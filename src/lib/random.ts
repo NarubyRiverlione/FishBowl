@@ -20,7 +20,7 @@ export const FISH_PALETTE = [
  */
 export const randomColor = (): string => {
   const index = Math.floor(Math.random() * FISH_PALETTE.length)
-  return FISH_PALETTE[index]
+  return FISH_PALETTE[index] ?? '#FF7F50' // Fallback to coral if undefined
 }
 
 /**

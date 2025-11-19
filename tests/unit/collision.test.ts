@@ -37,15 +37,27 @@ describe('Collision Utilities', () => {
     it('should reverse vx if hitting x boundary', () => {
       const fish = mockFish({ x: 5, vx: -10, radius: 10 })
       resolveBoundaryCollision(fish, { width: 100, height: 100, backgroundColor: 0 })
-      expect(fish.vx).toBe(10) // Reversed
+      expect(fish.vx).toBe(8) // Reversed with restitution 0.8
       expect(fish.x).toBe(10) // Pushed back
     })
 
     it('should reverse vy if hitting y boundary', () => {
       const fish = mockFish({ y: 95, vy: 10, radius: 10 })
       resolveBoundaryCollision(fish, { width: 100, height: 100, backgroundColor: 0 })
-      expect(fish.vy).toBe(-10) // Reversed
+      expect(fish.vy).toBe(-8) // Reversed with restitution 0.8
       expect(fish.y).toBe(90) // Pushed back
+    })
+
+    it('should prevent fish from going above water level', () => {
+      // Tank height 100, water level 85% = 85px high, top at y=15
+      const fish = mockFish({ y: 10, vy: -5, radius: 10 })
+      resolveBoundaryCollision(fish, { width: 100, height: 100, backgroundColor: 0 })
+
+      // Fish should be pushed down to waterTop + radius
+      // waterTop = 100 - (100 * 0.85) = 15
+      // Expected y = 15 + 10 = 25
+      expect(fish.y).toBe(25)
+      expect(fish.vy).toBe(4) // Reversed with restitution 0.8
     })
   })
 

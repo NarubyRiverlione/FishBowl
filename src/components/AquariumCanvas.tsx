@@ -9,12 +9,6 @@ interface AquariumCanvasProps {
 const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width = 800, height = 600 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<RenderingEngine | null>(null)
-  const [dimensions, setDimensions] = React.useState({ width, height })
-
-  // Update dimensions when props change
-  useEffect(() => {
-    setDimensions({ width, height })
-  }, [width, height])
 
   // Handle window resize (optional, if we wanted full screen)
   useEffect(() => {
@@ -39,7 +33,7 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width = 800, height = 6
         }
 
         // Initialize new engine
-        const engine = new RenderingEngine(dimensions.width, dimensions.height, 0x006994)
+        const engine = new RenderingEngine(width, height, 0x006994)
         engineRef.current = engine
 
         await engine.init(containerRef.current!)
@@ -57,15 +51,15 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width = 800, height = 6
         engineRef.current = null
       }
     }
-  }, [dimensions.width, dimensions.height])
+  }, [width, height])
 
   return (
     <div
       ref={containerRef}
       data-testid="aquarium-container"
       style={{
-        width: `${dimensions.width}px`,
-        height: `${dimensions.height}px`,
+        width: `${width}px`,
+        height: `${height}px`,
         border: '2px solid #333',
         margin: '20px auto',
         boxShadow: '0 0 20px rgba(0,0,0,0.3)',

@@ -40,7 +40,7 @@ export class TankView extends Container {
     // Draw tank walls (bottom and sides only, no top)
     this.background.rect(0, 0, this.tank.width, this.tank.height)
     this.background.stroke({ width: 4, color: 0x888888 })
-    
+
     // Draw water surface line
     this.background
       .moveTo(0, this.tank.height - waterLevel)

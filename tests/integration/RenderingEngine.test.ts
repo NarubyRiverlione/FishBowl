@@ -49,23 +49,15 @@ describe('RenderingEngine Integration', () => {
     const fish = engine.tank.fish[0]
     fish.vx = 10
     fish.vy = 0
-    ;(fish as any).friction = 0 // Disable friction for deterministic test
 
     const initialX = fish.x
 
     // Simulate a tick (delta = 1)
-    // We need to access the update method directly or simulate ticker
-    // Assuming RenderingEngine has a public update method or we can trigger it
-    // For now, let's assume we can call the update logic directly if exposed,
-    // or we test the effect if we can trigger the ticker callback.
-    // Since ticker is mocked, we can't rely on auto-update.
-    // Let's expose update method or assume it's public for testing/game loop.
-
-    // If update is private, we might need to cast to any or expose it.
-    // Let's assume we'll make it public for testing or use a specific method.
     engine.update(1)
 
-    expect(fish.x).toBe(initialX + 10)
+    // With swim behavior, the position will be affected by random forces
+    // So we just check that the fish moved forward (x increased)
+    expect(fish.x).toBeGreaterThan(initialX)
   })
 
   it('should spawn fish with varied colors and sizes', () => {
@@ -77,5 +69,23 @@ describe('RenderingEngine Integration', () => {
 
     expect(colors.size).toBeGreaterThan(1)
     expect(sizes.size).toBeGreaterThan(1)
+  })
+
+  it('should log metrics after update', async () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+
+    engine.spawnFish(5)
+
+    // Update and wait for metric logging interval
+    engine.update(1)
+    await new Promise((resolve) => setTimeout(resolve, 1100))
+    engine.update(1)
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('FPS:'))
+    consoleSpy.mockRestore()
+  })
+
+  it('should handle destroy without errors', () => {
+    expect(() => engine.destroy()).not.toThrow()
   })
 })

@@ -9,6 +9,8 @@ vi.mock('pixi.js', () => {
     fill = vi.fn().mockReturnThis()
     stroke = vi.fn().mockReturnThis()
     clear = vi.fn().mockReturnThis()
+    moveTo = vi.fn().mockReturnThis()
+    lineTo = vi.fn().mockReturnThis()
   }
 
   class ContainerMock {

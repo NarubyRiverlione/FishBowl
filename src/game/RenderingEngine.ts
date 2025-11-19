@@ -96,7 +96,7 @@ export class RenderingEngine {
     // Log metrics every second
     const now = performance.now()
     if (now - this.lastLogTime > 1000) {
-      const fps = this.app.ticker.FPS
+      const fps = this.lastLogTime ? 1000 / (now - this.lastLogTime) : 60
       const fishCount = this.tank.fish.length
       const checks = this.tank.collisionChecks
       const collisions = this.tank.collisionsResolved
