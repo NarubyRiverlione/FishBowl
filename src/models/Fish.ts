@@ -17,10 +17,18 @@ export class Fish implements IFish {
   radius: number = 16
   friction: number = 0.01
 
-  constructor(id: string, x: number, y: number) {
+  constructor(id: string, x: number, y: number, color: string = '#FFFFFF', scale: number = 1) {
     this.id = id
     this.x = x
     this.y = y
+    this.color = color
+    this.scale = scale
+
+    // Adjust physical properties based on scale
+    this.radius = 16 * scale
+    this.mass = 1 * scale
+    this.width = 32 * scale
+    this.height = 32 * scale
   }
 
   applyForce(fx: number, fy: number): void {

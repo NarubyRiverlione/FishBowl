@@ -1,14 +1,26 @@
 /**
- * Generates a random hex color string.
- * @returns Hex color string (e.g., "#FF5733")
+ * Palette of fish colors.
+ * - Orange (Clownfish)
+ * - Blue (Tang)
+ * - Yellow (Tang)
+ * - Purple (Basslet)
+ * - Red (Snapper)
+ */
+export const FISH_PALETTE = [
+  '#FF7F50', // Coral
+  '#00BFFF', // Deep Sky Blue
+  '#FFD700', // Gold
+  '#9370DB', // Medium Purple
+  '#FF6347', // Tomato
+]
+
+/**
+ * Generates a random hex color string from a predefined palette.
+ * @returns Hex color string
  */
 export const randomColor = (): string => {
-  const letters = '0123456789ABCDEF'
-  let color = '#'
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)]
-  }
-  return color
+  const index = Math.floor(Math.random() * FISH_PALETTE.length)
+  return FISH_PALETTE[index]
 }
 
 /**

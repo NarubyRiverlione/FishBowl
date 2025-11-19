@@ -117,18 +117,18 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T041 [P] [US3] Unit test for random color generation in `tests/unit/random.test.ts` (generates distinct colors)
-- [ ] T042 [P] [US3] Unit test for random size generation in `tests/unit/random.test.ts` (generates varied sizes)
-- [ ] T043 [US3] Integration test for fish variety in `tests/integration/AquariumCanvas.test.tsx` (multiple colors visible)
+- [x] T041 [P] [US3] Unit test for random color generation in `tests/unit/random.test.ts` (generates distinct colors)
+- [x] T042 [P] [US3] Unit test for random size generation in `tests/unit/random.test.ts` (generates varied sizes)
+- [x] T043 [US3] Integration test for fish variety in `tests/integration/AquariumCanvas.test.tsx` (multiple colors visible)
 
 ### Implementation for User Story 3
 
-- [ ] T044 [P] [US3] Implement `randomColor()` function in `src/lib/random.ts` (palette of 3+ distinct colors)
-- [ ] T045 [P] [US3] Implement `randomSize()` function in `src/lib/random.ts` (small, medium, large variations)
-- [ ] T046 [US3] Update Fish model in `src/models/Fish.ts` to accept color and size in constructor
-- [ ] T047 [US3] Update FishSprite in `src/game/FishSprite.ts` to render with color tint and scale based on size
-- [ ] T048 [US3] Update spawn logic in Tank to generate random colors/sizes when creating fish
-- [ ] T049 [US3] Adjust fish rendering to ensure sizes remain proportional (scale 0.5x - 1.5x)
+- [x] T044 [P] [US3] Implement `randomColor()` function in `src/lib/random.ts` (palette of 3+ distinct colors)
+- [x] T045 [P] [US3] Implement `randomSize()` function in `src/lib/random.ts` (small, medium, large variations)
+- [x] T046 [US3] Update Fish model in `src/models/Fish.ts` to accept color and size in constructor
+- [x] T047 [US3] Update FishSprite in `src/game/FishSprite.ts` to render with color tint and scale based on size
+- [x] T048 [US3] Update spawn logic in Tank to generate random colors/sizes when creating fish
+- [x] T049 [US3] Adjust fish rendering to ensure sizes remain proportional (scale 0.5x - 1.5x)
 
 **Checkpoint**: All 3 user stories complete - fish have visual variety, physics-based animation, and collision response
 
