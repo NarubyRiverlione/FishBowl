@@ -17,10 +17,10 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Scaffold src/ directory structure per plan.md
-- [ ] T002 Create main entry point and Vite configuration in `src/App.tsx` and `vite.config.ts`
-- [ ] T003 [P] Configure ESLint and Prettier rules in `.eslintrc.json` and `.prettierrc`
-- [ ] T004 [P] Configure Vitest in `vitest.config.ts`
+- [x] T001 Scaffold src/ directory structure per plan.md
+- [x] T002 Create main entry point and Vite configuration in `src/App.tsx` and `vite.config.ts`
+- [x] T003 [P] Configure ESLint and Prettier rules in `.eslintrc.json` and `.prettierrc`
+- [x] T004 [P] Configure Vitest in `vitest.config.ts`
 
 ---
 
@@ -30,9 +30,9 @@
 
 **⚠️ CRITICAL**: No rendering work can begin until this phase completes
 
-- [ ] T005 [P] Create type definitions for Fish in `src/types/fish.ts` (properties: id, color, size, position, velocity, acceleration, mass, radius)
-- [ ] T006 [P] Create type definitions for Tank in `src/types/tank.ts` (properties: width, height, backgroundColor)
-- [ ] T007 [P] Create type definitions for rendering in `src/types/render.ts` (Animation frames, sprite config, collision data)
+- [x] T005 [P] Create type definitions for Fish in `src/types/fish.ts` (properties: id, color, size, position, velocity, acceleration, mass, radius)
+- [x] T006 [P] Create type definitions for Tank in `src/types/tank.ts` (properties: width, height, backgroundColor)
+- [x] T007 [P] Create type definitions for rendering in `src/types/render.ts` (Animation frames, sprite config, collision data)
 - [ ] T008 Create base Fish model in `src/models/Fish.ts` with physics properties (velocity, acceleration, mass, radius)
 - [ ] T009 Create base Tank model in `src/models/Tank.ts` as a container with collision tracking
 - [ ] T010 [P] Create physics utility functions in `src/lib/physics.ts` (velocity update, acceleration calc, friction/drag, boundary detection, AABB collision)

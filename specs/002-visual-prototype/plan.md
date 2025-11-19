@@ -121,10 +121,10 @@ Update Loop: Each frame
 
 ### Phase 1: Design & Setup
 
-- [ ] Define interfaces (Fish, Tank, Sprite)
-- [ ] Configure Vite + ESLint + Prettier
-- [ ] Set up test infrastructure (Vitest)
-- [ ] Create project structure
+- [x] Define interfaces (Fish, Tank, Sprite)
+- [x] Configure Vite + ESLint + Prettier
+- [x] Set up test infrastructure (Vitest)
+- [x] Create project structure
 
 ### Phase 2: Core Rendering
 
