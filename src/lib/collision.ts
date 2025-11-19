@@ -1,5 +1,6 @@
 import { IFish } from '../types/fish'
 import { ITank } from '../types/tank'
+import { WATER_LEVEL } from './constants'
 
 /**
  * Detects if two fish are colliding (circle collision).
@@ -22,6 +23,8 @@ export const detectFishCollision = (f1: IFish, f2: IFish): boolean => {
  */
 export const resolveBoundaryCollision = (fish: IFish, tank: ITank): void => {
   const restitution = 0.8 // Bounciness factor (0-1)
+  const waterHeight = tank.height * WATER_LEVEL
+  const waterTop = tank.height - waterHeight
 
   // Left wall
   if (fish.x - fish.radius < 0) {
@@ -34,9 +37,9 @@ export const resolveBoundaryCollision = (fish: IFish, tank: ITank): void => {
     fish.vx *= -restitution
   }
 
-  // Top wall
-  if (fish.y - fish.radius < 0) {
-    fish.y = fish.radius
+  // Water surface (top boundary for fish)
+  if (fish.y - fish.radius < waterTop) {
+    fish.y = waterTop + fish.radius
     fish.vy *= -restitution
   }
   // Bottom wall

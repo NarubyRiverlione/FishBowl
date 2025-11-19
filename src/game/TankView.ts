@@ -31,11 +31,20 @@ export class TankView extends Container {
   private draw(): void {
     this.background.clear()
 
-    // Draw water
-    this.background.rect(0, 0, this.tank.width, this.tank.height)
+    const waterLevel = this.tank.height * 0.85 // Water fills 85% of tank height
+
+    // Draw water (filled portion)
+    this.background.rect(0, this.tank.height - waterLevel, this.tank.width, waterLevel)
     this.background.fill(this.tank.backgroundColor)
 
-    // Draw border
-    this.background.stroke({ width: 4, color: 0xffffff })
+    // Draw tank walls (bottom and sides only, no top)
+    this.background.rect(0, 0, this.tank.width, this.tank.height)
+    this.background.stroke({ width: 4, color: 0x888888 })
+    
+    // Draw water surface line
+    this.background
+      .moveTo(0, this.tank.height - waterLevel)
+      .lineTo(this.tank.width, this.tank.height - waterLevel)
+      .stroke({ width: 2, color: 0x66aaff, alpha: 0.6 })
   }
 }

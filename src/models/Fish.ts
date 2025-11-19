@@ -1,5 +1,15 @@
 import { IFish } from '../types/fish'
 import { updateVelocity, calculateAcceleration } from '../lib/physics'
+import {
+  FISH_BASE_SIZE,
+  FISH_BASE_RADIUS,
+  FISH_BASE_MASS,
+  FISH_FRICTION,
+  SWIM_DIRECTION_CHANGE_PROBABILITY,
+  SWIM_DIRECTION_CHANGE_FORCE,
+  SWIM_MIN_SPEED,
+  SWIM_BOOST_FORCE,
+} from '../lib/constants'
 
 export class Fish implements IFish {
   id: string
@@ -11,11 +21,11 @@ export class Fish implements IFish {
   ay: number = 0
   scale: number = 1
   color: string = '#FFFFFF'
-  width: number = 32
-  height: number = 32
-  mass: number = 1
-  radius: number = 16
-  friction: number = 0.01
+  width: number = FISH_BASE_SIZE
+  height: number = FISH_BASE_SIZE
+  mass: number = FISH_BASE_MASS
+  radius: number = FISH_BASE_RADIUS
+  friction: number = FISH_FRICTION
 
   constructor(id: string, x: number, y: number, color: string = '#FFFFFF', scale: number = 1) {
     this.id = id
@@ -25,13 +35,11 @@ export class Fish implements IFish {
     this.scale = scale
 
     // Adjust physical properties based on scale
-    this.radius = 16 * scale
-    this.mass = 1 * scale
-    this.width = 32 * scale
-    this.height = 32 * scale
-
-    // Lower friction for smoother gliding (water resistance)
-    this.friction = 0.005
+    this.radius = FISH_BASE_RADIUS * scale
+    this.mass = FISH_BASE_MASS * scale
+    this.width = FISH_BASE_SIZE * scale
+    this.height = FISH_BASE_SIZE * scale
+    this.friction = FISH_FRICTION
   }
 
   applyForce(fx: number, fy: number): void {
@@ -41,17 +49,17 @@ export class Fish implements IFish {
 
   swim(): void {
     // Randomly change direction slightly
-    if (Math.random() < 0.02) {
+    if (Math.random() < SWIM_DIRECTION_CHANGE_PROBABILITY) {
       const angle = Math.random() * Math.PI * 2
-      const force = 0.5 * this.mass // Proportional to mass
+      const force = SWIM_DIRECTION_CHANGE_FORCE * this.mass
       this.applyForce(Math.cos(angle) * force, Math.sin(angle) * force)
     }
 
     // If moving too slow, give a boost
     const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy)
-    if (speed < 1) {
+    if (speed < SWIM_MIN_SPEED) {
       const angle = Math.random() * Math.PI * 2
-      const force = 1.0 * this.mass
+      const force = SWIM_BOOST_FORCE * this.mass
       this.applyForce(Math.cos(angle) * force, Math.sin(angle) * force)
     }
   }

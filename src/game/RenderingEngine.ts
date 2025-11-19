@@ -3,6 +3,7 @@ import { Tank } from '../models/Tank'
 import { TankView } from './TankView'
 import { Fish } from '../models/Fish'
 import { randomColor, randomPosition, randomVelocity, randomSize } from '../lib/random'
+import { WATER_LEVEL } from '../lib/constants'
 
 export class RenderingEngine {
   private app: Application
@@ -67,10 +68,14 @@ export class RenderingEngine {
   }
 
   spawnFish(count: number): void {
+    const waterHeight = this.tank.height * WATER_LEVEL
+    const waterTop = this.tank.height - waterHeight
+
     for (let i = 0; i < count; i++) {
       const id = Math.random().toString(36).substring(7)
       const x = randomPosition(0, this.tank.width)
-      const y = randomPosition(0, this.tank.height)
+      // Spawn only within water boundaries
+      const y = randomPosition(waterTop + 50, this.tank.height - 50) // Add padding from edges
       const color = randomColor()
       const scale = randomSize(0.5, 1.5)
 
