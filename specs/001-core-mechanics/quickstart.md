@@ -11,6 +11,7 @@
 This guide walks you through setting up the FishBowl project and implementing the first feature: **Core Game Mechanics (MVP)**.
 
 **What you'll build**:
+
 - A game loop that ticks at 1 second intervals.
 - Fish entities with hunger, health, and aging.
 - A store to buy and sell fish.
@@ -63,27 +64,30 @@ This is the contract layer. All entities are defined here.
 // Primitives
 // ============================================
 
-export type UUID = string;
-export type Timestamp = number; // milliseconds since epoch
+export type UUID = string
+export type Timestamp = number // milliseconds since epoch
 
 // ============================================
 // Enums
 // ============================================
 
 export enum FishSpecies {
-  GUPPY = "GUPPY",
-  GOLDFISH = "GOLDFISH",
-  TETRA = "TETRA",
-  BETTA = "BETTA",
+  GUPPY = 'GUPPY',
+  GOLDFISH = 'GOLDFISH',
+  TETRA = 'TETRA',
+  BETTA = 'BETTA',
 }
 
 // Base stats for each species
-export const FISH_SPECIES_CONFIG: Record<FishSpecies, {
-  baseValue: number;
-  minSize: number;
-  maxSize: number;
-  hungerRate: number;
-}> = {
+export const FISH_SPECIES_CONFIG: Record<
+  FishSpecies,
+  {
+    baseValue: number
+    minSize: number
+    maxSize: number
+    hungerRate: number
+  }
+> = {
   [FishSpecies.GUPPY]: {
     baseValue: 50,
     minSize: 0.5,
@@ -108,67 +112,66 @@ export const FISH_SPECIES_CONFIG: Record<FishSpecies, {
     maxSize: 1.5,
     hungerRate: 1.5,
   },
-};
+}
 
 // ============================================
 // Core Interfaces
 // ============================================
 
 export interface IFish {
-  id: UUID;
-  species: FishSpecies;
-  name: string;
-  color: string; // Hex color
-  size: number; // 0.5-2.0
-  age: number; // Seconds
-  health: number; // 0-100
-  hunger: number; // 0-100
-  isAlive: boolean;
-  genetics: Record<string, unknown>; // Reserved for Phase 2
-  createdAt: Timestamp;
-  lastFedAt: Timestamp;
+  id: UUID
+  species: FishSpecies
+  name: string
+  color: string // Hex color
+  size: number // 0.5-2.0
+  age: number // Seconds
+  health: number // 0-100
+  hunger: number // 0-100
+  isAlive: boolean
+  genetics: Record<string, unknown> // Reserved for Phase 2
+  createdAt: Timestamp
+  lastFedAt: Timestamp
 }
 
 export interface ITank {
-  id: UUID;
-  capacity: number;
-  waterQuality: number; // 0-100
-  temperature: number; // Celsius
-  fish: IFish[];
-  createdAt: Timestamp;
+  id: UUID
+  capacity: number
+  waterQuality: number // 0-100
+  temperature: number // Celsius
+  fish: IFish[]
+  createdAt: Timestamp
 }
 
 export interface IStoreItem {
-  id: string;
-  type: "FISH" | "FOOD" | "EQUIPMENT";
-  name: string;
-  description: string;
-  cost: number;
-  quantity: number; // -1 = unlimited
-  species?: FishSpecies;
+  id: string
+  type: 'FISH' | 'FOOD' | 'EQUIPMENT'
+  name: string
+  description: string
+  cost: number
+  quantity: number // -1 = unlimited
+  species?: FishSpecies
 }
 
 export interface IGameState {
-  currentTick: number;
-  totalTime: number;
-  isPaused: boolean;
-  tank: ITank;
-  credits: number;
-  storeInventory: IStoreItem[];
-  selectedFishId: UUID | null;
-  gameStartedAt: Timestamp;
+  currentTick: number
+  totalTime: number
+  isPaused: boolean
+  tank: ITank
+  credits: number
+  storeInventory: IStoreItem[]
+  selectedFishId: UUID | null
+  gameStartedAt: Timestamp
 }
 
 // ============================================
 // Result Type (for error handling)
 // ============================================
 
-export type Result<T> = 
-  | { success: true; data: T }
-  | { success: false; error: string };
+export type Result<T> = { success: true; data: T } | { success: false; error: string }
 ```
 
 **Checklist**:
+
 - [ ] File created at `src/types/index.ts`
 - [ ] All enums and interfaces defined
 - [ ] `FISH_SPECIES_CONFIG` includes all 4 species
@@ -193,7 +196,7 @@ Services contain pure logic, independent of React or UI. They're easy to test.
 ```typescript
 // src/services/FishService.ts
 
-import { IFish, UUID, FishSpecies, FISH_SPECIES_CONFIG } from "../types";
+import { IFish, UUID, FishSpecies, FISH_SPECIES_CONFIG } from '../types'
 
 export class FishService {
   /**
@@ -213,7 +216,7 @@ export class FishService {
       genetics: {},
       createdAt: Date.now(),
       lastFedAt: Date.now(),
-    };
+    }
   }
 
   /**
@@ -221,20 +224,20 @@ export class FishService {
    */
   static tickFish(fish: IFish): IFish {
     if (!fish.isAlive) {
-      return fish;
+      return fish
     }
 
-    const config = FISH_SPECIES_CONFIG[fish.species];
-    let newHealth = fish.health;
-    let newHunger = Math.min(fish.hunger + config.hungerRate, 100);
+    const config = FISH_SPECIES_CONFIG[fish.species]
+    let newHealth = fish.health
+    let newHunger = Math.min(fish.hunger + config.hungerRate, 100)
 
     // Starvation: if very hungry, health decreases
     if (newHunger >= 80 && newHealth > 0) {
-      newHealth -= 1;
+      newHealth -= 1
     }
 
     // Death check
-    const isAlive = newHealth > 0;
+    const isAlive = newHealth > 0
 
     return {
       ...fish,
@@ -242,22 +245,22 @@ export class FishService {
       hunger: newHunger,
       health: Math.max(newHealth, 0),
       isAlive,
-    };
+    }
   }
 
   /**
-   * Feed a fish, resetting hunger to 0.
+   * Reduce hunger for a fish by 30 points (used by feedTank action).
    */
-  static feedFish(fish: IFish): IFish {
+  static reduceFishHunger(fish: IFish, amount: number = 30): IFish {
     if (!fish.isAlive) {
-      throw new Error("Cannot feed dead fish");
+      throw new Error('Cannot feed dead fish')
     }
 
     return {
       ...fish,
       hunger: 0,
       lastFedAt: Date.now(),
-    };
+    }
   }
 
   /**
@@ -265,32 +268,33 @@ export class FishService {
    */
   static calculateFishValue(fish: IFish): number {
     if (!fish.isAlive || fish.health === 0) {
-      return 0;
+      return 0
     }
 
-    const config = FISH_SPECIES_CONFIG[fish.species];
-    const baseValue = config.baseValue;
+    const config = FISH_SPECIES_CONFIG[fish.species]
+    const baseValue = config.baseValue
 
     // Age multiplier: 1.0 at age 0, max 2.0 at age 300 (5 minutes)
-    const ageMultiplier = Math.min(1 + fish.age / 300, 2.0);
+    const ageMultiplier = Math.min(1 + fish.age / 300, 2.0)
 
     // Health modifier: 0-1 based on health
-    const healthModifier = fish.health / 100;
+    const healthModifier = fish.health / 100
 
-    return Math.round(baseValue * ageMultiplier * healthModifier);
+    return Math.round(baseValue * ageMultiplier * healthModifier)
   }
 
   private static generateUUID(): string {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
-      const v = c === "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0
+      const v = c === 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
   }
 }
 ```
 
 **Checklist**:
+
 - [ ] File created at `src/services/FishService.ts`
 - [ ] All methods implemented
 - [ ] Methods are pure (no side effects)
@@ -300,37 +304,33 @@ export class FishService {
 ```typescript
 // src/services/EconomyService.ts
 
-import { IGameState, IFish, UUID, Result } from "../types";
-import { FishService } from "./FishService";
+import { IGameState, IFish, UUID, Result } from '../types'
+import { FishService } from './FishService'
 
 export class EconomyService {
   /**
    * Attempt to buy a fish from the store.
    */
   static buyFish(state: IGameState, storeItemId: string): Result<IGameState> {
-    const item = state.storeInventory.find(i => i.id === storeItemId);
+    const item = state.storeInventory.find((i) => i.id === storeItemId)
 
     if (!item) {
-      return { success: false, error: "Store item not found" };
+      return { success: false, error: 'Store item not found' }
     }
 
-    if (item.type !== "FISH") {
-      return { success: false, error: "Item is not a fish" };
+    if (item.type !== 'FISH') {
+      return { success: false, error: 'Item is not a fish' }
     }
 
     if (state.credits < item.cost) {
-      return { success: false, error: "Insufficient credits" };
+      return { success: false, error: 'Insufficient credits' }
     }
 
     if (state.tank.fish.length >= state.tank.capacity) {
-      return { success: false, error: "Tank is at capacity" };
+      return { success: false, error: 'Tank is at capacity' }
     }
 
-    const newFish = FishService.createFish(
-      item.species!,
-      this.randomColor(),
-      `${item.name}-${state.currentTick}`
-    );
+    const newFish = FishService.createFish(item.species!, this.randomColor(), `${item.name}-${state.currentTick}`)
 
     return {
       success: true,
@@ -342,20 +342,20 @@ export class EconomyService {
           fish: [...state.tank.fish, newFish],
         },
       },
-    };
+    }
   }
 
   /**
    * Attempt to sell a fish.
    */
   static sellFish(state: IGameState, fishId: UUID): Result<IGameState> {
-    const fish = state.tank.fish.find(f => f.id === fishId);
+    const fish = state.tank.fish.find((f) => f.id === fishId)
 
     if (!fish) {
-      return { success: false, error: "Fish not found" };
+      return { success: false, error: 'Fish not found' }
     }
 
-    const value = FishService.calculateFishValue(fish);
+    const value = FishService.calculateFishValue(fish)
 
     return {
       success: true,
@@ -364,10 +364,10 @@ export class EconomyService {
         credits: state.credits + value,
         tank: {
           ...state.tank,
-          fish: state.tank.fish.filter(f => f.id !== fishId),
+          fish: state.tank.fish.filter((f) => f.id !== fishId),
         },
       },
-    };
+    }
   }
 
   /**
@@ -375,20 +375,20 @@ export class EconomyService {
    */
   static feedFish(state: IGameState, fishId: UUID): Result<IGameState> {
     if (state.credits < 1) {
-      return { success: false, error: "Insufficient credits for feeding" };
+      return { success: false, error: 'Insufficient credits for feeding' }
     }
 
-    const fish = state.tank.fish.find(f => f.id === fishId);
+    const fish = state.tank.fish.find((f) => f.id === fishId)
 
     if (!fish) {
-      return { success: false, error: "Fish not found" };
+      return { success: false, error: 'Fish not found' }
     }
 
     if (!fish.isAlive) {
-      return { success: false, error: "Cannot feed dead fish" };
+      return { success: false, error: 'Cannot feed dead fish' }
     }
 
-    const fedFish = FishService.feedFish(fish);
+    const fedFish = FishService.feedFish(fish)
 
     return {
       success: true,
@@ -397,22 +397,23 @@ export class EconomyService {
         credits: state.credits - 1,
         tank: {
           ...state.tank,
-          fish: state.tank.fish.map(f => (f.id === fishId ? fedFish : f)),
+          fish: state.tank.fish.map((f) => (f.id === fishId ? fedFish : f)),
         },
       },
-    };
+    }
   }
 
   private static randomColor(): string {
-    const hue = Math.floor(Math.random() * 360);
-    const saturation = 70 + Math.floor(Math.random() * 20);
-    const lightness = 50 + Math.floor(Math.random() * 20);
-    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+    const hue = Math.floor(Math.random() * 360)
+    const saturation = 70 + Math.floor(Math.random() * 20)
+    const lightness = 50 + Math.floor(Math.random() * 20)
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`
   }
 }
 ```
 
 **Checklist**:
+
 - [ ] File created at `src/services/EconomyService.ts`
 - [ ] All methods return `Result<T>`
 - [ ] Error cases handled
@@ -422,8 +423,8 @@ export class EconomyService {
 ```typescript
 // src/services/GameLoopService.ts
 
-import { IGameState } from "../types";
-import { FishService } from "./FishService";
+import { IGameState } from '../types'
+import { FishService } from './FishService'
 
 export class GameLoopService {
   /**
@@ -431,14 +432,14 @@ export class GameLoopService {
    */
   static tickGame(state: IGameState): IGameState {
     if (state.isPaused) {
-      return state;
+      return state
     }
 
     // Update all fish
-    const updatedFish = state.tank.fish.map(fish => FishService.tickFish(fish));
+    const updatedFish = state.tank.fish.map((fish) => FishService.tickFish(fish))
 
     // Remove dead fish
-    const livingFish = updatedFish.filter(f => f.isAlive);
+    const livingFish = updatedFish.filter((f) => f.isAlive)
 
     return {
       ...state,
@@ -448,14 +449,14 @@ export class GameLoopService {
         ...state.tank,
         fish: livingFish,
       },
-    };
+    }
   }
 
   /**
    * Initialize a new game.
    */
   static initializeGame(): IGameState {
-    const now = Date.now();
+    const now = Date.now()
 
     return {
       currentTick: 0,
@@ -472,48 +473,49 @@ export class GameLoopService {
       credits: 100,
       storeInventory: [
         {
-          id: "fish-guppy",
-          type: "FISH",
-          name: "Guppy",
-          description: "Small, colorful fish",
+          id: 'fish-guppy',
+          type: 'FISH',
+          name: 'Guppy',
+          description: 'Small, colorful fish',
           cost: 50,
           quantity: -1,
-          species: "GUPPY",
+          species: 'GUPPY',
         },
         {
-          id: "fish-goldfish",
-          type: "FISH",
-          name: "Goldfish",
-          description: "Classic goldfish",
+          id: 'fish-goldfish',
+          type: 'FISH',
+          name: 'Goldfish',
+          description: 'Classic goldfish',
           cost: 100,
           quantity: -1,
-          species: "GOLDFISH",
+          species: 'GOLDFISH',
         },
         {
-          id: "food-bulk",
-          type: "FOOD",
-          name: "Bulk Food",
-          description: "Feed your fish",
+          id: 'food-bulk',
+          type: 'FOOD',
+          name: 'Bulk Food',
+          description: 'Feed your fish',
           cost: 1,
           quantity: -1,
         },
       ],
       selectedFishId: null,
       gameStartedAt: now,
-    };
+    }
   }
 
   private static generateUUID(): string {
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
-      const v = c === "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0
+      const v = c === 'x' ? r : (r & 0x3) | 0x8
+      return v.toString(16)
+    })
   }
 }
 ```
 
 **Checklist**:
+
 - [ ] File created at `src/services/GameLoopService.ts`
 - [ ] `tickGame()` updates all fish and removes dead ones
 - [ ] `initializeGame()` creates starting state with 100 credits
@@ -527,29 +529,29 @@ export class GameLoopService {
 ```typescript
 // src/store/useGameStore.ts
 
-import { create } from "zustand";
-import { IGameState, UUID, Result } from "../types";
-import { GameLoopService } from "../services/GameLoopService";
-import { EconomyService } from "../services/EconomyService";
+import { create } from 'zustand'
+import { IGameState, UUID, Result } from '../types'
+import { GameLoopService } from '../services/GameLoopService'
+import { EconomyService } from '../services/EconomyService'
 
 interface GameStoreActions {
-  tick: () => void;
-  initializeGame: () => void;
-  togglePause: () => void;
-  buyFish: (storeItemId: string) => Result<void>;
-  feedFish: (fishId: UUID) => Result<void>;
-  sellFish: (fishId: UUID) => Result<void>;
-  selectFish: (fishId: UUID | null) => void;
+  tick: () => void
+  initializeGame: () => void
+  togglePause: () => void
+  buyFish: (storeItemId: string) => Result<void>
+  feedFish: (fishId: UUID) => Result<void>
+  sellFish: (fishId: UUID) => Result<void>
+  selectFish: (fishId: UUID | null) => void
 }
 
-type GameStore = IGameState & GameStoreActions;
+type GameStore = IGameState & GameStoreActions
 
 export const useGameStore = create<GameStore>((set, get) => ({
   // Initial state (can be replaced by initializeGame)
   currentTick: 0,
   totalTime: 0,
   isPaused: false,
-  tank: { id: "", capacity: 0, waterQuality: 0, temperature: 0, fish: [], createdAt: 0 },
+  tank: { id: '', capacity: 0, waterQuality: 0, temperature: 0, fish: [], createdAt: 0 },
   credits: 0,
   storeInventory: [],
   selectedFishId: null,
@@ -557,65 +559,66 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   // Actions
   initializeGame: () => {
-    const initialState = GameLoopService.initializeGame();
-    set(initialState);
+    const initialState = GameLoopService.initializeGame()
+    set(initialState)
   },
 
   tick: () => {
-    const state = get();
-    const newState = GameLoopService.tickGame(state);
-    set(newState);
+    const state = get()
+    const newState = GameLoopService.tickGame(state)
+    set(newState)
   },
 
   togglePause: () => {
-    set(state => ({ isPaused: !state.isPaused }));
+    set((state) => ({ isPaused: !state.isPaused }))
   },
 
   buyFish: (storeItemId: string) => {
-    const state = get();
-    const result = EconomyService.buyFish(state, storeItemId);
+    const state = get()
+    const result = EconomyService.buyFish(state, storeItemId)
     if (result.success) {
-      set(result.data);
+      set(result.data)
     }
-    return result;
+    return result
   },
 
   feedFish: (fishId: UUID) => {
-    const state = get();
-    const result = EconomyService.feedFish(state, fishId);
+    const state = get()
+    const result = EconomyService.feedFish(state, fishId)
     if (result.success) {
-      set(result.data);
+      set(result.data)
     }
-    return result;
+    return result
   },
 
   sellFish: (fishId: UUID) => {
-    const state = get();
-    const result = EconomyService.sellFish(state, fishId);
+    const state = get()
+    const result = EconomyService.sellFish(state, fishId)
     if (result.success) {
-      set(result.data);
+      set(result.data)
     }
-    return result;
+    return result
   },
 
   selectFish: (fishId: UUID | null) => {
-    set({ selectedFishId: fishId });
+    set({ selectedFishId: fishId })
   },
-}));
+}))
 
 // Selectors
-export const selectGameState = (state: GameStore) => state;
-export const selectCredits = (state: GameStore) => state.credits;
-export const selectTankFish = (state: GameStore) => state.tank.fish;
+export const selectGameState = (state: GameStore) => state
+export const selectCredits = (state: GameStore) => state.credits
+export const selectTankFish = (state: GameStore) => state.tank.fish
 export const selectSelectedFish = (state: GameStore) => {
-  if (!state.selectedFishId) return null;
-  return state.tank.fish.find(f => f.id === state.selectedFishId) || null;
-};
-export const selectCurrentTick = (state: GameStore) => state.currentTick;
-export const selectStoreInventory = (state: GameStore) => state.storeInventory;
+  if (!state.selectedFishId) return null
+  return state.tank.fish.find((f) => f.id === state.selectedFishId) || null
+}
+export const selectCurrentTick = (state: GameStore) => state.currentTick
+export const selectStoreInventory = (state: GameStore) => state.storeInventory
 ```
 
 **Checklist**:
+
 - [ ] File created at `src/store/useGameStore.ts`
 - [ ] All actions delegated to services
 - [ ] Selectors defined for UI components
@@ -629,76 +632,76 @@ export const selectStoreInventory = (state: GameStore) => state.storeInventory;
 ```typescript
 // tests/services/FishService.test.ts
 
-import { describe, it, expect } from "vitest";
-import { FishService } from "../../src/services/FishService";
-import { FishSpecies } from "../../src/types";
+import { describe, it, expect } from 'vitest'
+import { FishService } from '../../src/services/FishService'
+import { FishSpecies } from '../../src/types'
 
-describe("FishService", () => {
-  it("should create a fish with initial stats", () => {
-    const fish = FishService.createFish(FishSpecies.GUPPY, "#FF0000", "Bubbles");
-    expect(fish.species).toBe(FishSpecies.GUPPY);
-    expect(fish.age).toBe(0);
-    expect(fish.health).toBe(80);
-    expect(fish.hunger).toBe(0);
-    expect(fish.isAlive).toBe(true);
-  });
+describe('FishService', () => {
+  it('should create a fish with initial stats', () => {
+    const fish = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Bubbles')
+    expect(fish.species).toBe(FishSpecies.GUPPY)
+    expect(fish.age).toBe(0)
+    expect(fish.health).toBe(80)
+    expect(fish.hunger).toBe(0)
+    expect(fish.isAlive).toBe(true)
+  })
 
-  it("should increase age and hunger on tick", () => {
-    const fish = FishService.createFish(FishSpecies.GUPPY, "#FF0000", "Bubbles");
-    const tickedFish = FishService.tickFish(fish);
-    expect(tickedFish.age).toBe(1);
-    expect(tickedFish.hunger).toBe(1);
-    expect(tickedFish.health).toBe(80);
-  });
+  it('should increase age and hunger on tick', () => {
+    const fish = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Bubbles')
+    const tickedFish = FishService.tickFish(fish)
+    expect(tickedFish.age).toBe(1)
+    expect(tickedFish.hunger).toBe(1)
+    expect(tickedFish.health).toBe(80)
+  })
 
-  it("should cause health loss when starving", () => {
-    let fish = FishService.createFish(FishSpecies.GUPPY, "#FF0000", "Bubbles");
+  it('should cause health loss when starving', () => {
+    let fish = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Bubbles')
     // Simulate 80 ticks to reach hunger threshold
     for (let i = 0; i < 80; i++) {
-      fish = FishService.tickFish(fish);
+      fish = FishService.tickFish(fish)
     }
-    expect(fish.hunger).toBe(100); // Clamped
-    expect(fish.health).toBe(80); // Not dead yet
+    expect(fish.hunger).toBe(100) // Clamped
+    expect(fish.health).toBe(80) // Not dead yet
 
     // One more tick should reduce health
-    fish = FishService.tickFish(fish);
-    expect(fish.health).toBe(79);
-  });
+    fish = FishService.tickFish(fish)
+    expect(fish.health).toBe(79)
+  })
 
-  it("should mark fish as dead when health reaches 0", () => {
-    let fish = FishService.createFish(FishSpecies.GUPPY, "#FF0000", "Bubbles");
+  it('should mark fish as dead when health reaches 0', () => {
+    let fish = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Bubbles')
     // Starvation for 100+ ticks
     for (let i = 0; i < 100; i++) {
-      fish = FishService.tickFish(fish);
+      fish = FishService.tickFish(fish)
     }
-    expect(fish.isAlive).toBe(false);
-    expect(fish.health).toBe(0);
-  });
+    expect(fish.isAlive).toBe(false)
+    expect(fish.health).toBe(0)
+  })
 
-  it("should reset hunger when fed", () => {
-    let fish = FishService.createFish(FishSpecies.GUPPY, "#FF0000", "Bubbles");
-    fish.hunger = 50;
-    const fedFish = FishService.feedFish(fish);
-    expect(fedFish.hunger).toBe(0);
-  });
+  it('should reset hunger when fed', () => {
+    let fish = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Bubbles')
+    fish.hunger = 50
+    const fedFish = FishService.feedFish(fish)
+    expect(fedFish.hunger).toBe(0)
+  })
 
-  it("should calculate fish value based on age and health", () => {
-    const fish = FishService.createFish(FishSpecies.GUPPY, "#FF0000", "Bubbles");
-    fish.age = 120;
-    fish.health = 90;
-    const value = FishService.calculateFishValue(fish);
+  it('should calculate fish value based on age and health', () => {
+    const fish = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Bubbles')
+    fish.age = 120
+    fish.health = 90
+    const value = FishService.calculateFishValue(fish)
     // Expected: 50 * 1.4 * 0.9 = 63
-    expect(value).toBe(63);
-  });
+    expect(value).toBe(63)
+  })
 
-  it("should return 0 value for dead fish", () => {
-    const fish = FishService.createFish(FishSpecies.GUPPY, "#FF0000", "Bubbles");
-    fish.isAlive = false;
-    fish.health = 0;
-    const value = FishService.calculateFishValue(fish);
-    expect(value).toBe(0);
-  });
-});
+  it('should return 0 value for dead fish', () => {
+    const fish = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Bubbles')
+    fish.isAlive = false
+    fish.health = 0
+    const value = FishService.calculateFishValue(fish)
+    expect(value).toBe(0)
+  })
+})
 ```
 
 ### 5.2 Run tests
@@ -782,6 +785,7 @@ pnpm dev
 ```
 
 You should see a basic UI with:
+
 - Credits: 100
 - Tick: 0
 - Fish: 0
@@ -820,11 +824,11 @@ To make the game loop run automatically without clicking "Tick" each time:
 
 React.useEffect(() => {
   const interval = setInterval(() => {
-    tick_action();
-  }, 1000); // Tick every 1 second
+    tick_action()
+  }, 1000) // Tick every 1 second
 
-  return () => clearInterval(interval);
-}, [tick_action]);
+  return () => clearInterval(interval)
+}, [tick_action])
 ```
 
 ---
@@ -845,16 +849,20 @@ React.useEffect(() => {
 ## Common Issues & Fixes
 
 ### Issue: `Cannot find module 'zustand'`
+
 **Fix**: `pnpm install zustand`
 
 ### Issue: TypeScript errors in tests
+
 **Fix**: Ensure `tests/` directory has `tsconfig.json` or is configured in root `tsconfig.json`.
 
 ### Issue: Store not updating in React
+
 **Fix**: Ensure selectors are used correctly:
+
 ```typescript
-const credits = useGameStore(state => state.credits); // ✅ Correct
-const state = useGameStore(); // ❌ Returns entire state, every change causes re-render
+const credits = useGameStore((state) => state.credits) // ✅ Correct
+const state = useGameStore() // ❌ Returns entire state, every change causes re-render
 ```
 
 ---

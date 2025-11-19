@@ -14,20 +14,20 @@
 
 **Fields**:
 
-| Field | Type | Range | Notes |
-|-------|------|-------|-------|
-| `id` | `string` (UUID) | - | Unique identifier for the fish |
-| `species` | `FishSpecies` enum | `GUPPY \| GOLDFISH \| TETRA \| ...` | Determines base stats and breeding traits |
-| `name` | `string` | 1-20 chars | Optional display name |
-| `color` | `string` | Hex color | RGB values, used for rendering |
-| `size` | `number` | 0.5-2.0 | Multiplier for rendering scale; grows with age |
-| `age` | `number` | 0-∞ seconds | Increments per tick; affects value and maturity |
-| `health` | `number` | 0-100 | Decreases when starving; reaches 0 = death |
-| `hunger` | `number` | 0-100 | Increases per tick; above 80 causes health loss |
-| `isAlive` | `boolean` | true \| false | Set to false when health reaches 0 |
-| `genetics` | `IGeneticMarkers` (future) | - | Reserved for breeding/mutations (Phase 2) |
-| `createdAt` | `timestamp` | - | Unix milliseconds; used for value calculation |
-| `lastFedAt` | `timestamp` | - | Unix milliseconds; used for hunger reset |
+| Field       | Type                       | Range                               | Notes                                           |
+| ----------- | -------------------------- | ----------------------------------- | ----------------------------------------------- |
+| `id`        | `string` (UUID)            | -                                   | Unique identifier for the fish                  |
+| `species`   | `FishSpecies` enum         | `GUPPY \| GOLDFISH \| TETRA \| ...` | Determines base stats and breeding traits       |
+| `name`      | `string`                   | 1-20 chars                          | Optional display name                           |
+| `color`     | `string`                   | Hex color                           | RGB values, used for rendering                  |
+| `size`      | `number`                   | 0.5-2.0                             | Multiplier for rendering scale; grows with age  |
+| `age`       | `number`                   | 0-∞ seconds                         | Increments per tick; affects value and maturity |
+| `health`    | `number`                   | 0-100                               | Decreases when starving; reaches 0 = death      |
+| `hunger`    | `number`                   | 0-100                               | Increases per tick; above 80 causes health loss |
+| `isAlive`   | `boolean`                  | true \| false                       | Set to false when health reaches 0              |
+| `genetics`  | `IGeneticMarkers` (future) | -                                   | Reserved for breeding/mutations (Phase 2)       |
+| `createdAt` | `timestamp`                | -                                   | Unix milliseconds; used for value calculation   |
+| `lastFedAt` | `timestamp`                | -                                   | Unix milliseconds; used for hunger reset        |
 
 **State Transitions**:
 
@@ -75,20 +75,27 @@ SPAWNED → LIVING → STARVING → DEAD
 
 **Fields**:
 
-| Field | Type | Range | Notes |
-|-------|------|-------|-------|
-| `id` | `string` (UUID) | - | Unique identifier for the tank |
-| `capacity` | `number` | 1-100 | Max fish allowed in tank |
-| `waterQuality` | `number` | 0-100 | Health of environment; affects fish health (future) |
-| `temperature` | `number` | 0-40 °C | Tank temperature; affects metabolism (future) |
-| `fish` | `IFish[]` | - | List of living fish in tank |
-| `createdAt` | `timestamp` | - | When tank was created |
+| Field          | Type            | Range              | Notes                                                  |
+| -------------- | --------------- | ------------------ | ------------------------------------------------------ |
+| `id`           | `string` (UUID) | -                  | Unique identifier for the tank                         |
+| `size`         | `TankSize` enum | `BOWL \| STANDARD` | Tank size: BOWL (capacity 1), STANDARD (capacity 10)   |
+| `capacity`     | `number`        | 1 or 10            | Max fish allowed (derived from size)                   |
+| `waterQuality` | `number`        | 0-100              | Health of environment; calculated as 100 - pollution   |
+| `pollution`    | `number`        | 0-100              | Pollution level from fish waste and feeding            |
+| `hasFilter`    | `boolean`       | true/false         | Whether a filter is installed (reduces pollution rate) |
+| `temperature`  | `number`        | 0-40 °C            | Tank temperature; affects metabolism (future)          |
+| `fish`         | `IFish[]`       | -                  | List of living fish in tank                            |
+| `createdAt`    | `timestamp`     | -                  | When tank was created                                  |
 
 **Validation Rules**:
 
 - `id` must be a valid UUID v4.
-- `capacity` ≥ 1.
-- `waterQuality` is clamped to 0-100.
+- `size` must be `BOWL` or `STANDARD`.
+- `capacity` must match size: BOWL = 1, STANDARD = 10.
+- `hasFilter` can only be true if `size === 'STANDARD'` (BOWL cannot have filters).
+- `waterQuality` is clamped to 0-100 (calculated as `100 - pollution`).
+- `pollution` is clamped to 0-100.
+- `hasFilter` defaults to false.
 - `temperature` is clamped to 0-40.
 - `fish.length ≤ capacity`.
 - Cannot add more fish if `fish.length === capacity`.
@@ -98,8 +105,11 @@ SPAWNED → LIVING → STARVING → DEAD
 ```typescript
 {
   id: "660e8400-e29b-41d4-a716-446655440001",
+  size: "STANDARD",
   capacity: 10,
   waterQuality: 85,
+  pollution: 15,
+  hasFilter: false,
   temperature: 24,
   fish: [ /* IFish instances */ ],
   createdAt: 1731866134949
@@ -108,22 +118,41 @@ SPAWNED → LIVING → STARVING → DEAD
 
 ---
 
-### 1.3 Game State (`IGameState`)
+### 1.5 Game State (`IGameState`)
 
-**Purpose**: Represents the entire game simulation state and lifecycle.
+**Purpose**: Root state container for the entire game.
 
 **Fields**:
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `currentTick` | `number` | 0-based tick counter |
-| `totalTime` | `number` | Total seconds elapsed (currentTick × 1) |
-| `isPaused` | `boolean` | If true, no ticks are processed |
-| `tank` | `ITank` | Primary player tank |
-| `credits` | `number` | AquaCredits balance (currency) |
-| `storeInventory` | `IStoreItem[]` | Items available for purchase |
-| `selectedFishId` | `string \| null` | Currently selected fish (for UI) |
-| `gameStartedAt` | `timestamp` | When game was initialized |
+| Field                  | Type             | Notes                                                                   |
+| ---------------------- | ---------------- | ----------------------------------------------------------------------- |
+| `currentTick`          | `number`         | Game loop tick counter                                                  |
+| `totalTime`            | `number`         | Total elapsed time in seconds                                           |
+| `isPaused`             | `boolean`        | Whether game loop is paused                                             |
+| `maturityBonusAwarded` | `boolean`        | Whether the 50 credit maturity bonus has been given                     |
+| `tutorialEnabled`      | `boolean`        | Whether tutorial popups are enabled                                     |
+| `tutorialEvents`       | `string[]`       | List of tutorial events already shown (e.g., "first_buy", "first_feed") |
+| `tank`                 | `ITank`          | The player's tank                                                       |
+| `credits`              | `number`         | Player's currency                                                       |
+| `storeInventory`       | `IStoreItem[]`   | Available items for purchase                                            |
+| `selectedFishId`       | `string \| null` | Currently selected fish for UI                                          |
+| `gameStartedAt`        | `timestamp`      | When game was initialized                                               |
+
+**Tutorial Events** (tracked to avoid duplicate popups):
+
+- `"first_buy"` - First fish purchase
+- `"first_feed"` - First feeding action
+- `"hunger_warning"` - Fish hunger reaches 80
+- `"low_water_quality"` - Water quality drops below 50
+- `"fish_death"` - First fish dies
+- `"maturity_bonus"` - Maturity bonus awarded
+- `"tank_upgrade"` - Tank upgraded to STANDARD
+
+**Tutorial Popup Behavior**:
+
+- Popups are modal overlays that block game interaction until dismissed
+- User must click "OK" or "X" button to close (no auto-dismiss timer)
+- Game loop continues running while popup is displayed (time-based mechanics continue)
 
 **Example Instance**:
 
@@ -148,22 +177,22 @@ SPAWNED → LIVING → STARVING → DEAD
 
 ```typescript
 enum FishSpecies {
-  GUPPY = "GUPPY",
-  GOLDFISH = "GOLDFISH",
-  TETRA = "TETRA",
-  BETTA = "BETTA",
+  GUPPY = 'GUPPY',
+  GOLDFISH = 'GOLDFISH',
+  TETRA = 'TETRA',
+  BETTA = 'BETTA',
   // ... more species in Phase 2
 }
 ```
 
 **Base Stats** (used in value calculation):
 
-| Species | Base Value | Size Range | Health | Hunger Rate |
-|---------|------------|------------|--------|-------------|
-| GUPPY | 50 | 0.5-1.0 | 80 | 1/tick |
-| GOLDFISH | 100 | 1.0-2.0 | 80 | 2/tick |
-| TETRA | 60 | 0.4-0.8 | 75 | 1/tick |
-| BETTA | 150 | 0.8-1.5 | 90 | 1.5/tick |
+| Species  | Base Value | Size Range | Health | Hunger Rate |
+| -------- | ---------- | ---------- | ------ | ----------- |
+| GUPPY    | 50         | 0.5-1.0    | 80     | 1/tick      |
+| GOLDFISH | 100        | 1.0-2.0    | 80     | 2/tick      |
+| TETRA    | 60         | 0.4-0.8    | 75     | 1/tick      |
+| BETTA    | 150        | 0.8-1.5    | 90     | 1.5/tick    |
 
 ---
 
@@ -171,23 +200,25 @@ enum FishSpecies {
 
 ```typescript
 interface IStoreItem {
-  id: string;
-  type: "FISH" | "FOOD" | "EQUIPMENT";
-  name: string;
-  description: string;
-  cost: number;
-  quantity: number; // -1 = unlimited
-  species?: FishSpecies; // If type == "FISH"
+  id: string
+  type: 'FISH' | 'FOOD' | 'EQUIPMENT'
+  name: string
+  description: string
+  cost: number
+  quantity: number // -1 = unlimited
+  species?: FishSpecies // If type == "FISH"
 }
 ```
 
 **Initial Store Inventory** (MVP):
 
 ```typescript
-[
-  { id: "fish-guppy", type: "FISH", name: "Guppy", cost: 50, quantity: -1, species: "GUPPY" },
-  { id: "fish-goldfish", type: "FISH", name: "Goldfish", cost: 100, quantity: -1, species: "GOLDFISH" },
-  { id: "food-bulk", type: "FOOD", name: "Bulk Food", cost: 1, quantity: -1 }
+;[
+  { id: 'fish-guppy', type: 'FISH', name: 'Guppy', cost: 50, quantity: -1, species: 'GUPPY' },
+  { id: 'fish-goldfish', type: 'FISH', name: 'Goldfish', cost: 100, quantity: -1, species: 'GOLDFISH' },
+  { id: 'food-bulk', type: 'FOOD', name: 'Bulk Food', cost: 1, quantity: -1 },
+  { id: 'equipment-filter', type: 'EQUIPMENT', name: 'Water Filter', cost: 50, quantity: 1 },
+  { id: 'upgrade-tank', type: 'UPGRADE', name: 'Standard Tank', cost: 75, quantity: 1 },
 ]
 ```
 
@@ -198,6 +229,7 @@ interface IStoreItem {
 ### 3.1 Fish Value Calculation
 
 **Formula**:
+
 ```
 value = baseValue × ageMultiplier × healthModifier
 
@@ -206,6 +238,7 @@ healthModifier = health / 100               // 0-1 based on health
 ```
 
 **Example**:
+
 - Guppy (base = 50) at age 120s, health 90:
   - ageMultiplier = 1 + (120 / 300) = 1.4
   - healthModifier = 90 / 100 = 0.9
@@ -219,34 +252,65 @@ healthModifier = health / 100               // 0-1 based on health
 
 1. **Hunger increases**: `hunger += speciesHungerRate` (clamped to max 100).
 2. **Starvation check**: If `hunger ≥ 80`, then `health -= 1` (per tick).
-3. **Death check**: If `health ≤ 0`, mark fish as dead.
+3. **Pollution increases**: `pollution += (livingFishCount × 0.1) + (feedingsThisTick × 2)`.
+4. **Filter effect**: If `hasFilter === true`, then `pollution -= 0.5` (per tick, clamped to 0).
+5. **Water quality update**: `waterQuality = 100 - pollution` (clamped 0-100).
+6. **Low water quality check**: If `waterQuality < 50`, then all fish `health -= 0.5` (per tick).
+7. **Death check**: If `health ≤ 0`, mark fish as dead.
 
 **Feed Action**:
 
-- **Cost**: 1 credit (deducted from player balance).
-- **Effect**: Set `hunger = 0`, `lastFedAt = now`.
-- **Preconditions**: Fish must be alive, player must have ≥ 1 credit.
-- **Result**: Prevents starvation if done in time.
+- **Cost**: 2 + (1 × number of living fish) credits (base cost + per-fish cost).
+- **Effect**: All living fish: `hunger = max(0, hunger - 30)`, `lastFedAt = now`.
+- **Preconditions**: At least one living fish, player must have enough credits.
+- **Result**: Prevents starvation if done in time. Dead fish are not affected.
 
 ---
 
 ### 3.3 Economy Rules
 
 **Starting State**:
-- Player starts with 100 AquaCredits.
-- Tank starts with capacity 10, empty.
+
+- **Normal Mode**: Player starts with 50 AquaCredits and Small Bowl (capacity 1).\n- **Developer Mode**: Player starts with 100 AquaCredits and Standard Tank (capacity 10).\n- Tank starts empty (no fish).
 
 **Buy Fish**:
+
 - **Cost**: Varies by species (50-150 credits).
 - **Preconditions**: Player has enough credits, tank not full.
 - **Result**: Fish spawned in tank with `age = 0`, `health = 80`, `hunger = 0`.
 
-**Feed Fish**:
-- **Cost**: 1 credit per fish.
-- **Preconditions**: Player has ≥ 1 credit, fish alive.
-- **Result**: `hunger = 0`.
+**Feed Tank**:
+
+- **Cost**: 2 + (1 × living fish count) credits.
+- **Preconditions**: Player has enough credits, at least one living fish.
+- **Result**: All living fish `hunger = max(0, hunger - 30)`. Pollution increases by 2.
+
+**Clean Tank**:
+
+- **Cost**: 10 credits (flat fee).
+- **Preconditions**: Player has ≥ 10 credits.
+- **Result**: `pollution = max(0, pollution - 30)`.
+
+**Buy Filter**:
+
+- **Cost**: 50 credits (one-time purchase).
+- **Preconditions**: Player has ≥ 50 credits, no filter installed.
+- **Result**: `hasFilter = true`. Pollution decreases by 0.5 per tick.
+
+**Upgrade Tank**:
+
+- **Cost**: 75 credits (one-time purchase).
+- **Preconditions**: Player has ≥ 75 credits, current tank is BOWL.
+- **Result**: Tank upgraded to STANDARD (capacity increases from 1 to 10). Breeding unlocked.
+
+**Maturity Bonus**:
+
+- **Trigger**: First fish reaches age 120 seconds (2 minutes) while alive.
+- **Preconditions**: Tank size is BOWL, bonus not yet awarded.
+- **Result**: Player receives 50 bonus credits (one-time reward).
 
 **Sell Fish**:
+
 - **Cost**: None (player gains value).
 - **Preconditions**: Fish alive or dead (no value if dead).
 - **Result**: Fish removed from tank, player gains calculated credits.
@@ -256,23 +320,28 @@ healthModifier = health / 100               // 0-1 based on health
 ## 4. Constraints & Edge Cases
 
 ### Tank Capacity
-- Tank can hold up to 10 fish (MVP).
+
+- **Small Bowl**: Can hold 1 fish (starter tank).
+- **Standard Tank**: Can hold 10 fish (after upgrade).
 - Cannot buy or breed beyond capacity.
 - If full, show error message.
 
 ### Fish Death
+
 - When `health = 0`, mark `isAlive = false`.
 - Dead fish cannot be fed or bred.
 - Dead fish can be sold for 0 credits (cleanup action).
 - Remove dead fish from tank after 1 tick (grace period for UI).
 
 ### Starvation Timeline (Example: Guppy)
+
 - Hunger increases 1/tick → reaches 80 after 80 ticks (80 seconds).
 - Health starts at 80 (newborn) or varies (older).
 - At 80 hunger, health decreases 1/tick → death in 80-100 ticks (1.3-1.6 min).
 - **Player window to react**: ~2 minutes before death.
 
 ### Game Over Condition (Future)
+
 - If all fish die AND player has 0 credits → game over.
 - Option: Offer "pity" loan or restart.
 - **MVP**: No explicit game over; player can restart manually.
@@ -282,11 +351,13 @@ healthModifier = health / 100               // 0-1 based on health
 ## 5. Data Persistence
 
 ### MVP (No Persistence)
+
 - State is stored only in memory (Zustand store).
 - Refreshing the page resets the game.
 - **Rationale**: Simplifies testing, allows rapid iteration.
 
 ### Future (Phase 2)
+
 - Serialize state to `localStorage`.
 - On app load, deserialize and restore.
 - Implement offline time progression (optional).
@@ -297,57 +368,62 @@ healthModifier = health / 100               // 0-1 based on health
 
 ```typescript
 // Core types
-type UUID = string;
-type Timestamp = number; // milliseconds
-type Credits = number;
+type UUID = string
+type Timestamp = number // milliseconds
+type Credits = number
 
 // Enums
-enum FishSpecies { GUPPY, GOLDFISH, TETRA, BETTA }
+enum FishSpecies {
+  GUPPY,
+  GOLDFISH,
+  TETRA,
+  BETTA,
+}
 
 // Interfaces
 interface IFish {
-  id: UUID;
-  species: FishSpecies;
-  name?: string;
-  color: string;
-  size: number; // 0.5-2.0
-  age: number;
-  health: number; // 0-100
-  hunger: number; // 0-100
-  isAlive: boolean;
-  genetics: Record<string, unknown>; // Future
-  createdAt: Timestamp;
-  lastFedAt: Timestamp;
+  id: UUID
+  species: FishSpecies
+  name?: string
+  color: string
+  size: number // 0.5-2.0
+  age: number
+  health: number // 0-100
+  hunger: number // 0-100
+  isAlive: boolean
+  genetics: Record<string, unknown> // Future
+  createdAt: Timestamp
+  lastFedAt: Timestamp
 }
 
 interface ITank {
-  id: UUID;
-  capacity: number;
-  waterQuality: number; // 0-100
-  temperature: number; // 0-40 °C
-  fish: IFish[];
-  createdAt: Timestamp;
+  id: UUID
+  capacity: number
+  waterQuality: number // 0-100
+  temperature: number // 0-40 °C
+  fish: IFish[]
+  createdAt: Timestamp
 }
 
 interface IGameState {
-  currentTick: number;
-  totalTime: number;
-  isPaused: boolean;
-  tank: ITank;
-  credits: Credits;
-  storeInventory: IStoreItem[];
-  selectedFishId?: UUID;
-  gameStartedAt: Timestamp;
+  currentTick: number
+  totalTime: number
+  isPaused: boolean
+  tank: ITank
+  credits: Credits
+  storeInventory: IStoreItem[]
+  selectedFishId?: UUID
+  gameStartedAt: Timestamp
 }
 
 interface IStoreItem {
-  id: string;
-  type: "FISH" | "FOOD" | "EQUIPMENT";
-  name: string;
-  description: string;
-  cost: number;
-  quantity: number; // -1 = unlimited
-  species?: FishSpecies;
+  id: string
+  type: 'FISH' | 'FOOD' | 'EQUIPMENT'
+  name: string
+  description: string
+  cost: number
+  quantity: number // -1 = unlimited
+  species?: FishSpecies
 }
 ```
 
@@ -408,7 +484,7 @@ GameState:
 ```
 GameState:
   credits: 50 (100 - 50)
-  tank: { 
+  tank: {
     fish: [
       { id: "uuid1", species: "GUPPY", age: 0, health: 80, hunger: 0 }
     ]

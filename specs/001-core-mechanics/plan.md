@@ -27,24 +27,28 @@ Implement the core game loop for FishBowl: a tick-based simulation where players
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 **Feature-Centric Architecture**: ✅ PASS
+
 - Feature has dedicated spec (`001-core-mechanics/spec.md`)
 - Follows Spec → Plan → Design → Impl workflow
 - Independently testable through acceptance scenarios
 
 **Test-First (TDD)**: ✅ PASS
+
 - Spec defines acceptance scenarios for each user story
 - Plan requires tests before implementation
 - Target: >90% coverage for models/services documented
 
 **Type Safety**: ✅ PASS
+
 - TypeScript Strict Mode enforced
 - Plan mandates interfaces in `src/types/` before logic implementation
 - No `any` types allowed per constitution
 
 **Separation of Concerns**: ✅ PASS
+
 - Architecture clearly separates:
   - Models: Pure TypeScript logic (Fish, Tank)
   - Services: Business logic (hunger mechanics, economy)
@@ -53,6 +57,7 @@ Implement the core game loop for FishBowl: a tick-based simulation where players
   - Components: React UI (thin wrappers)
 
 **Continuous Quality**: ✅ PASS
+
 - `pnpm lint` must pass after each phase
 - Zero warnings tolerance documented
 - Quality gates: lint + test + coverage checks
@@ -154,29 +159,33 @@ tests/
 
 ## Post-Phase 1 Constitution Re-Check
 
-*After design phase (research, data-model, contracts, quickstart complete)*
+_After design phase (research, data-model, contracts, quickstart complete)_
 
 ### Re-evaluation Results
 
 **Feature-Centric Architecture**: ✅ PASS
+
 - Data model clearly defines entities (Fish, Tank, Store, GameLoop)
 - Contracts specify all store actions with preconditions/postconditions
 - Quickstart provides implementation workflow
 - All artifacts independently testable
 
 **Test-First (TDD)**: ✅ PASS
+
 - Data model includes validation rules for test case generation
 - Contracts define expected inputs/outputs for test assertions
 - Quickstart mandates writing tests before implementation
 - Test coverage targets documented (>90% for services/models)
 
 **Type Safety**: ✅ PASS
+
 - All entities have explicit TypeScript interfaces in `src/types/`
 - No `any` types in contracts
 - Strict mode enforced in `tsconfig.json`
 - Discriminated unions for state machines (Fish lifecycle)
 
 **Separation of Concerns**: ✅ PASS
+
 - Clear layer boundaries in structure:
   - Types → Models → Services → Store → UI
 - Services are stateless pure functions
@@ -185,6 +194,7 @@ tests/
 - UI components are observers only
 
 **Continuous Quality**: ✅ PASS
+
 - Quickstart includes quality gate checkpoints
 - Lint + Test commands defined for each phase
 - Zero warnings tolerance reaffirmed
@@ -195,18 +205,21 @@ tests/
 ### Design Quality Validation
 
 **Completeness**:
+
 - ✅ All entities from spec have interfaces
 - ✅ All functional requirements have store actions
 - ✅ All NEEDS CLARIFICATION items resolved in research.md
 - ✅ Implementation path documented in quickstart.md
 
 **Testability**:
+
 - ✅ Acceptance scenarios map to test cases
 - ✅ Services are pure functions (easily mockable)
 - ✅ Models support dependency injection
 - ✅ State transitions explicitly defined
 
 **Maintainability**:
+
 - ✅ Single Responsibility: Each service/model has one purpose
 - ✅ Open/Closed: Services extensible without modification
 - ✅ No circular dependencies in design
@@ -221,6 +234,7 @@ tests/
 **Status**: ✅ READY FOR IMPLEMENTATION (`/speckit.tasks` command)
 
 All planning artifacts complete:
+
 - ✅ Technical Context filled (no NEEDS CLARIFICATION remaining)
 - ✅ Constitution Check passed (pre and post design)
 - ✅ research.md complete (all architectural decisions documented)
@@ -230,4 +244,4 @@ All planning artifacts complete:
 - ✅ Agent context updated (technologies registered)
 
 **Next Command**: `/speckit.tasks` to generate implementation tasks from this plan.
-
+````
