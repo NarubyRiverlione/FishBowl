@@ -33,7 +33,7 @@ export class Tank implements ITank {
       for (let j = i + 1; j < this.fish.length; j++) {
         const f1 = this.fish[i]
         const f2 = this.fish[j]
-        if (detectFishCollision(f1, f2)) {
+        if (f1 && f2 && detectFishCollision(f1, f2)) {
           resolveFishCollision(f1, f2)
         }
       }

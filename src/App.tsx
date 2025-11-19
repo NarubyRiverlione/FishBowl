@@ -1,10 +1,11 @@
 import React from 'react'
+import AquariumCanvas from './components/AquariumCanvas'
 
 const App: React.FC = () => {
   return (
-    <div className="app-container">
+    <div className="app-container" style={{ textAlign: 'center', padding: '20px' }}>
       <h1>FishBowl Visual Prototype</h1>
-      <div id="canvas-container">{/* PixiJS canvas will be mounted here */}</div>
+      <AquariumCanvas width={800} height={600} />
     </div>
   )
 }

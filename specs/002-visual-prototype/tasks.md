@@ -53,18 +53,18 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T013 [P] [US1] Unit test for Tank model in `tests/unit/Tank.test.ts` (dimensions, properties)
-- [ ] T014 [P] [US1] Unit test for TankView rendering in `tests/unit/TankView.test.ts` (canvas creation, dimensions)
-- [ ] T015 [US1] Integration test for AquariumCanvas in `tests/integration/AquariumCanvas.test.tsx` (tank appears on mount)
+- [x] T013 [P] [US1] Unit test for Tank model in `tests/unit/Tank.test.ts` (dimensions, properties)
+- [x] T014 [P] [US1] Unit test for TankView rendering in `tests/unit/TankView.test.ts` (canvas creation, dimensions)
+- [x] T015 [US1] Integration test for AquariumCanvas in `tests/integration/AquariumCanvas.test.tsx` (tank appears on mount)
 
 ### Implementation for User Story 1
 
-- [ ] T016 [P] [US1] Create TankView Pixi container in `src/game/TankView.ts` (extends Pixi.Container)
-- [ ] T017 [US1] Create RenderingEngine Pixi Application in `src/game/RenderingEngine.ts` (Pixi.Application setup)
-- [ ] T018 [US1] Create AquariumCanvas React component wrapper in `src/components/AquariumCanvas.tsx` (useEffect/useRef for Pixi)
-- [ ] T019 [US1] Update `src/App.tsx` to render AquariumCanvas as main entry point
-- [ ] T020 [US1] Add styles for tank container in `src/components/AquariumCanvas.tsx` (width, height, borders)
-- [ ] T021 [US1] Add logging for tank initialization in RenderingEngine
+- [x] T016 [P] [US1] Create TankView Pixi container in `src/game/TankView.ts` (extends Pixi.Container)
+- [x] T017 [US1] Create RenderingEngine Pixi Application in `src/game/RenderingEngine.ts` (Pixi.Application setup)
+- [x] T018 [US1] Create AquariumCanvas React component wrapper in `src/components/AquariumCanvas.tsx` (useEffect/useRef for Pixi)
+- [x] T019 [US1] Update `src/App.tsx` to render AquariumCanvas as main entry point
+- [x] T020 [US1] Add styles for tank container in `src/components/AquariumCanvas.tsx` (width, height, borders)
+- [x] T021 [US1] Add logging for tank initialization in RenderingEngine
 
 **Checkpoint**: Tank renders on screen with visible boundaries - US1 complete and testable independently
 
