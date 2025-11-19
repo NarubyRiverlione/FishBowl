@@ -147,6 +147,8 @@
 - [x] T056 Add responsive tank sizing (adjust canvas size on window resize)
 - [x] T057 Implement swim behavior in Fish model to prevent stopping
 - [x] T058 Reduce initial spawn velocity for more natural start
+- [x] T059 Add fish SVG asset to project
+- [x] T060 Update FishSprite to use SVG texture instead of white square
 
 **Checkpoint**: Application runs smoothly at target 30+ fps with 20+ fish including physics/collisions
 
