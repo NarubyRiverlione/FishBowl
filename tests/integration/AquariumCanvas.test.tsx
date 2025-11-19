@@ -6,9 +6,10 @@ import AquariumCanvas from '../../src/components/AquariumCanvas'
 vi.mock('../../src/game/RenderingEngine', () => {
   return {
     RenderingEngine: class {
-      initialize = vi.fn().mockResolvedValue(undefined)
+      init = vi.fn().mockResolvedValue(undefined)
       destroy = vi.fn()
       resize = vi.fn()
+      spawnFish = vi.fn()
     },
   }
 })

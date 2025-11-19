@@ -80,27 +80,27 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T022 [P] [US2] Unit test for Fish model in `tests/unit/Fish.test.ts` (position, velocity, acceleration, mass properties)
-- [ ] T023 [P] [US2] Unit test for physics calculations in `tests/unit/physics.test.ts` (velocity update, acceleration, friction, boundary detection)
-- [ ] T024 [P] [US2] Unit test for collision detection in `tests/unit/collision.test.ts` (AABB detection, wall collision, fish-to-fish collision)
-- [ ] T025 [P] [US2] Unit test for collision response in `tests/unit/collision.test.ts` (elastic bounce, velocity reversal)
-- [ ] T026 [P] [US2] Unit test for FishSprite in `tests/unit/FishSprite.test.ts` (sprite creation, position/velocity sync)
-- [ ] T027 [US2] Integration test for animation loop with physics in `tests/integration/RenderingEngine.test.ts` (fish animate with acceleration over time)
-- [ ] T028 [US2] Integration test for collision response in `tests/integration/AquariumCanvas.test.tsx` (fish bounce off walls and each other)
+- [x] T022 [P] [US2] Unit test for Fish model in `tests/unit/Fish.test.ts` (position, velocity, acceleration, mass properties)
+- [x] T023 [P] [US2] Unit test for physics calculations in `tests/unit/physics.test.ts` (velocity update, acceleration, friction, boundary detection)
+- [x] T024 [P] [US2] Unit test for collision detection in `tests/unit/collision.test.ts` (AABB detection, wall collision, fish-to-fish collision)
+- [x] T025 [P] [US2] Unit test for collision response in `tests/unit/collision.test.ts` (elastic bounce, velocity reversal)
+- [x] T026 [P] [US2] Unit test for FishSprite in `tests/unit/FishSprite.test.ts` (sprite creation, position/velocity sync)
+- [x] T027 [US2] Integration test for animation loop with physics in `tests/integration/RenderingEngine.test.ts` (fish animate with acceleration over time)
+- [x] T028 [US2] Integration test for collision response in `tests/integration/AquariumCanvas.test.tsx` (fish bounce off walls and each other)
 
 ### Implementation for User Story 2
 
-- [ ] T029 [P] [US2] Implement velocity update in physics.ts `updateVelocity(velocity, acceleration, friction)`
-- [ ] T030 [P] [US2] Implement acceleration calculation in physics.ts `calculateAcceleration(mass, forces)`
-- [ ] T031 [P] [US2] Implement boundary collision detection in physics.ts `detectBoundaryCollision(position, radius, tankBounds)`
-- [ ] T032 [P] [US2] Implement fish-to-fish collision detection in collision.ts `detectFishCollision(fish1, fish2)` using AABB
-- [ ] T033 [P] [US2] Implement boundary collision response in collision.ts `resolveBoundaryCollision(fish, tankBounds)`
-- [ ] T034 [P] [US2] Implement fish-to-fish collision response in collision.ts `resolveFishCollision(fish1, fish2)` (elastic bounce)
-- [ ] T035 [US2] Create FishSprite class in `src/game/FishSprite.ts` (extends Pixi.Sprite, update method with physics)
-- [ ] T036 [US2] Implement spawn fish logic in Tank model in `src/models/Tank.ts` (addFish with initial velocity/acceleration)
-- [ ] T037 [US2] Implement physics update loop in `src/game/RenderingEngine.ts` (calculate forces, update velocity/position, detect/resolve collisions)
-- [ ] T038 [US2] Update TankView to render FishSprite instances in `src/game/TankView.ts`
-- [ ] T039 [US2] Update RenderingEngine to initialize fish on startup with random velocities (create 5-10 default fish)
+- [x] T029 [P] [US2] Implement velocity update in physics.ts `updateVelocity(velocity, acceleration, friction)`
+- [x] T030 [P] [US2] Implement acceleration calculation in physics.ts `calculateAcceleration(mass, forces)`
+- [x] T031 [P] [US2] Implement boundary collision detection in physics.ts `detectBoundaryCollision(position, radius, tankBounds)`
+- [x] T032 [P] [US2] Implement fish-to-fish collision detection in collision.ts `detectFishCollision(fish1, fish2)` using AABB
+- [x] T033 [P] [US2] Implement boundary collision response in collision.ts `resolveBoundaryCollision(fish, tankBounds)`
+- [x] T034 [P] [US2] Implement fish-to-fish collision response in collision.ts `resolveFishCollision(fish1, fish2)` (elastic bounce)
+- [x] T035 [US2] Create FishSprite class in `src/game/FishSprite.ts` (extends Pixi.Sprite, update method with physics)
+- [x] T036 [US2] Implement spawn fish logic in Tank model in `src/models/Tank.ts` (addFish with initial velocity/acceleration)
+- [x] T037 [US2] Implement physics update loop in `src/game/RenderingEngine.ts` (calculate forces, update velocity/position, detect/resolve collisions)
+- [x] T038 [US2] Update TankView to render FishSprite instances in `src/game/TankView.ts`
+- [x] T039 [US2] Update RenderingEngine to initialize fish on startup with random velocities (create 5-10 default fish)
 - [ ] T040 [US2] Add frame rate monitoring and physics metrics logging in `src/game/RenderingEngine.ts`
 
 **Checkpoint**: Fish render and animate smoothly; tank boundaries enforced - US1 + US2 both functional
@@ -117,18 +117,18 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T032 [P] [US3] Unit test for random color generation in `tests/unit/random.test.ts` (generates distinct colors)
-- [ ] T033 [P] [US3] Unit test for random size generation in `tests/unit/random.test.ts` (generates varied sizes)
-- [ ] T034 [US3] Integration test for fish variety in `tests/integration/AquariumCanvas.test.tsx` (multiple colors visible)
+- [ ] T041 [P] [US3] Unit test for random color generation in `tests/unit/random.test.ts` (generates distinct colors)
+- [ ] T042 [P] [US3] Unit test for random size generation in `tests/unit/random.test.ts` (generates varied sizes)
+- [ ] T043 [US3] Integration test for fish variety in `tests/integration/AquariumCanvas.test.tsx` (multiple colors visible)
 
 ### Implementation for User Story 3
 
-- [ ] T035 [P] [US3] Implement `randomColor()` function in `src/lib/random.ts` (palette of 3+ distinct colors)
-- [ ] T036 [P] [US3] Implement `randomSize()` function in `src/lib/random.ts` (small, medium, large variations)
-- [ ] T037 [US3] Update Fish model in `src/models/Fish.ts` to accept color and size in constructor
-- [ ] T038 [US3] Update FishSprite in `src/game/FishSprite.ts` to render with color tint and scale based on size
-- [ ] T039 [US3] Update spawn logic in Tank to generate random colors/sizes when creating fish
-- [ ] T040 [US3] Adjust fish rendering to ensure sizes remain proportional (scale 0.5x - 1.5x)
+- [ ] T044 [P] [US3] Implement `randomColor()` function in `src/lib/random.ts` (palette of 3+ distinct colors)
+- [ ] T045 [P] [US3] Implement `randomSize()` function in `src/lib/random.ts` (small, medium, large variations)
+- [ ] T046 [US3] Update Fish model in `src/models/Fish.ts` to accept color and size in constructor
+- [ ] T047 [US3] Update FishSprite in `src/game/FishSprite.ts` to render with color tint and scale based on size
+- [ ] T048 [US3] Update spawn logic in Tank to generate random colors/sizes when creating fish
+- [ ] T049 [US3] Adjust fish rendering to ensure sizes remain proportional (scale 0.5x - 1.5x)
 
 **Checkpoint**: All 3 user stories complete - fish have visual variety, physics-based animation, and collision response
 
@@ -138,13 +138,13 @@
 
 **Purpose**: Optimization and refinement for physics simulation
 
-- [ ] T041 [P] Monitor frame rate and physics metrics (collision checks, velocity updates) in `src/game/RenderingEngine.ts`
-- [ ] T042 [P] Stress test with 20+ fish and verify 30+ fps with physics in `tests/integration/performance.test.ts`
-- [ ] T043 [P] Profile collision detection performance (O(n²) cost) and log collision counts
-- [ ] T044 [P] Implement optional spatial hashing in `src/lib/collision.ts` if needed for >50 fish
-- [ ] T045 Adjust fish mass and friction coefficients for natural-feeling movement
-- [ ] T046 Tune collision elasticity (coefficient of restitution) for realistic bouncing
-- [ ] T047 Add responsive tank sizing (adjust canvas size on window resize)
+- [ ] T050 [P] Monitor frame rate and physics metrics (collision checks, velocity updates) in `src/game/RenderingEngine.ts`
+- [ ] T051 [P] Stress test with 20+ fish and verify 30+ fps with physics in `tests/integration/performance.test.ts`
+- [ ] T052 [P] Profile collision detection performance (O(n²) cost) and log collision counts
+- [ ] T053 [P] Implement optional spatial hashing in `src/lib/collision.ts` if needed for >50 fish
+- [ ] T054 Adjust fish mass and friction coefficients for natural-feeling movement
+- [ ] T055 Tune collision elasticity (coefficient of restitution) for realistic bouncing
+- [ ] T056 Add responsive tank sizing (adjust canvas size on window resize)
 
 **Checkpoint**: Application runs smoothly at target 30+ fps with 20+ fish including physics/collisions
 
@@ -154,16 +154,16 @@
 
 **Purpose**: Comprehensive test coverage and user-facing documentation
 
-- [ ] T048 [P] Achieve >90% code coverage for `src/models/` and `src/lib/`
-- [ ] T049 [P] Achieve >85% code coverage for `src/game/` and `src/components/`
-- [ ] T050 Review all test results and add missing physics edge case tests (corner collisions, simultaneous collisions)
-- [ ] T051 Create QUICKSTART.md with:
+- [ ] T057 [P] Achieve >90% code coverage for `src/models/` and `src/lib/`
+- [ ] T058 [P] Achieve >85% code coverage for `src/game/` and `src/components/`
+- [ ] T059 Review all test results and add missing physics edge case tests (corner collisions, simultaneous collisions)
+- [ ] T060 Create QUICKSTART.md with:
   - How to run dev server (`pnpm dev`)
   - How to run tests (`pnpm test`)
   - How to build (`pnpm build`)
   - Expected output (screenshot/description of visual with physics)
-- [ ] T052 Document physics implementation in project README (velocity/acceleration formulas, collision math, performance notes)
-- [ ] T053 Document architecture in README with physics simulation flow diagram
+- [ ] T061 Document physics implementation in project README (velocity/acceleration formulas, collision math, performance notes)
+- [ ] T062 Document architecture in README with physics simulation flow diagram
 
 **Checkpoint**: All tests passing, >90% coverage, documentation complete - READY FOR DELIVERY
 
@@ -171,16 +171,16 @@
 
 ## Summary
 
-**Total Tasks**: 53 (increased from 50 due to physics + collisions)
+**Total Tasks**: 62 (renumbered to fix duplicates)
 **Parallel Opportunities**: ~18 tasks can run in parallel (marked [P])
 **User Story Breakdown**:
 
 - US1 (Tank Rendering): T013-T021 (9 tasks)
-- US2 (Swimming Fish + Physics + Collisions): T022-T040 (19 tasks, +8 from physics/collisions)
-- US3 (Fish Variety): T041-T053 (same scope, included in polish phase)
+- US2 (Swimming Fish + Physics + Collisions): T022-T040 (19 tasks)
+- US3 (Fish Variety): T041-T049 (9 tasks)
 - Setup: T001-T012 (12 foundational tasks)
-- Performance/Testing: T041-T053 (13 tasks)
+- Performance/Testing: T050-T062 (13 tasks)
 
-**Recommended MVP Scope**: Complete Phases 1-5 (T001-T047) for a working physics-enabled visual prototype.
+**Recommended MVP Scope**: Complete Phases 1-5 (T001-T049) for a working physics-enabled visual prototype.
 
 **Next Steps**: Begin Phase 1 setup tasks, then proceed through phases sequentially. Physics implementation is now a core feature, not optional.

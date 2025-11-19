@@ -1,10 +1,12 @@
 import { Application } from 'pixi.js'
 import { Tank } from '../models/Tank'
 import { TankView } from './TankView'
+import { Fish } from '../models/Fish'
+import { randomColor, randomPosition, randomVelocity } from '../lib/random'
 
 export class RenderingEngine {
   private app: Application
-  private tank: Tank
+  public tank: Tank // Public for testing/inspection
   private tankView: TankView
   private isInitialized: boolean = false
   private isDestroyed: boolean = false
@@ -16,7 +18,7 @@ export class RenderingEngine {
     console.log('RenderingEngine initialized with tank:', { width, height, backgroundColor })
   }
 
-  async initialize(element: HTMLElement): Promise<void> {
+  async init(element: HTMLElement): Promise<void> {
     if (this.isInitialized || this.isDestroyed) {
       return
     }
@@ -63,9 +65,25 @@ export class RenderingEngine {
     }
   }
 
-  private update(delta: number): void {
+  spawnFish(count: number): void {
+    for (let i = 0; i < count; i++) {
+      const id = Math.random().toString(36).substring(7)
+      const x = randomPosition(0, this.tank.width)
+      const y = randomPosition(0, this.tank.height)
+
+      const fish = new Fish(id, x, y)
+      fish.vx = randomVelocity(5)
+      fish.vy = randomVelocity(5)
+      fish.color = randomColor()
+
+      this.tank.addFish(fish)
+      this.tankView.addFish(fish)
+    }
+  }
+
+  update(delta: number): void {
     this.tank.update(delta)
-    // Future: Update fish sprites here
+    this.tankView.update()
   }
 
   destroy(): void {

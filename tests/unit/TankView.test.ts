@@ -16,9 +16,21 @@ vi.mock('pixi.js', () => {
     removeChildren = vi.fn()
   }
 
+  class SpriteMock {
+    anchor = { set: vi.fn() }
+    width = 0
+    height = 0
+    tint = 0
+    x = 0
+    y = 0
+    rotation = 0
+  }
+
   return {
     Container: ContainerMock,
     Graphics: GraphicsMock,
+    Sprite: SpriteMock,
+    Texture: { WHITE: {} },
   }
 })
 

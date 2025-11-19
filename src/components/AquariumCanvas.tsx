@@ -25,7 +25,8 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width = 800, height = 6
         const engine = new RenderingEngine(width, height, 0x006994)
         engineRef.current = engine
 
-        await engine.initialize(containerRef.current!)
+        await engine.init(containerRef.current!)
+        engine.spawnFish(20)
       } catch (error) {
         console.error('Failed to initialize aquarium:', error)
       }
