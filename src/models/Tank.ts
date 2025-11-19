@@ -8,6 +8,10 @@ export class Tank implements ITank {
   backgroundColor: number
   fish: IFish[] = []
 
+  // Metrics
+  collisionChecks: number = 0
+  collisionsResolved: number = 0
+
   constructor(width: number, height: number, backgroundColor: number) {
     this.width = width
     this.height = height
@@ -19,6 +23,10 @@ export class Tank implements ITank {
   }
 
   update(delta: number): void {
+    // Reset metrics for this frame
+    this.collisionChecks = 0
+    this.collisionsResolved = 0
+
     // Update each fish
     for (const fish of this.fish) {
       fish.update(delta)
@@ -33,8 +41,11 @@ export class Tank implements ITank {
       for (let j = i + 1; j < this.fish.length; j++) {
         const f1 = this.fish[i]
         const f2 = this.fish[j]
+
+        this.collisionChecks++
         if (f1 && f2 && detectFishCollision(f1, f2)) {
           resolveFishCollision(f1, f2)
+          this.collisionsResolved++
         }
       }
     }

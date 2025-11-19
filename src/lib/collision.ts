@@ -21,26 +21,28 @@ export const detectFishCollision = (f1: IFish, f2: IFish): boolean => {
  * @param tank Tank boundaries
  */
 export const resolveBoundaryCollision = (fish: IFish, tank: ITank): void => {
+  const restitution = 0.8 // Bounciness factor (0-1)
+
   // Left wall
   if (fish.x - fish.radius < 0) {
     fish.x = fish.radius
-    fish.vx *= -1
+    fish.vx *= -restitution
   }
   // Right wall
   else if (fish.x + fish.radius > tank.width) {
     fish.x = tank.width - fish.radius
-    fish.vx *= -1
+    fish.vx *= -restitution
   }
 
   // Top wall
   if (fish.y - fish.radius < 0) {
     fish.y = fish.radius
-    fish.vy *= -1
+    fish.vy *= -restitution
   }
   // Bottom wall
   else if (fish.y + fish.radius > tank.height) {
     fish.y = tank.height - fish.radius
-    fish.vy *= -1
+    fish.vy *= -restitution
   }
 }
 

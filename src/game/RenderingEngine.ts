@@ -10,6 +10,7 @@ export class RenderingEngine {
   private tankView: TankView
   private isInitialized: boolean = false
   private isDestroyed: boolean = false
+  private lastLogTime: number = 0
 
   constructor(width: number, height: number, backgroundColor: number) {
     this.app = new Application()
@@ -74,8 +75,9 @@ export class RenderingEngine {
       const scale = randomSize(0.5, 1.5)
 
       const fish = new Fish(id, x, y, color, scale)
-      fish.vx = randomVelocity(5)
-      fish.vy = randomVelocity(5)
+      // Reduced initial velocity for more natural spawn (was 5)
+      fish.vx = randomVelocity(2)
+      fish.vy = randomVelocity(2)
 
       this.tank.addFish(fish)
       this.tankView.addFish(fish)
@@ -85,6 +87,18 @@ export class RenderingEngine {
   update(delta: number): void {
     this.tank.update(delta)
     this.tankView.update()
+
+    // Log metrics every second
+    const now = performance.now()
+    if (now - this.lastLogTime > 1000) {
+      const fps = this.app.ticker.FPS
+      const fishCount = this.tank.fish.length
+      const checks = this.tank.collisionChecks
+      const collisions = this.tank.collisionsResolved
+
+      console.log(`FPS: ${fps.toFixed(1)} | Fish: ${fishCount} | Checks: ${checks} | Collisions: ${collisions}`)
+      this.lastLogTime = now
+    }
   }
 
   destroy(): void {

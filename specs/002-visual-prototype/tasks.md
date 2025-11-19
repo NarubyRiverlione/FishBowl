@@ -138,13 +138,15 @@
 
 **Purpose**: Optimization and refinement for physics simulation
 
-- [ ] T050 [P] Monitor frame rate and physics metrics (collision checks, velocity updates) in `src/game/RenderingEngine.ts`
-- [ ] T051 [P] Stress test with 20+ fish and verify 30+ fps with physics in `tests/integration/performance.test.ts`
-- [ ] T052 [P] Profile collision detection performance (O(n²) cost) and log collision counts
+- [x] T050 [P] Monitor frame rate and physics metrics (collision checks, velocity updates) in `src/game/RenderingEngine.ts`
+- [x] T051 [P] Stress test with 20+ fish and verify 30+ fps with physics in `tests/integration/performance.test.ts`
+- [x] T052 [P] Profile collision detection performance (O(n²) cost) and log collision counts
 - [ ] T053 [P] Implement optional spatial hashing in `src/lib/collision.ts` if needed for >50 fish
-- [ ] T054 Adjust fish mass and friction coefficients for natural-feeling movement
-- [ ] T055 Tune collision elasticity (coefficient of restitution) for realistic bouncing
-- [ ] T056 Add responsive tank sizing (adjust canvas size on window resize)
+- [x] T054 Adjust fish mass and friction coefficients for natural-feeling movement
+- [x] T055 Tune collision elasticity (coefficient of restitution) for realistic bouncing
+- [x] T056 Add responsive tank sizing (adjust canvas size on window resize)
+- [x] T057 Implement swim behavior in Fish model to prevent stopping
+- [x] T058 Reduce initial spawn velocity for more natural start
 
 **Checkpoint**: Application runs smoothly at target 30+ fps with 20+ fish including physics/collisions
 

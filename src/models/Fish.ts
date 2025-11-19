@@ -29,6 +29,9 @@ export class Fish implements IFish {
     this.mass = 1 * scale
     this.width = 32 * scale
     this.height = 32 * scale
+
+    // Lower friction for smoother gliding (water resistance)
+    this.friction = 0.005
   }
 
   applyForce(fx: number, fy: number): void {
@@ -36,7 +39,27 @@ export class Fish implements IFish {
     this.ay += calculateAcceleration(fy, this.mass)
   }
 
+  swim(): void {
+    // Randomly change direction slightly
+    if (Math.random() < 0.02) {
+      const angle = Math.random() * Math.PI * 2
+      const force = 0.5 * this.mass // Proportional to mass
+      this.applyForce(Math.cos(angle) * force, Math.sin(angle) * force)
+    }
+
+    // If moving too slow, give a boost
+    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy)
+    if (speed < 1) {
+      const angle = Math.random() * Math.PI * 2
+      const force = 1.0 * this.mass
+      this.applyForce(Math.cos(angle) * force, Math.sin(angle) * force)
+    }
+  }
+
   update(delta: number): void {
+    // Apply swim forces
+    this.swim()
+
     // Update velocity
     this.vx = updateVelocity(this.vx, this.ax, this.friction)
     this.vy = updateVelocity(this.vy, this.ay, this.friction)
