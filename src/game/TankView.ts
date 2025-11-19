@@ -2,6 +2,7 @@ import { Container, Graphics } from 'pixi.js'
 import { ITank } from '../types/tank'
 import { IFish } from '../types/fish'
 import { FishSprite } from './FishSprite'
+import { WATER_LEVEL } from '../lib/constants'
 
 export class TankView extends Container {
   private tank: ITank
@@ -31,7 +32,7 @@ export class TankView extends Container {
   private draw(): void {
     this.background.clear()
 
-    const waterLevel = this.tank.height * 0.85 // Water fills 85% of tank height
+    const waterLevel = this.tank.height * WATER_LEVEL
 
     // Draw water (filled portion)
     this.background.rect(0, this.tank.height - waterLevel, this.tank.width, waterLevel)
