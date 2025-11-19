@@ -149,14 +149,12 @@ Phase 6: Performance & Testing (T041-T053)
 #### Minor Observations (Not Blockers)
 
 1. **Plan.md Assumptions vs. Spec Assumptions**:
-
    - Plan lists old assumptions ("Simple velocity physics are sufficient")
    - Should update plan.md to reflect new physics+collisions assumptions
    - Impact: LOW (tasks align correctly despite plan wording)
    - **Recommendation**: Update plan.md Assumptions & Risks section to match spec
 
 2. **Task Numbering Duplicate**:
-
    - Phase 5 (US3) tasks reuse T032-T040 numbers (already used in Phase 4)
    - Should renumber US3 tasks to T041-T053
    - Impact: MEDIUM (confusing but not blocking)
@@ -202,7 +200,6 @@ Phase 6: Performance & Testing (T041-T053)
 ### Suggested Refinements (Optional Before Starting)
 
 1. **Update plan.md** section "Assumptions & Risks":
-
    - Change "Simple velocity physics are sufficient" → "Physics with acceleration, friction, and elastic collisions implemented"
    - Add risk: "Collision detection performance with 20+ fish"
 

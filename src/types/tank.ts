@@ -3,11 +3,11 @@
  */
 export interface ITank {
   /** Width of the tank in pixels */
-  width: number;
+  width: number
 
   /** Height of the tank in pixels */
-  height: number;
+  height: number
 
   /** Background color of the tank (hex string) */
-  backgroundColor: number;
+  backgroundColor: number
 }

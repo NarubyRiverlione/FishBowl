@@ -33,11 +33,11 @@
 - [x] T005 [P] Create type definitions for Fish in `src/types/fish.ts` (properties: id, color, size, position, velocity, acceleration, mass, radius)
 - [x] T006 [P] Create type definitions for Tank in `src/types/tank.ts` (properties: width, height, backgroundColor)
 - [x] T007 [P] Create type definitions for rendering in `src/types/render.ts` (Animation frames, sprite config, collision data)
-- [ ] T008 Create base Fish model in `src/models/Fish.ts` with physics properties (velocity, acceleration, mass, radius)
-- [ ] T009 Create base Tank model in `src/models/Tank.ts` as a container with collision tracking
-- [ ] T010 [P] Create physics utility functions in `src/lib/physics.ts` (velocity update, acceleration calc, friction/drag, boundary detection, AABB collision)
-- [ ] T011 [P] Create collision response functions in `src/lib/collision.ts` (elastic bounce for walls and fish-to-fish)
-- [ ] T012 [P] Create random utility functions in `src/lib/random.ts` (randomColor, randomSize, randomVelocity)
+- [x] T008 Create base Fish model in `src/models/Fish.ts` with physics properties (velocity, acceleration, mass, radius)
+- [x] T009 Create base Tank model in `src/models/Tank.ts` as a container with collision tracking
+- [x] T010 [P] Create physics utility functions in `src/lib/physics.ts` (velocity update, acceleration calc, friction/drag, boundary detection, AABB collision)
+- [x] T011 [P] Create collision response functions in `src/lib/collision.ts` (elastic bounce for walls and fish-to-fish)
+- [x] T012 [P] Create random utility functions in `src/lib/random.ts` (randomColor, randomSize, randomVelocity)
 
 **Checkpoint**: Type definitions and utilities ready - rendering implementation can begin in parallel
 

@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "tsc --noEmit && eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint": "pnpm lint:fix && pnpm format && pnpm typecheck",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest"
   },

@@ -25,6 +25,7 @@ You are an expert Game Developer and Software Architect working on "FishBowl", a
   - **Logic**: Pure TypeScript models/services (no UI code).
   - **View**: Pixi.js components (observers only).
   - **UI**: React components (HUD, menus).
+- **Continuous Quality**: The linter (`pnpm lint`) MUST be executed successfully after the completion of every implementation phase. Zero warnings allowed.
 
 ## 3. Architecture & Patterns
 
@@ -61,6 +62,7 @@ src/
 - **Start Dev Server**: `pnpm dev`
 - **Run Tests**: `pnpm test` (Vitest)
 - **Linting**: `pnpm lint` (ESLint Strict)
+- **Formatting**: `pnpm format` (Prettier)
 
 ### Adding a New Feature (Workflow)
 
@@ -70,6 +72,7 @@ src/
 4.  **Model**: Implement domain logic in `src/models/`.
 5.  **Store**: Update Zustand store if global state is needed.
 6.  **View**: Implement visual representation in `src/game/` or `src/components/`.
+7.  **Verify**: Run `pnpm lint` and `pnpm test` to ensure quality gates are passed.
 
 ## 5. Immediate Tasks
 
