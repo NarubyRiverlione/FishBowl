@@ -34,6 +34,11 @@ The player can manage multiple tanks. Each tank has its own ecosystem.
     - **Filter:** Removes a fixed amount of pollution per minute. Requires occasional cleaning.
     - **Water Change:** Immediately reduces pollution. Costs credits and takes time. **Feeding is disabled during a water change.**
     - **Plants:** Passively reduce pollution (nitrates).
+- **Water Visuals (UX suggestion):**
+  - **Background image as "transparent water":** Instead of a flat blue fill, use a subtle background image (texture/photo) to act as the scene behind the tank. Render fish and decorations on top so the background reads as the water body.
+  - **Pollution-driven blur/opacity:** Apply a dynamic blur and color/palette shift to the background based on the tank's pollution grade (e.g., clean = slightly clear, moderate = subtle blur + green tint, heavy = stronger blur + brownish tint). This provides immediate visual feedback about water quality without intrusive HUD elements.
+  - **Performance:** Provide a low-cost shader/Canvas2D fallback and LOD (disable heavy blur when many fish are present or on low-end devices).
+  - **Annotation / Recommendation:** UI-level enhancement that enhances feedback for pollution. Consider as part of Milestone 2 (visual feedback for core mechanics) with a spec entry and small tasks for implementation and testing.
 - **Oxygen:**
   - **Consumption:** Fish consume oxygen based on size.
   - **Supply:** Surface agitation, oxygen pumps, plants.

@@ -121,6 +121,8 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 - **FR-013**: The system MUST calculate **Fish Value** dynamically based on species, size, health, and age.
 - **FR-014**: The system MUST handle **Fish Death**: When health reaches zero, the fish is marked as dead and removed from the active population.
 - **FR-015**: The system MUST render **Life Stage Visual Variations**: Fish sprites must adjust size and appearance based on age. Young fish (0–119s) render at base size. Mature fish (120–299s) render at 1.3× base size. Old fish (≥300s) render at 1.3× base size with 0.8× color saturation (slight desaturation to indicate aging).
+- **FR-016**: The system SHOULD provide an in-game **fish inspection UI**: clicking a fish selects it and opens an info panel showing species, age, life stage, hunger, health, estimated sell price, and actions (sell, inspect). This is preferred over hover-only tooltips for accessibility and mobile support.
+- **FR-017**: The system SHOULD provide **Water Visual Feedback**: use a background image/texture behind the tank rendering and apply a dynamic blur/tint based on the tank's pollution grade to communicate water quality non-verbally. Provide a performant shader or Canvas fallback and allow disabling on low-end devices.
 
 ### Key Entities
 

@@ -108,13 +108,7 @@ src/
 
 ## Roadmap
 
-- ✅ **Milestone 1**: Visual Prototype (swimming, physics, rendering)
-- 🚧 **Milestone 2**: Core Mechanics (economy, survival, progression) - **Current**
-- 🔮 **Milestone 3**: Breeding & Genetics
-- 🔮 **Milestone 4**: Advanced Environment (oxygen, plants, stress)
-- 🔮 **Milestone 5**: Extended Economy & Multi-tank
-
-See [docs/IMPLEMENTATION_STATUS.md](./docs/IMPLEMENTATION_STATUS.md) for detailed progress.
+See `docs/roadmap.md` for the milestone plan and high-level feature allocation. For implementation progress, see `docs/IMPLEMENTATION_STATUS.md`.
 
 ## Governance
 

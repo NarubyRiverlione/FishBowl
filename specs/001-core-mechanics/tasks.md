@@ -73,6 +73,18 @@ Independent test criteria: selling a fish calculates value using baseValue × ag
 - [ ] T042 [FR-015] Implement life stage visual rendering in `FishSprite`: apply size multiplier (1.0x young, 1.3x mature/old) and color desaturation (0.8x for old fish only) based on fish age — file: `src/game/views/FishSprite.ts`
 - [ ] T043 [FR-015] Add unit test `tests/unit/LifeStage.test.ts` verifying age thresholds and visual parameters (size, saturation) for each life stage — file: `tests/unit/LifeStage.test.ts`
 
+**Hover / Selection UX tasks (recommended)**
+
+- [ ] T044 [FR-016] Implement `selectFish(fishId)` state and `selectedFishId` in store; wire click events from `FishSprite` to dispatch selection — files: `src/store/slices/gameSlice.ts`, `src/game/views/FishSprite.ts`
+- [ ] T045 [FR-016] Create `FishInfoPanel` component showing selected fish stats and actions (Sell/Inspect) — file: `src/components/FishInfoPanel.tsx`
+- [ ] T046 [FR-016] Add integration test `tests/integration/FishInspect.test.ts` verifying click → select → panel open → sell flow — file: `tests/integration/FishInspect.test.ts`
+
+**Water Visuals (pollution-driven) tasks**
+
+- [ ] T047 [FR-017] Add PRD/spec entry and design notes for water background + pollution-driven blur/tint; include performance constraints and fallback behavior — files: `docs/PRD_Eng.md`, `specs/001-core-mechanics/spec.md`
+- [ ] T048 [FR-017] Implement background rendering + shader or Canvas2D blur in `RenderingEngine` with a toggle and LOD (disable on low-end devices); expose API to set blur/tint by pollution grade — files: `src/game/RenderingEngine.ts`, `src/game/views/TankContainer.ts`
+- [ ] T049 [FR-017] Add integration/perf tests `tests/integration/WaterVisuals.test.ts` to ensure visual changes reflect pollution and that performance remains acceptable (FPS/CPU thresholds) — file: `tests/integration/WaterVisuals.test.ts`
+
 Final Phase: Polish & Cross-Cutting Concerns
 
 - [x] T029 Add tutorial popup event wiring and storage (`tutorialEvents[]`, `showTutorial(eventId)` action) — file: `src/store/useGameStore.ts`
