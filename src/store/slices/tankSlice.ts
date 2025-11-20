@@ -1,5 +1,18 @@
 import { StateCreator } from 'zustand'
-import { ITank } from '../../models/types'
+import { ITank, FishSpecies, UUID } from '../../models/types'
+import { GameState } from './gameSlice'
+import { EconomyService } from '../../services/EconomyService'
+import { FishService } from '../../services/FishService'
+import {
+  POLLUTION_PER_FEEDING,
+  FEED_BASE_COST,
+  FEED_PER_FISH_COST,
+  CLEAN_COST,
+  CLEAN_POLLUTION_REDUCTION,
+  FILTER_COST,
+  TANK_UPGRADE_COST,
+  TANK_CAPACITY_STANDARD,
+} from '../../lib/constants'
 
 export interface TankState {
   /** Array of tanks (multi-tank support) */
@@ -16,11 +29,19 @@ export interface TankState {
   selectTank: (id: string) => void
   /** Set the selected tank (backwards-compatible API) */
   setTank: (tank: ITank) => void
+
+  // New actions
+  feedTank: (tankId: UUID) => void
+  cleanTank: (tankId: UUID) => void
+  buyFilter: (tankId: UUID) => void
+  upgradeTank: (tankId: UUID) => void
+  buyFish: (tankId: UUID, species: FishSpecies) => void
+  sellFish: (tankId: UUID, fishId: UUID) => void
 }
 
 // allow unused get/api params required by zustand StateCreator signature
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const createTankSlice: StateCreator<TankState> = (set, get, _api) => {
+export const createTankSlice: StateCreator<TankState & GameState, [], [], TankState> = (set, get, _api) => {
   // create a default BOWL tank
   const defaultTank: ITank = {
     id: 'default-bowl-tank',
@@ -32,6 +53,9 @@ export const createTankSlice: StateCreator<TankState> = (set, get, _api) => {
     temperature: 24,
     fish: [],
     createdAt: Date.now(),
+    width: 400,
+    height: 400,
+    backgroundColor: 0x87ceeb, // Sky blue
   }
 
   return {
@@ -48,32 +72,204 @@ export const createTankSlice: StateCreator<TankState> = (set, get, _api) => {
       const current = get()
       const existing = current.tanks.find((t) => t.id === tank.id)
       if (existing) {
-        // replace existing tank
-        const updated = current.tanks.map((t) => (t.id === tank.id ? tank : t))
-        set({ tanks: updated, tank, selectedTankId: tank.id })
+        set({ selectedTankId: tank.id, tank: existing })
       } else {
-        set({ tanks: [...current.tanks, tank], tank, selectedTankId: tank.id })
+        set({ tanks: [...current.tanks, tank], selectedTankId: tank.id, tank })
       }
     },
 
     selectTank: (id: string) => {
       const current = get()
-      const found = current.tanks.find((t) => t.id === id) ?? null
-      set({ tank: found, selectedTankId: found?.id ?? null })
+      const target = current.tanks.find((t) => t.id === id)
+      if (target) {
+        set({ selectedTankId: id, tank: target })
+      }
     },
 
-    // Backwards-compatible setter: upsert and select
     setTank: (tank: ITank) => {
       const current = get()
       const exists = current.tanks.some((t) => t.id === tank.id)
       if (exists) {
-        const updated = current.tanks.map((t) => (t.id === tank.id ? tank : t))
-        set({ tanks: updated, tank, selectedTankId: tank.id })
+        set((state) => ({
+          tanks: state.tanks.map((t) => (t.id === tank.id ? tank : t)),
+          tank,
+          selectedTankId: tank.id,
+        }))
       } else {
-        set({ tanks: [...current.tanks, tank], tank, selectedTankId: tank.id })
+        set((state) => ({
+          tanks: [...state.tanks, tank],
+          tank,
+          selectedTankId: tank.id,
+        }))
       }
+    },
+
+    feedTank: (tankId: UUID) => {
+      set((state) => {
+        const tankIndex = state.tanks.findIndex((t) => t.id === tankId)
+        if (tankIndex === -1) return state
+        const tank = state.tanks[tankIndex]
+        if (!tank) return state
+
+        const livingFish = tank.fish.filter((f) => f.isAlive)
+        const cost = FEED_BASE_COST + livingFish.length * FEED_PER_FISH_COST
+
+        if (state.credits < cost) return state
+
+        const updatedFish = tank.fish.map((fish) => {
+          return FishService.feedFish(fish)
+        })
+
+        const updatedTank = {
+          ...tank,
+          fish: updatedFish,
+          pollution: Math.min(100, tank.pollution + POLLUTION_PER_FEEDING),
+          waterQuality: Math.max(0, tank.waterQuality - POLLUTION_PER_FEEDING),
+        }
+
+        const newTanks = [...state.tanks]
+        newTanks[tankIndex] = updatedTank
+
+        return {
+          credits: state.credits - cost,
+          tanks: newTanks,
+          tank: state.tank?.id === tankId ? updatedTank : state.tank,
+        }
+      })
+    },
+    cleanTank: (tankId: UUID) => {
+      set((state) => {
+        const tankIndex = state.tanks.findIndex((t) => t.id === tankId)
+        if (tankIndex === -1) return state
+        const tank = state.tanks[tankIndex]
+        if (!tank) return state
+
+        const cost = CLEAN_COST
+        if (state.credits < cost) return state
+
+        const newPollution = Math.max(0, tank.pollution - CLEAN_POLLUTION_REDUCTION)
+        const newWaterQuality = Math.min(100, tank.waterQuality + CLEAN_POLLUTION_REDUCTION)
+
+        const updatedTank = {
+          ...tank,
+          pollution: newPollution,
+          waterQuality: newWaterQuality,
+        }
+
+        const newTanks = [...state.tanks]
+        newTanks[tankIndex] = updatedTank
+
+        return {
+          credits: state.credits - cost,
+          tanks: newTanks,
+          tank: state.tank?.id === tankId ? updatedTank : state.tank,
+        }
+      })
+    },
+    buyFilter: (tankId: UUID) => {
+      set((state) => {
+        const tankIndex = state.tanks.findIndex((t) => t.id === tankId)
+        if (tankIndex === -1) return state
+        const tank = state.tanks[tankIndex]
+        if (!tank) return state
+
+        // Preconditions: Standard tank, no filter yet, enough credits
+        if (tank.size !== 'STANDARD') return state
+        if (tank.hasFilter) return state
+        if (state.credits < FILTER_COST) return state
+
+        const updatedTank = {
+          ...tank,
+          hasFilter: true,
+        }
+
+        const newTanks = [...state.tanks]
+        newTanks[tankIndex] = updatedTank
+
+        return {
+          credits: state.credits - FILTER_COST,
+          tanks: newTanks,
+          tank: state.tank?.id === tankId ? updatedTank : state.tank,
+        }
+      })
+    },
+    upgradeTank: (tankId: UUID) => {
+      set((state) => {
+        const tankIndex = state.tanks.findIndex((t) => t.id === tankId)
+        if (tankIndex === -1) return state
+        const tank = state.tanks[tankIndex]
+        if (!tank) return state
+
+        // Preconditions: BOWL tank, enough credits
+        if (tank.size !== 'BOWL') return state
+        if (state.credits < TANK_UPGRADE_COST) return state
+
+        const updatedTank = {
+          ...tank,
+          size: 'STANDARD',
+          capacity: TANK_CAPACITY_STANDARD,
+          width: 800,
+          height: 600,
+        } as ITank // Cast to ensure type safety if needed, though should be inferred
+
+        const newTanks = [...state.tanks]
+        newTanks[tankIndex] = updatedTank
+
+        return {
+          credits: state.credits - TANK_UPGRADE_COST,
+          tanks: newTanks,
+          tank: state.tank?.id === tankId ? updatedTank : state.tank,
+        }
+      })
+    },
+    buyFish: (tankId, species) => {
+      const state = get()
+      const tank = state.tanks.find((t) => t.id === tankId)
+      if (!tank) return
+
+      if (EconomyService.canBuyFish(state.credits, tank, species)) {
+        const cost = EconomyService.getFishCost(species)
+        const newFish = FishService.createFish(species)
+
+        // Update credits
+        set((s) => ({ credits: s.credits - cost }))
+
+        // Update tank
+        const updatedTank = { ...tank, fish: [...tank.fish, newFish] }
+        get().setTank(updatedTank)
+      }
+    },
+    sellFish: (tankId: UUID, fishId: UUID) => {
+      set((state) => {
+        const tankIndex = state.tanks.findIndex((t) => t.id === tankId)
+        if (tankIndex === -1) return state
+        const tank = state.tanks[tankIndex]
+        if (!tank) return state
+
+        const fishIndex = tank.fish.findIndex((f) => f.id === fishId)
+        if (fishIndex === -1) return state
+        const fish = tank.fish[fishIndex]
+        if (!fish) return state
+
+        const value = FishService.calculateFishValue(fish)
+
+        const newFishList = [...tank.fish]
+        newFishList.splice(fishIndex, 1)
+
+        const updatedTank = {
+          ...tank,
+          fish: newFishList,
+        }
+
+        const newTanks = [...state.tanks]
+        newTanks[tankIndex] = updatedTank
+
+        return {
+          credits: state.credits + value,
+          tanks: newTanks,
+          tank: state.tank?.id === tankId ? updatedTank : state.tank,
+        }
+      })
     },
   }
 }
-
-export default createTankSlice

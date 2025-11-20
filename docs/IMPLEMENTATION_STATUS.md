@@ -1,12 +1,38 @@
 # FishBowl - Implementation Status
 
-**Last Updated**: 2025-11-19
+**Last Updated**: 2025-11-20
 
 ## Overview
 
 FishBowl is a web-based fish breeding simulation game. This document tracks the implementation progress across planned features.
 
-## Current Status: Phase 1 Complete ✅
+## Current Status: Phase 1 & Core Mechanics In Progress 🚧
+
+### ⚠️ Spec Alignment Required
+
+**Action Required**: Verify `specs/001-core-mechanics/spec.md` against `docs/PRD.md` for missing features.
+
+**Known Gaps Already Addressed**:
+
+- ✅ Life stages (jong/volwassen/oud) - Added as FR-015 with tasks T041-T043
+
+**Potential Gaps to Review**:
+
+- Stress mechanics (PRD 2.1): Fish stress affected by environment, prevents breeding
+- School behavior (PRD 2.1): Some species need companions for health/happiness
+- Biomass-based pollution (PRD 2.2): Large fish pollute more than small fish
+- Oxygen system (PRD 2.2): Oxygen consumption/production, pumps, surface agitation
+- Plants system (PRD 2.3): Living organisms that reduce pollution, provide hiding spots, can die
+- Decorations (PRD 2.3): Visual elements and hiding spots
+- Food particles (PRD): Not-eaten food increases pollution
+- Fish size growth (PRD): Young fish grow to adult size over time
+
+**Next Steps**:
+
+1. Read through entire PRD systematically
+2. Cross-reference each PRD section with spec.md functional requirements
+3. Identify features that belong in MVP (001-core-mechanics) vs future specs
+4. Add missing MVP features to spec.md or create new feature specs for post-MVP items
 
 ### Phase 1: Visual Prototype (✅ Completed)
 
@@ -61,6 +87,82 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 
 ---
 
+---
+
+## Phase 1.5: Core Game Mechanics (🚧 In Progress)
+
+**Branch**: `001-core-mechanics`  
+**Objective**: Implement core gameplay loop - fish survival, feeding, economy, progression.
+
+**Implemented Features**:
+
+- ✅ Game loop (1 tick/second with pause/resume)
+- ✅ Fish lifecycle:
+  - Age tracking (increments per tick)
+  - Hunger system (species-specific rates)
+  - Health system (affected by hunger and water quality)
+  - Death when health reaches 0
+- ✅ Economy system:
+  - Credits (starting: 100)
+  - Buy fish from store (cost validation)
+  - Sell fish (dynamic value: baseValue × ageMultiplier × healthModifier)
+- ✅ Tank management:
+  - Multiple tank support (up to 3 tanks)
+  - Tank sizes: BOWL (capacity 1), STANDARD (capacity 10), BIG (capacity 20)
+  - Tank upgrade system (BOWL → STANDARD for 75 credits)
+  - Maturity bonus (50 credits when first fish reaches 120s in BOWL tank)
+- ✅ Water quality:
+  - Pollution accumulation (from fish count and feeding)
+  - Water quality calculation (100 - pollution)
+  - Health penalties when water quality < 50
+  - Clean tank action (cost 10, reduces pollution by 30)
+  - Filter system (cost 50, reduces pollution per tick, requires STANDARD tank)
+- ✅ Feeding system:
+  - Feed tank action (reduces all fish hunger by 30)
+  - Cost: 2 + livingFishCount
+  - Increases pollution
+- ✅ UI/UX:
+  - Top bar HUD with stats (credits, time, fish count, pollution)
+  - Store menu with dropdowns (buy fish, upgrade tank, clean, filter)
+  - Disabled states for unaffordable items (WCAG AA compliant)
+  - Full-width responsive canvas
+  - Pause/resume button with color-coded states
+  - Time display in HH:mm:ss format
+- ✅ Developer mode:
+  - Enabled via `?dev=true` URL param
+  - Starts with 100 credits, STANDARD tank, tutorial disabled
+- ✅ Visual rendering:
+  - Pixi.js integration with Zustand store synchronization
+  - Fish sprites with collision detection
+  - Tank container with boundaries
+
+**In Progress**:
+
+- ⏳ Fish selection UI (T037-T040):
+  - Click fish sprite to select
+  - Visual highlight for selected fish
+  - Fish info panel showing stats and sell value
+  - Sell button in UI
+- ⏳ Life stage visual variations (T041-T043):
+  - Young (0-119s): Base size
+  - Mature (120-299s): 1.3× size
+  - Old (≥300s): 1.3× size with 0.8× saturation
+
+**Test Coverage**:
+
+- 40+ tests passing
+- Unit tests for services, models, physics
+- Integration tests for buy/feed/survival/pollution/progression flows
+- E2E tests with Playwright
+
+**Documentation**:
+
+- ✅ specs/001-core-mechanics/spec.md - Feature specification
+- ✅ specs/001-core-mechanics/tasks.md - Implementation tasks (43 total, 36 complete)
+- ✅ specs/001-core-mechanics/plan.md - Technical architecture
+
+---
+
 ## Planned Features (Not Yet Implemented)
 
 ### Phase 2: Breeding System (Planned)
@@ -88,50 +190,49 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 
 ### Phase 3: Environment & Water Quality (Planned)
 
-**Objective**: Implement water quality simulation and tank management.
+**Objective**: Extend water quality simulation with advanced mechanics.
 
 **Planned Features** (from PRD.md):
 
-- Water quality system:
-  - Pollution from fish biomass and waste
-  - Health/stress effects from poor water
-  - Disease mechanics
-- Water maintenance:
-  - Water changes (costs money and time)
-  - Filters (continuous pollution removal, requires cleaning)
-  - Oxygen pumps
-- Plants and decoration:
-  - Living plants (reduce pollution, provide hiding spots)
-  - Decorative items (stress reduction)
+- Enhanced water quality:
+  - Biomass-based pollution (large fish pollute more)
+  - Food particle system (uneaten food increases pollution)
+  - Stress mechanics affecting fish health and breeding
+- Advanced maintenance:
+  - Filter cleaning requirement
+  - Water change mechanics (locks feeding temporarily)
 - Oxygen management:
   - Fish consume oxygen based on size
   - Surface agitation, oxygen pumps, plants provide oxygen
+  - Oxygen deficiency → rapid health decline
+- Plants and decoration:
+  - Living plants (reduce pollution, provide hiding spots, can die)
+  - Decorative items (stress reduction, breeding sites)
+- School behavior:
+  - Some species need companions for health/happiness
 
-**Status**: Not started
+**Status**: Not started (some basics implemented in Phase 1.5)
 
 ---
 
 ### Phase 4: Economy System (Planned)
 
-**Objective**: Implement currency, trading, and progression mechanics.
+**Objective**: Extend economy with equipment shop and progression.
 
 **Planned Features** (from PRD.md):
 
-- Currency system (Euro-based, needs in-game name)
-- Fish trading:
-  - Sell adult fish
-  - Buy rare breeds
-- Equipment purchases:
-  - Filters (varied capacity)
-  - Oxygen pumps
-  - Tank expansions
+- Advanced trading:
+  - Buy rare fish breeds
+  - Dynamic market prices
+- Equipment shop (expanded):
+  - Multiple filter types (varied capacity)
+  - Oxygen pumps (various sizes)
+  - Tank expansions (BIG tank)
   - Decorations and plants
-- Progression system:
-  - Starting capital
-  - Unlock better equipment
-  - Multiple tank management
+- Multiple tank management (partially implemented)
+- Unlock progression system
 
-**Status**: Not started
+**Status**: Core economy implemented in Phase 1.5, advanced features pending
 
 ---
 
@@ -209,28 +310,35 @@ src/
 
 ## Next Steps
 
-### Immediate (Phase 2 - Breeding System)
+### Immediate (Complete Phase 1.5)
+
+1. ✅ Implement fish selection UI (T037-T040)
+2. ✅ Add life stage visual rendering (T041-T043)
+3. Verify and align spec with PRD
+4. Complete any remaining MVP tasks
+
+### Short-term (Phase 2 - Breeding System)
 
 1. Design genetic system (traits, inheritance rules)
-2. Implement life cycle stages (fry, adult, old)
-3. Create breeding mechanics (mate selection, egg laying)
-4. Add visual indicators for age and gender
-5. Test genetic inheritance with multiple generations
+2. Implement breeding mechanics (mate selection, egg laying)
+3. Add visual indicators for gender and fertility
+4. Test genetic inheritance with multiple generations
 
-### Short-term (Phase 3 - Environment)
+### Medium-term (Phase 3 - Enhanced Environment)
 
-1. Design water quality model (pollution sources, effects)
-2. Implement maintenance actions (water change, filter)
-3. Add plants and decorations
-4. Create UI for water quality indicators
+1. Implement biomass-based pollution
+2. Add plants and decorations
+3. Create oxygen management system
+4. Implement stress mechanics
+5. Add food particle simulation
 
-### Long-term (Phase 4+ - Economy & Advanced)
+### Long-term (Phase 4+ - Advanced Features)
 
-1. Design economy balancing (prices, progression)
-2. Implement trading system
-3. Add equipment shop
-4. Create multiple tank management
-5. Implement save/load system
+1. Expand equipment shop
+2. Implement save/load system
+3. Add achievement system
+4. Create seasonal events
+5. Optimize for mobile devices
 
 ---
 
@@ -238,6 +346,7 @@ src/
 
 - [PRD.md](./PRD.md) - Product Requirements (Dutch)
 - [HighLevel.md](./HighLevel.md) - High-level design (Dutch)
-- [specs/002-visual-prototype/](../specs/002-visual-prototype/) - Phase 1 specification
+- [specs/001-core-mechanics/](../specs/001-core-mechanics/) - Phase 1.5 specification (In Progress)
+- [specs/002-visual-prototype/](../specs/002-visual-prototype/) - Phase 1 specification (Complete)
 - [QUICKSTART.md](../QUICKSTART.md) - User setup guide
 - [README.md](../README.md) - Technical documentation

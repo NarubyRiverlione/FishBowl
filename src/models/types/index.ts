@@ -37,6 +37,10 @@ export interface ITank {
   temperature: number // 0-40
   fish: IFish[]
   createdAt: Timestamp
+  // Visual properties
+  width: number
+  height: number
+  backgroundColor: number
 }
 
 export interface IStoreItem {
@@ -59,6 +63,20 @@ export interface IGameState {
   tanks: ITank[]
   credits: Credits
   storeInventory: IStoreItem[]
-  selectedFishId?: UUID | null
-  gameStartedAt?: Timestamp
+  selectedFishId: UUID | null
+  gameStartedAt: Timestamp
+}
+
+export interface IFishSpeciesConfig {
+  baseValue: number
+  sizeRange: [number, number]
+  health: number
+  hungerRate: number
+}
+
+export const FISH_SPECIES_CONFIG: Record<FishSpecies, IFishSpeciesConfig> = {
+  [FishSpecies.GUPPY]: { baseValue: 50, sizeRange: [0.5, 1.0], health: 80, hungerRate: 1 },
+  [FishSpecies.GOLDFISH]: { baseValue: 100, sizeRange: [1.0, 2.0], health: 80, hungerRate: 2 },
+  [FishSpecies.TETRA]: { baseValue: 60, sizeRange: [0.4, 0.8], health: 75, hungerRate: 1 },
+  [FishSpecies.BETTA]: { baseValue: 150, sizeRange: [0.8, 1.5], health: 90, hungerRate: 1.5 },
 }

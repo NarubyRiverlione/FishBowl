@@ -3,6 +3,7 @@ import { Tank } from '../models/Tank'
 import { TankContainer } from './views/TankContainer'
 import { FishController } from './controllers/FishController'
 import { PerformanceMonitor } from './PerformanceMonitor'
+import { IFish } from '../models/types'
 
 export class RenderingEngine {
   private app: Application
@@ -71,6 +72,10 @@ export class RenderingEngine {
 
   spawnFish(amountNewFish: number): void {
     this.fishManager.spawn(amountNewFish)
+  }
+
+  syncFish(fish: IFish[]): void {
+    this.fishManager.syncFish(fish)
   }
 
   update(delta: number): void {

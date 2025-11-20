@@ -1,5 +1,5 @@
-import { ITank } from './types/tank'
-import { IFish } from './types/fish'
+import { ITank, TankSize, UUID } from './types'
+import { Fish } from './Fish'
 import {
   resolveBoundaryCollision,
   resolveFishCollision,
@@ -7,10 +7,19 @@ import {
 } from '../services/physics/CollisionService'
 
 export class Tank implements ITank {
+  id: UUID = crypto.randomUUID()
+  size: TankSize = 'BOWL'
+  capacity: number = 1
+  waterQuality: number = 100
+  pollution: number = 0
+  hasFilter: boolean = false
+  temperature: number = 24
+  createdAt: number = Date.now()
+
   width: number
   height: number
   backgroundColor: number
-  fish: IFish[] = []
+  fish: Fish[] = []
 
   // Metrics
   collisionChecks: number = 0
@@ -22,8 +31,12 @@ export class Tank implements ITank {
     this.backgroundColor = backgroundColor
   }
 
-  addFish(fish: IFish): void {
+  addFish(fish: Fish): void {
     this.fish.push(fish)
+  }
+
+  removeFish(fishId: string): void {
+    this.fish = this.fish.filter((f) => f.id !== fishId)
   }
 
   update(delta: number): void {

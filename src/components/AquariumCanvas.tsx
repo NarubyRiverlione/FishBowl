@@ -1,20 +1,19 @@
 import React, { useEffect, useRef } from 'react'
 import { RenderingEngine } from '../game/RenderingEngine'
+import useGameStore from '../store/useGameStore'
 
-interface AquariumCanvasProps {
-  width?: number
-  height?: number
-}
-
-const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width = 800, height = 600 }) => {
+const AquariumCanvas: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<RenderingEngine | null>(null)
+  const fish = useGameStore((state) => state.tanks[0]?.fish)
 
-  // Handle window resize (optional, if we wanted full screen)
+  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      // Placeholder for responsive logic if we switch to full-screen mode
-      // For now, we stick to prop-based sizing
+      if (containerRef.current && engineRef.current) {
+        // Note: We'd need to add a resize method to RenderingEngine to properly handle this
+        // For now, dimensions are set on mount
+      }
     }
 
     window.addEventListener('resize', handleResize)
@@ -32,12 +31,19 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width = 800, height = 6
           engineRef.current = null
         }
 
+        // Get container dimensions
+        const width = containerRef.current!.clientWidth
+        const height = containerRef.current!.clientHeight
+
         // Initialize new engine
         const engine = new RenderingEngine(width, height, 0x006994)
         engineRef.current = engine
 
         await engine.init(containerRef.current!)
-        engine.spawnFish(20)
+
+        // Initial sync with store state
+        const currentFish = useGameStore.getState().tanks[0]?.fish || []
+        engine.syncFish(currentFish)
       } catch (error) {
         console.error('Failed to initialize aquarium:', error)
       }
@@ -51,17 +57,23 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width = 800, height = 6
         engineRef.current = null
       }
     }
-  }, [width, height])
+  }, [])
+
+  // Sync fish from store to engine
+  useEffect(() => {
+    if (engineRef.current && fish) {
+      engineRef.current.syncFish(fish)
+    }
+  }, [fish])
 
   return (
     <div
       ref={containerRef}
       data-testid="aquarium-container"
       style={{
-        width: `${width}px`,
-        height: `${height}px`,
+        width: '100%',
+        height: '100%',
         border: '2px solid #333',
-        margin: '20px auto',
         boxShadow: '0 0 20px rgba(0,0,0,0.3)',
       }}
     />

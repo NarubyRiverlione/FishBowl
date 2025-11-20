@@ -1,23 +1,103 @@
 import { StateCreator } from 'zustand'
-import { ITank } from '../../models/types'
+import { ITank, IStoreItem, UUID } from '../../models/types'
+import { TankState } from './tankSlice'
+import { FishService } from '../../services/FishService'
+import {
+  TICK_RATE_SECONDS,
+  POLLUTION_PER_FISH_PER_TICK,
+  FILTER_POLLUTION_REDUCTION_PER_TICK,
+  MATURE_AGE_SECONDS,
+  MATURITY_BONUS,
+} from '../../lib/constants'
 
 export interface GameState {
   credits: number
+  currentTick: number
+  totalTime: number
+  isPaused: boolean
+  maturityBonusAwarded: boolean
   tutorialEnabled: boolean
+  tutorialEvents: string[]
+  storeInventory: IStoreItem[]
+  selectedFishId: UUID | null
+  gameStartedAt: number
   developerMode: boolean
-  // Alias/utility: returns true when the game is in normal/tutorial mode
+
   isTutorialMode: () => boolean
-  // Helper to set mode explicitly: 'tutorial' for normal mode, 'dev' for developer mode
   setMode: (mode: 'tutorial' | 'dev') => void
   initializeFromQuery: (qs?: string) => void
+
+  tick: () => void
+  setPaused: (paused: boolean) => void
+  selectFish: (fishId: UUID | null) => void
+  showTutorial: (eventId: string) => void
+  dismissTutorial: (eventId: string) => void
 }
 
 // allow unused get/api params required by zustand StateCreator signature
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const createGameSlice: StateCreator<GameState> = (set, get, _api) => ({
-  credits: 50,
+export const createGameSlice: StateCreator<GameState & TankState, [], [], GameState> = (set, get, _api) => ({
+  credits: 100,
+  currentTick: 0,
+  totalTime: 0,
+  isPaused: false,
+  maturityBonusAwarded: false,
   tutorialEnabled: true,
+  tutorialEvents: [],
+  storeInventory: [],
+  selectedFishId: null,
+  gameStartedAt: Date.now(),
   developerMode: false,
+
+  isTutorialMode: () => !get().developerMode,
+
+  setMode: (mode) => {
+    if (mode === 'dev') {
+      set({ developerMode: true, credits: 100, tutorialEnabled: false })
+
+      // Set dev tank
+      const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
+      if (typeof maybeSetTank === 'function') {
+        const devTank: ITank = {
+          id: 'dev-standard-tank',
+          size: 'STANDARD',
+          capacity: 10,
+          waterQuality: 100,
+          pollution: 0,
+          hasFilter: false,
+          temperature: 24,
+          fish: [],
+          createdAt: Date.now(),
+          width: 800,
+          height: 600,
+          backgroundColor: 0x87ceeb,
+        }
+        maybeSetTank(devTank)
+      }
+    } else {
+      set({ developerMode: false, credits: 50, tutorialEnabled: true })
+
+      // Set default bowl tank
+      const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
+      if (typeof maybeSetTank === 'function') {
+        const bowlTank: ITank = {
+          id: 'default-bowl-tank',
+          size: 'BOWL',
+          capacity: 1,
+          waterQuality: 100,
+          pollution: 0,
+          hasFilter: false,
+          temperature: 24,
+          fish: [],
+          createdAt: Date.now(),
+          width: 400,
+          height: 400,
+          backgroundColor: 0x87ceeb,
+        }
+        maybeSetTank(bowlTank)
+      }
+    }
+  },
 
   initializeFromQuery: (qs?: string) => {
     const search = qs ?? (typeof window !== 'undefined' ? window.location.search : '')
@@ -27,7 +107,6 @@ export const createGameSlice: StateCreator<GameState> = (set, get, _api) => ({
     const tutorialParam = params.get('tutorial')
 
     if (dev) {
-      // Developer mode: higher starting credits, standard tank, tutorial off
       set({ developerMode: true, credits: 100, tutorialEnabled: false })
 
       // If tank slice is present, set a STANDARD tank for dev convenience
@@ -43,60 +122,85 @@ export const createGameSlice: StateCreator<GameState> = (set, get, _api) => ({
           temperature: 24,
           fish: [],
           createdAt: Date.now(),
+          width: 800,
+          height: 600,
+          backgroundColor: 0x87ceeb,
         }
         maybeSetTank(devTank)
       }
-      return
+    } else {
+      if (tutorialParam === 'false') {
+        set({ tutorialEnabled: false })
+      }
     }
+  },
 
-    if (tutorialParam === 'false') {
-      set({ tutorialEnabled: false })
-    }
-  },
-  isTutorialMode: () => {
-    // Tutorial mode is enabled when tutorialEnabled is true and developerMode is false
-    const s = get() as unknown as GameState
-    return !!s.tutorialEnabled && !s.developerMode
-  },
-  setMode: (mode: 'tutorial' | 'dev') => {
-    if (mode === 'dev') {
-      // enable developer mode and set dev STANDARD tank
-      set({ developerMode: true, credits: 100, tutorialEnabled: false })
-      const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
-      if (typeof maybeSetTank === 'function') {
-        const devTank: ITank = {
-          id: 'dev-standard-tank',
-          size: 'STANDARD',
-          capacity: 10,
-          waterQuality: 100,
-          pollution: 0,
-          hasFilter: false,
-          temperature: 24,
-          fish: [],
-          createdAt: Date.now(),
+  tick: () => {
+    const state = get()
+    if (state.isPaused) return
+
+    const newTick = state.currentTick + 1
+    const newTotalTime = state.totalTime + TICK_RATE_SECONDS
+
+    // Update fish in all tanks
+    let bonusAwarded = state.maturityBonusAwarded
+    let newCredits = state.credits
+
+    const newTanks = state.tanks.map((tank) => {
+      const livingFishCount = tank.fish.filter((f) => f.isAlive).length
+      const pollutionIncrease = livingFishCount * POLLUTION_PER_FISH_PER_TICK
+      const pollutionDecrease = tank.hasFilter ? FILTER_POLLUTION_REDUCTION_PER_TICK : 0
+
+      const newPollution = Math.min(100, Math.max(0, tank.pollution + pollutionIncrease - pollutionDecrease))
+      const newWaterQuality = Math.max(0, 100 - newPollution)
+
+      const newFish = tank.fish.map((fish) => {
+        if (!fish.isAlive) return fish
+
+        // Check for maturity bonus
+        if (!bonusAwarded && tank.size === 'BOWL' && fish.age >= MATURE_AGE_SECONDS) {
+          bonusAwarded = true
+          newCredits += MATURITY_BONUS
         }
-        maybeSetTank(devTank)
-      }
-      return
-    }
 
-    // tutorial mode: normal startup with a BOWL tank
-    set({ developerMode: false, tutorialEnabled: true, credits: 50 })
-    const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
-    if (typeof maybeSetTank === 'function') {
-      const bowlTank: ITank = {
-        id: 'default-bowl-tank',
-        size: 'BOWL',
-        capacity: 1,
-        waterQuality: 100,
-        pollution: 0,
-        hasFilter: false,
-        temperature: 24,
-        fish: [],
-        createdAt: Date.now(),
+        return FishService.tickFish(fish, newWaterQuality)
+      })
+
+      return {
+        ...tank,
+        fish: newFish,
+        pollution: newPollution,
+        waterQuality: newWaterQuality,
       }
-      maybeSetTank(bowlTank)
+    })
+
+    // Sync selected tank
+    const newSelectedTank = state.tank ? newTanks.find((t) => t.id === state.tank!.id) || state.tank : null
+
+    set({
+      currentTick: newTick,
+      totalTime: newTotalTime,
+      tanks: newTanks,
+      tank: newSelectedTank,
+      maturityBonusAwarded: bonusAwarded,
+      credits: newCredits,
+    })
+  },
+
+  setPaused: (paused) => set({ isPaused: paused }),
+
+  selectFish: (fishId) => set({ selectedFishId: fishId }),
+
+  showTutorial: (eventId) => {
+    const { tutorialEvents, tutorialEnabled } = get()
+    if (tutorialEnabled && !tutorialEvents.includes(eventId)) {
+      set({ tutorialEvents: [...tutorialEvents, eventId] })
     }
+  },
+
+  dismissTutorial: (eventId) => {
+    const { tutorialEvents } = get()
+    set({ tutorialEvents: tutorialEvents.filter((id) => id !== eventId) })
   },
 })
 

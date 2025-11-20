@@ -1,4 +1,4 @@
-import { IFish } from './types/fish'
+import { IFish, FishSpecies } from './types'
 import { updateVelocity, calculateAcceleration } from '../services/physics/PhysicsService'
 import {
   FISH_BASE_SIZE,
@@ -13,6 +13,18 @@ import {
 
 export class Fish implements IFish {
   id: string
+  // New IFish properties
+  species: FishSpecies = FishSpecies.GUPPY
+  size: number = 1.0
+  age: number = 0
+  health: number = 100
+  hunger: number = 0
+  isAlive: boolean = true
+  genetics: Record<string, unknown> = {}
+  createdAt: number = Date.now()
+  name?: string
+
+  // Physics properties
   x: number
   y: number
   vx: number = 0
@@ -33,6 +45,7 @@ export class Fish implements IFish {
     this.y = y
     this.color = color
     this.scale = scale
+    this.size = scale // Sync size with scale
 
     // Adjust physical properties based on scale
     this.radius = FISH_BASE_RADIUS * scale

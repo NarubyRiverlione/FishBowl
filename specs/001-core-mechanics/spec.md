@@ -89,9 +89,12 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 
 **Acceptance Scenarios**:
 
-1. **Given** a fish in the tank, **When** the player selects "Sell", **Then** the fish is removed and credits are added to the player's balance.
-2. **Given** a fish, **When** selling, **Then** the value is calculated based on species, size, and health (as per PRD).
-3. **Given** insufficient credits, **When** trying to buy an item, **Then** the transaction is rejected.
+1. **Given** fish in the tank, **When** the player clicks on a fish sprite, **Then** that fish is selected and visually highlighted.
+2. **Given** a selected fish, **When** the fish info panel displays, **Then** it shows the fish's age, health, hunger, and calculated sell value.
+3. **Given** a selected fish, **When** the player clicks the "Sell Fish" button, **Then** the fish is removed and credits are added to the player's balance.
+4. **Given** a fish, **When** selling, **Then** the value is calculated based on species, age, and health: `baseValue × ageMultiplier × healthModifier` (as per PRD).
+5. **Given** insufficient credits, **When** trying to buy an item, **Then** the transaction is rejected.
+6. **Given** no fish selected, **When** viewing the game, **Then** the fish info panel is hidden or shows a "Select a fish" prompt.
 
 ### Edge Cases
 
@@ -117,6 +120,7 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 - **FR-012**: The system MUST implement **Developer Mode**: When enabled (query param or button), start with large tank, skip tutorial, and disable tutorial popups.
 - **FR-013**: The system MUST calculate **Fish Value** dynamically based on species, size, health, and age.
 - **FR-014**: The system MUST handle **Fish Death**: When health reaches zero, the fish is marked as dead and removed from the active population.
+- **FR-015**: The system MUST render **Life Stage Visual Variations**: Fish sprites must adjust size and appearance based on age. Young fish (0–119s) render at base size. Mature fish (120–299s) render at 1.3× base size. Old fish (≥300s) render at 1.3× base size with 0.8× color saturation (slight desaturation to indicate aging).
 
 ### Key Entities
 
@@ -145,6 +149,10 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 - **Tutorial Mode**: Enabled by default. Can be disabled via URL query param `?tutorial=false` or UI toggle in settings. Shows popup explanations for key game events.
 - **Developer Mode**: Accessible via URL query param `?dev=true` or debug button. Starts with 100 credits, Standard Tank (capacity 10), and tutorial disabled.
 - **Filter Restriction**: BOWL tanks cannot have filters installed (option hidden in store). Prevents overwhelming new players with too many choices.
+- **Life Stages**: Fish have three visual life stages based on age:
+  - **Young (Jong)**: Age 0–119 seconds. Renders at base size (current sprite size).
+  - **Mature (Volwassen)**: Age 120–299 seconds. Renders at 1.3× base size (slightly bigger).
+  - **Old (Oud)**: Age ≥300 seconds. Renders at 1.3× base size with slight color desaturation (0.8× saturation to indicate aging).
 - **Mature Age**: Fish reach maturity at 120 seconds (2 minutes).
 - **Tank Upgrade**: First mature fish awards 50 bonus credits. Standard Tank costs 75 credits and unlocks filters.
 - **Time Scale**: 1 Tick = 1 Second (real-time).

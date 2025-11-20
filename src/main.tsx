@@ -19,6 +19,6 @@ try {
   }
 } catch (err) {
   // non-fatal: allow app to start even if initialization fails
-  // eslint-disable-next-line no-console
+
   console.warn('Game mode initialization skipped:', err)
 }

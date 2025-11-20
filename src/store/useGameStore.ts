@@ -15,3 +15,10 @@ const useGameStore = create<StoreState>()(
 )
 
 export default useGameStore
+
+// Selectors
+export const selectCredits = (state: StoreState) => state.credits
+export const selectTankFish = (state: StoreState) => state.tank?.fish || []
+export const selectStoreInventory = (state: StoreState) => state.storeInventory
+export const selectSelectedFish = (state: StoreState) =>
+  state.selectedFishId && state.tank ? state.tank.fish.find((f) => f.id === state.selectedFishId) || null : null
