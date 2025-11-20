@@ -559,6 +559,6 @@ Credits: 50 + 0 = 50
 
 1. Create `contracts/` directory with API specs.
 2. Generate `quickstart.md` with development setup.
-3. Begin implementation in `src/types/` (type definitions).
+3. Begin implementation in `src/models/types/` (type definitions).
 4. Create `src/models/Fish.ts` and `src/models/Tank.ts`.
 5. Create `src/services/` business logic layer.

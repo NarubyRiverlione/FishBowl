@@ -89,7 +89,7 @@ type GameState = {
 
 ### Decision
 
-Define strict TypeScript interfaces in `src/types/` before implementation:
+Define strict TypeScript interfaces in `src/models/types/` before implementation:
 
 - `IFish`: Core fish entity with genetics, stats, lifecycle.
 - `ITank`: Container for fish, tracks water quality.

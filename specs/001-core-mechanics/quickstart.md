@@ -51,14 +51,14 @@ npm run test   # Should run, tests may not exist yet
 
 ## Step 2: Create Type Definitions
 
-### 2.1 Create `src/types/index.ts`
+### 2.1 Create `src/models/types/index.ts`
 
 This is the contract layer. All entities are defined here.
 
 **What to implement**:
 
 ```typescript
-// src/types/index.ts
+// src/models/types/index.ts
 
 // ============================================
 // Primitives
@@ -172,7 +172,7 @@ export type Result<T> = { success: true; data: T } | { success: false; error: st
 
 **Checklist**:
 
-- [ ] File created at `src/types/index.ts`
+- [ ] File created at `src/models/types/index.ts`
 - [ ] All enums and interfaces defined
 - [ ] `FISH_SPECIES_CONFIG` includes all 4 species
 - [ ] No `any` types used
@@ -634,7 +634,7 @@ export const selectStoreInventory = (state: GameStore) => state.storeInventory
 
 import { describe, it, expect } from 'vitest'
 import { FishService } from '../../src/services/FishService'
-import { FishSpecies } from '../../src/types'
+import { FishSpecies } from '../../src/models/types'
 
 describe('FishService', () => {
   it('should create a fish with initial stats', () => {
@@ -835,7 +835,7 @@ React.useEffect(() => {
 
 ## Checklist for Completion
 
-- [ ] Types defined in `src/types/index.ts`
+- [ ] Types defined in `src/models/types/index.ts`
 - [ ] Services implemented (Fish, Economy, GameLoop)
 - [ ] Zustand store created with actions
 - [ ] Tests written and passing

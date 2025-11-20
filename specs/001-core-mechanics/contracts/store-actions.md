@@ -826,6 +826,6 @@ export function GameHUD() {
 
 ## Next Steps
 
-1. Implement types in `src/types/index.ts`.
+1. Implement types in `src/models/types/index.ts`.
 2. Implement store actions in `src/store/useGameStore.ts`.
 3. Write tests for each action in `tests/store.test.ts`.

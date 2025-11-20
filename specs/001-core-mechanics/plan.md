@@ -1,4 +1,3 @@
-````markdown
 # Implementation Plan: Core Game Mechanics (MVP)
 
 **Branch**: `001-core-mechanics` | **Date**: 2025-11-19 | **Spec**: [spec.md](./spec.md)
@@ -21,9 +20,9 @@ Implement the core game loop for FishBowl: a tick-based simulation where players
 **Performance Goals**: 60 FPS rendering, 1 tick/second simulation, support 50+ fish without degradation  
 **Constraints**: Real-time simulation (no offline progression), client-side only (no backend for MVP)  
 **Scale/Scope**: Single player, single tank, 10-50 fish capacity, 5-10 minute play sessions  
-**State Management Pattern**: NEEDS CLARIFICATION - Integration strategy between Zustand global state and Pixi.js game loop  
-**Game Loop Architecture**: NEEDS CLARIFICATION - Synchronization between React rendering (60 FPS) and game simulation (1 tick/sec)  
-**Service Layer Design**: NEEDS CLARIFICATION - Best practices for organizing business logic (services vs model methods)
+**State Management Pattern**: Zustand for UI/global application state (HUD, settings). The Pixi.js game loop remains authoritative for model updates (Fish/Tank). Controllers (in `src/game/controllers`) mediate between the authoritative model state and the UI/store to keep concerns separated.
+**Game Loop Architecture**: Game simulation runs on a tick (e.g., 1 tick/sec) inside `RenderingEngine` or a `GameLoopService`. Rendering (Pixi.js) continues at 60 FPS and interpolates model state for smooth visuals; synchronization is done by letting the game loop update models and the views observe model state.
+**Service Layer Design**: Business logic lives in `src/services/` (physics, spawn, economy, monitoring). Models remain pure and focused on domain logic; services implement higher-level workflows and are injected into controllers for testability.
 
 ## Constitution Check
 
@@ -44,7 +43,7 @@ _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 **Type Safety**: ✅ PASS
 
 - TypeScript Strict Mode enforced
-- Plan mandates interfaces in `src/types/` before logic implementation
+- Plan mandates interfaces in `src/models/types/` before logic implementation
 - No `any` types allowed per constitution
 
 **Separation of Concerns**: ✅ PASS
@@ -110,16 +109,23 @@ src/
 │   ├── FeedButton.tsx       # NEW: Feed action UI
 │   └── StoreMenu.tsx        # NEW: Buy/sell fish interface
 │
-├── game/             # Pixi.js rendering (existing, minimal changes)
-│   ├── FishSprite.ts         # ALREADY EXISTS - may need health indicator
-│   ├── TankView.ts           # ALREADY EXISTS
-│   └── RenderingEngine.ts    # ALREADY EXISTS - integrate with game loop
+├── game/             # Pixi.js rendering + controllers (restructured)
+│   ├── views/                # Visual Pixi components
+│   │   ├── FishSprite.ts     # Sprite rendering and texture loading
+│   │   └── TankContainer.ts  # Tank visuals and fish sprite management
+│   ├── controllers/          # Orchestrators/facades used by RenderingEngine
+│   │   └── FishController.ts
+│   └── RenderingEngine.ts    # Game loop + integration point with controllers
 │
 └── lib/              # Utilities (existing)
-    ├── constants.ts          # ALREADY EXISTS - add game constants
-    ├── physics.ts            # ALREADY EXISTS
-    ├── collision.ts          # ALREADY EXISTS
-    └── random.ts             # ALREADY EXISTS
+  ├── constants.ts          # ALREADY EXISTS - add game constants
+  ├── random.ts             # ALREADY EXISTS
+  └── (keep small helpers)  # Prefer keeping heavy physics/collision logic in services
+
+src/services/        # Business logic layer (migrated from lib where appropriate)
+  ├── physics/              # Physics & collision services (CollisionService, PhysicsService)
+  ├── simulation/           # SpawnService and other simulation helpers
+  └── monitoring/           # Performance/metrics services
 
 tests/
 ├── unit/                     # Existing directory
@@ -145,9 +151,12 @@ tests/
 - **NEW**: `src/services/` for business logic (hunger, health, economy)
 - **NEW**: `src/store/` for Zustand global state
 - **EXTEND**: Existing `src/models/` (Fish, Tank) with game mechanics properties
-- **EXTEND**: Existing `src/types/` with game loop and economy interfaces
+- **EXTEND**: Existing `src/models/types/` with game loop and economy interfaces
 - **EXTEND**: Existing `src/components/` with HUD and store UI
-- **REUSE**: `src/game/` and `src/lib/` largely unchanged (visual prototype complete)
+- **RESTRUCTURE**: `src/game/` reorganized for clearer separation of view vs controller:
+  - `src/game/views/` — Pixi.js visual components (TankContainer, FishSprite)
+  - `src/game/controllers/` — Orchestrators and facades (e.g., `FishController`) used by `RenderingEngine`
+- **MOVE**: Collision and physics helpers migrated from `src/lib/` into `src/services/physics/` (pure services). Keep `src/lib/` for small utilities like `random.ts`, `constants.ts`.
 
 ## Complexity Tracking
 
@@ -177,9 +186,9 @@ _After design phase (research, data-model, contracts, quickstart complete)_
 - Quickstart mandates writing tests before implementation
 - Test coverage targets documented (>90% for services/models)
 
-**Type Safety**: ✅ PASS
+-**Type Safety**: ✅ PASS
 
-- All entities have explicit TypeScript interfaces in `src/types/`
+- All entities have explicit TypeScript interfaces in `src/models/types/`
 - No `any` types in contracts
 - Strict mode enforced in `tsconfig.json`
 - Discriminated unions for state machines (Fish lifecycle)
@@ -244,4 +253,3 @@ All planning artifacts complete:
 - ✅ Agent context updated (technologies registered)
 
 **Next Command**: `/speckit.tasks` to generate implementation tasks from this plan.
-````
