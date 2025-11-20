@@ -1,6 +1,7 @@
 import { Sprite, Texture, Assets } from 'pixi.js'
 import { IFish } from '../../models/types/fish'
 import fishSvg from '../../assets/fish.svg'
+import useGameStore from '../../store/useGameStore'
 
 export class FishSprite extends Sprite {
   private fish: IFish
@@ -18,6 +19,31 @@ export class FishSprite extends Sprite {
     // Load texture asynchronously
     this.loadTexture()
     this.update()
+    // Make interactive for click/select/sell
+    this.interactive = true
+    this.buttonMode = true
+    this.on('pointerdown', this.handlePointerDown.bind(this))
+  }
+
+  private handlePointerDown(): void {
+    try {
+      const store = useGameStore.getState()
+      if (store.sellMode) {
+        // Find the tank that contains this fish
+        const tank = store.tanks.find((t) => t.fish.some((f) => f.id === this.fish.id))
+        if (tank) {
+          store.sellFish(tank.id, this.fish.id)
+        }
+        // Exit sell mode after an action
+        store.setSellMode(false)
+      } else {
+        store.selectFish(this.fish.id)
+      }
+    } catch (error) {
+      // swallow errors to avoid crashing renderer
+      // eslint-disable-next-line no-console
+      console.error('Error handling fish click:', error)
+    }
   }
 
   private async loadTexture(): Promise<void> {

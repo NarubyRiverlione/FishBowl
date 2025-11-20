@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import useGameStore from '../store/useGameStore'
+import { emojiCursorDataUrl } from '../lib/cursor'
 import { FishSpecies, FISH_SPECIES_CONFIG } from '../models/types'
 import { FILTER_COST, TANK_UPGRADE_COST, CLEAN_COST, FEED_BASE_COST, FEED_PER_FISH_COST } from '../lib/constants'
 
@@ -11,11 +12,25 @@ const StoreMenu: React.FC = () => {
   const upgradeTank = useGameStore((state) => state.upgradeTank)
   const cleanTank = useGameStore((state) => state.cleanTank)
   const feedTank = useGameStore((state) => state.feedTank)
+  const sellMode = useGameStore((state) => state.sellMode)
+  const setSellMode = useGameStore((state) => state.setSellMode)
 
   const [showBuyMenu, setShowBuyMenu] = useState(false)
   const [showUpgradeMenu, setShowUpgradeMenu] = useState(false)
   const buyMenuRef = useRef<HTMLDivElement>(null)
   const upgradeMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (sellMode) {
+      document.body.style.cursor = emojiCursorDataUrl('💸', 32)
+    } else {
+      document.body.style.cursor = ''
+    }
+    return () => {
+      if (typeof document !== 'undefined') document.body.style.cursor = ''
+    }
+  }, [sellMode])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -158,6 +173,17 @@ const StoreMenu: React.FC = () => {
           </div>
         )}
       </div>
+
+      <button
+        style={{
+          ...buttonStyle,
+          ...(sellMode ? { background: '#b33', color: '#fff' } : {}),
+        }}
+        onClick={() => setSellMode(!sellMode)}
+        title={sellMode ? 'Cancel sell mode' : 'Sell fish - click this, then click a fish to sell it'}
+      >
+        💸 Sell
+      </button>
 
       <div style={{ position: 'relative' }} ref={upgradeMenuRef}>
         <button

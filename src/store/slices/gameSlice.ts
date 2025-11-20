@@ -22,6 +22,8 @@ export interface GameState {
   selectedFishId: UUID | null
   gameStartedAt: number
   developerMode: boolean
+  sellMode: boolean
+  setSellMode: (enabled: boolean) => void
 
   isTutorialMode: () => boolean
   setMode: (mode: 'tutorial' | 'dev') => void
@@ -48,6 +50,7 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
   selectedFishId: null,
   gameStartedAt: Date.now(),
   developerMode: false,
+  sellMode: false,
 
   isTutorialMode: () => !get().developerMode,
 
@@ -190,6 +193,8 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
   setPaused: (paused) => set({ isPaused: paused }),
 
   selectFish: (fishId) => set({ selectedFishId: fishId }),
+
+  setSellMode: (enabled) => set({ sellMode: enabled }),
 
   showTutorial: (eventId) => {
     const { tutorialEvents, tutorialEnabled } = get()
