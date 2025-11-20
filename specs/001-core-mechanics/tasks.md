@@ -1,106 +1,118 @@
-# Tasks: Core Game Mechanics (MVP)
+a# Tasks: Core Game Mechanics (MVP)
 
 Feature: Core Game Mechanics (MVP)
 
 Phase 1: Setup
 
-- [ ] T001 Create this tasks file at `specs/001-core-mechanics/tasks.md`
-- [ ] T002 [P] Add `src/models/types/index.ts` (type definitions) — file: `src/models/types/index.ts`
-- [ ] T003 [P] Ensure dev dependencies installed: run `pnpm install` from repo root — command: `pnpm install`
-- [ ] T004 Add CI/test placeholders (Vitest config) — file: `vitest.config.ts` (if missing) or update existing test config
+- [ ] T001 Create repository prerequisites check (run locally): command: `/.specify/scripts/bash/check-prerequisites.sh --json`
+- [ ] T002 [P] Create type definitions file: `src/models/types/index.ts`
+- [ ] T003 [P] Add game constants file: `src/lib/constants.ts`
+- [ ] T004 [P] Ensure dev tooling: verify `package.json` scripts and `vitest` config — files: `package.json`, `vitest.config.ts`
 
 Phase 2: Foundational (blocking prerequisites)
 
-- [ ] T005 [P] [US-] Implement `IFish` and `ITank` interfaces and `FISH_SPECIES_CONFIG` — file: `src/models/types/index.ts`
-- [ ] T006 [P] [US-] Create `src/services/FishService.ts` (createFish, tickFish, calculateFishValue) — file: `src/services/FishService.ts`
-- [ ] T007 [P] [US-] Create `src/services/EconomyService.ts` (buyFish, sellFish, feedTank, cleanTank, buyFilter, upgradeTank) — file: `src/services/EconomyService.ts`
-- [ ] T008 [P] [US-] Create initial `useGameStore` Zustand hook with state and actions signatures (no full logic) — file: `src/store/useGameStore.ts`
-- [ ] T009 [P] Add unit test skeletons for services: `tests/unit/FishService.test.ts`, `tests/unit/EconomyService.test.ts` — files: `tests/unit/FishService.test.ts`, `tests/unit/EconomyService.test.ts`
+- [ ] T005 [P] Implement core interfaces and species config (`IFish`, `ITank`, `IGameState`, `FISH_SPECIES_CONFIG`) — file: `src/models/types/index.ts`
+- [ ] T006 [P] Implement `src/services/FishService.ts` (createFish, tickFish, calculateFishValue) — file: `src/services/FishService.ts`
+- [ ] T007 [P] Implement `src/services/EconomyService.ts` (buy/sell/clean/filter/upgrade helper signatures) — file: `src/services/EconomyService.ts`
+- [ ] T008 Implement `GameLoopService` abstraction (start/pause/resume/stop) — file: `src/services/GameLoopService.ts`
+- [ ] T009 [P] Add Zustand store skeleton with initial state and action signatures (`useGameStore.ts`) — file: `src/store/useGameStore.ts`
+- [ ] T010 [P] Add unit test skeletons for services and models (`tests/unit/*`) — files: `tests/unit/FishService.test.ts`, `tests/unit/EconomyService.test.ts`, `tests/unit/GameLoopService.test.ts`
+- [ ] T010 [P] Add unit test skeletons for services and models (`tests/unit/*`) — files: `tests/unit/FishService.test.ts`, `tests/unit/EconomyService.test.ts`, `tests/unit/GameLoopService.test.ts`
+- [x] T036 Implement multi-tank support: change game state to `tanks: ITank[]`, add per-tank actions (create/select/upgrade), and update tests/UI to support up to 2–3 tanks — files: `src/store/useGameStore.ts`, `src/models/types/index.ts`, `tests/integration/MultiTank.test.ts` **(COMPLETE — `tankSlice` refactor applied; `tests/integration/MultiTank.test.ts` added; domain types added; remaining docs/update tasks optional)**
 
 Phase 3: User Story Phases (priority order)
 
 **User Story 1 - Tank & Fish Management (P1)**
 
-Independent test criteria: initialize game, buy a fish, credits deducted, fish in tank, tick increases age.
+Independent test criteria: start game → default BOWL + 50 credits → buy fish reduces credits → fish exists in tank → tick increases age.
 
-- [ ] T010 [US1] Create `initializeGame` action and default game state (BOWL, credits 50) — file: `src/store/useGameStore.ts`
-- [ ] T011 [US1] Implement `buyFish(storeItemId)` action with validations (credits, capacity) and spawn fish — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [ ] T012 [US1] Add unit test: `tests/integration/BuyFish.test.ts` verifying credits decrease and fish added — file: `tests/integration/BuyFish.test.ts`
-- [ ] T013 [US1] Implement `tick()` action wiring: increment tick, increment fish.age for living fish — files: `src/store/useGameStore.ts`, `src/services/FishService.ts`
-- [ ] T014 [US1] Add integration test: `tests/integration/GameLoopTick.test.ts` verifying age increments per tick — file: `tests/integration/GameLoopTick.test.ts`
+- [ ] T011 [US1] Initialize game state with BOWL tank and 50 credits — file: `src/store/useGameStore.ts`
+- [ ] T012 [US1] Implement `buyFish(storeItemId)` action (validations: credits, capacity) that spawns fish via `FishService.createFish` — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- [ ] T013 [US1] Wire `tick()` action to increment `currentTick` and call `FishService.tickFish` for living fish — files: `src/store/useGameStore.ts`, `src/services/FishService.ts`
+- [ ] T014 [US1] Add integration test `tests/integration/BuyAndTick.test.ts` verifying buy → credits change → tick increments age — file: `tests/integration/BuyAndTick.test.ts`
 
 **User Story 2 - Feeding & Survival (P1)**
 
-Independent test criteria: hunger increases with ticks, feedTank reduces hunger by 30 for all living fish and deducts cost, feeding increases pollution.
+Independent test criteria: hunger increases per tick; `feedTank` reduces hunger by 30 for all living fish, deducts cost `2 + livingFishCount`, and increases pollution.
 
-- [ ] T015 [US2] Implement per-tick hunger increase and starvation health decay (hunger threshold ≥80 → health -1) — file: `src/services/FishService.ts`
-- [ ] T016 [US2] Implement `feedTank()` action: cost calculation, hunger reduction, pollution increase — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [ ] T017 [US2] Add unit test: `tests/unit/Feeding.test.ts` for feed cost, hunger reduction and pollution effect — file: `tests/unit/Feeding.test.ts`
-- [ ] T018 [US2] Add integration test: `tests/integration/FeedAndSurvive.test.ts` accelerate ticks and verify feed prevents death — file: `tests/integration/FeedAndSurvive.test.ts`
+- [ ] T015 [US2] Implement per-tick hunger increase (species-specific) and starvation health decay when `hunger >= 80` — file: `src/services/FishService.ts`
+- [ ] T016 [US2] Implement `feedTank()` action: cost calc, deduct credits, reduce all living fish hunger by 30, set `lastFedAt`, and record `feedingsThisTick` for pollution — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- [ ] T017 [US2] Add unit test `tests/unit/Feeding.test.ts` for feed cost, hunger reduction and `lastFedAt` update — file: `tests/unit/Feeding.test.ts`
+- [ ] T018 [US2] Add integration test `tests/integration/FeedAndSurvive.test.ts` to accelerate ticks and verify feeding prevents death — file: `tests/integration/FeedAndSurvive.test.ts`
 
 **User Story 3 - Water Quality & Maintenance (P1)**
 
-Independent test criteria: pollution increases per tick and by feed, waterQuality = 100 - pollution, cleaning and filters reduce pollution and affect health decay.
+Independent test criteria: pollution formula applied per tick and on feeds; `waterQuality = 100 - pollution`; `cleanTank` and `buyFilter` reduce pollution and affect health decay.
 
-- [ ] T019 [US3] Implement pollution accumulation formula in `tick()` and update `waterQuality` calculation — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [ ] T020 [US3] Implement `cleanTank()` action (cost 10, reduce pollution by 30) — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [ ] T021 [US3] Implement `buyFilter()` action with precondition (STANDARD tank) and apply per-tick pollution reduction — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [ ] T022 [US3] Add unit test: `tests/unit/Pollution.test.ts` for pollution accumulation, cleaning, and filter behavior — file: `tests/unit/Pollution.test.ts`
+- [ ] T019 [US3] Implement pollution accumulation per tick: `pollution += (livingFishCount * 0.1) + (feedingsThisTick * 2)` and clamp — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- [ ] T020 [US3] Update `waterQuality` calculation (`100 - pollution`, clamp 0-100) and apply health penalty when `waterQuality < 50` — file: `src/store/useGameStore.ts`
+- [ ] T021 [US3] Implement `cleanTank()` action (cost 10, `pollution = max(0, pollution - 30)`) — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- [ ] T022 [US3] Implement `buyFilter()` action (precondition: `size === 'STANDARD'`, cost 50) and per-tick pollution reduction when installed — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- [ ] T023 [US3] Add unit test `tests/unit/Pollution.test.ts` for pollution accumulation, clean, and filter behavior — file: `tests/unit/Pollution.test.ts`
 
 **User Story 4 - Tank Progression (P1)**
 
-Independent test criteria: start with BOWL (capacity 1) and 50 credits, maturity bonus awarded when fish age ≥ 120s, tank upgrade increases capacity and unlocks filter.
+Independent test criteria: starts with BOWL capacity 1 and 50 credits; when first fish reaches age >= 120s award 50 credits (maturity bonus); `upgradeTank()` costs 75 and sets capacity=10 and unlocks filter.
 
-- [ ] T023 [US4] Implement maturity bonus check in `tick()` (for BOWL only) — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [ ] T024 [US4] Implement `upgradeTank()` action (cost 75) to set size STANDARD and capacity=10 — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [ ] T025 [US4] Add integration test: `tests/integration/Progression.test.ts` verifying maturity bonus and upgrade flow — file: `tests/integration/Progression.test.ts`
+- [ ] T024 [US4] Implement maturity bonus awarding (one-time) when a living fish reaches age >= 120 for BOWL tanks — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- [ ] T025 [US4] Implement `upgradeTank()` action (cost 75) that changes tank `size` to `STANDARD`, sets `capacity = 10`, and makes filter purchasable — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- [ ] T026 [US4] Add integration test `tests/integration/Progression.test.ts` verifying maturity bonus and upgrade flow — file: `tests/integration/Progression.test.ts`
 
 **User Story 5 - Economy & Progression (P2)**
 
-Independent test criteria: selling fish calculates value correctly and updates credits; purchases rejected on insufficient funds.
+Independent test criteria: selling a fish calculates value using baseValue × ageMultiplier × healthModifier and updates credits; purchases rejected on insufficient funds.
 
-- [ ] T026 [US5] Implement `sellFish(fishId)` action using FishService.calculateFishValue — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [ ] T027 [US5] Add unit test: `tests/unit/SellFish.test.ts` verifying value formula and credit update — file: `tests/unit/SellFish.test.ts`
+- [ ] T027 [US5] Implement `sellFish(fishId)` action using `FishService.calculateFishValue` and update credits — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- [ ] T028 [US5] Add unit test `tests/unit/SellFish.test.ts` verifying value formula and credit update — file: `tests/unit/SellFish.test.ts`
+
+- [ ] T035 [FR-012] Implement Developer Mode initialization (parse `?dev=true` & `?tutorial=false`), set starting state (100 credits, STANDARD tank), and add unit/integration tests — files: `src/store/useGameStore.ts`, `tests/unit/DeveloperMode.test.ts`
 
 Final Phase: Polish & Cross-Cutting Concerns
 
-- [ ] T028 [US-] Add tutorial popup events wiring and UI contract (store action `showTutorial(eventId)`) — file: `src/store/useGameStore.ts`
-- [ ] T029 [US-] Add selectors for UI: `selectCredits`, `selectTankFish`, `selectStoreInventory`, `selectSelectedFish` — file: `src/store/useGameStore.ts`
-- [ ] T030 [US-] Add E2E Playwright test: `tests/e2e/core-mechanics.spec.ts` for buy → feed → mature → sell flow — file: `tests/e2e/core-mechanics.spec.ts`
-- [ ] T031 [US-] Run lint and tests, fix any issues discovered (`pnpm lint`, `pnpm test`) — commands: `pnpm lint`, `pnpm test`
+- [ ] T029 Add tutorial popup event wiring and storage (`tutorialEvents[]`, `showTutorial(eventId)` action) — file: `src/store/useGameStore.ts`
+- [ ] T030 Add UI selectors for core data (`selectCredits`, `selectTankFish`, `selectStoreInventory`, `selectSelectedFish`) — file: `src/store/useGameStore.ts`
+- [ ] T031 [P] Create minimal HUD and store UI hooks/components: `src/components/HUD.tsx`, `src/components/StoreMenu.tsx` (UI may be lightweight, tests focus on store/actions) — files: `src/components/HUD.tsx`, `src/components/StoreMenu.tsx`
+- [ ] T032 [infra] Add E2E Playwright test `tests/e2e/core-mechanics.spec.ts` for buy → feed → mature → sell flow — file: `tests/e2e/core-mechanics.spec.ts`
+- [ ] T033 [infra] Run lint and tests and fix issues: `pnpm lint` and `pnpm test` — commands: `pnpm lint`, `pnpm test`
+- [ ] T034 [infra] Add performance profiling notes and harness placeholder (`tests/perf/README.md`, `tests/perf/harness.ts`) — files: `tests/perf/README.md`, `tests/perf/harness.ts`
 
-Dependencies (User story completion order)
+Dependencies (user-story completion order)
 
 - US1 → US2 → US3 → US4 → US5
-- Rationale: Basic tank/fish create (US1) is required before feeding (US2), pollution mechanics (US3) depend on feeding/pollution, progression (US4) depends on survival, economy sell/buy (US5) depends on values implemented.
 
-Parallel Execution Examples
+Rationale: Basic tank/fish creation (US1) is required before feeding (US2); feeding/pollution (US3) depend on feeding; progression (US4) depends on survival; economy sell/buy (US5) depends on values implemented.
 
-- Files that can be implemented in parallel (no cross-file blocking):
-  - `src/services/FishService.ts` (T006) and `src/services/EconomyService.ts` (T007) — [P]
-  - Type definitions `src/models/types/index.ts` (T005) and store skeleton `src/store/useGameStore.ts` (T008) — [P]
-  - Unit tests generation (T009) can be created in parallel with service implementations
+Parallel execution examples
 
-Implementation Strategy
+- Tasks that are safe to run in parallel (different files, minimal blocking):
+  - `T005` `src/models/types/index.ts` and `T006` `src/services/FishService.ts` — [P]
+  - `T007` `src/services/EconomyService.ts` and `T009` `src/store/useGameStore.ts` — [P]
+  - `T010` test skeletons and `T003` constants file — [P]
 
-- MVP-first: Implement smallest end-to-end path for US1 (types → fish spawn → tick → test) to have a runnable loop. Then add feeding (US2) and pollution (US3). Prioritize tests (TDD) for each service before implementation.
-- Incremental delivery: complete one user story fully (including tests) before moving to the next.
+Implementation strategy (recommended)
 
-Validation Checklist
+- MVP-first: implement smallest end-to-end path for US1 (T011–T014) to have a runnable loop, then add US2 and US3. Follow TDD: add tests before implementing service logic.
+- Incremental: complete one user story fully (including tests) before moving to the next.
 
-- All tasks follow checklist format with Task IDs.
-- Each user story phase contains independent test criteria and tasks to implement models/services/store/actions.
+Validation checklist
 
-Output Summary (to be filled out after tasks created)
+- All tasks follow the required checklist format with Task IDs.
+- Each user story is paired with independent test criteria and implementation tasks.
+
+Output summary (generated)
 
 - Path to generated tasks file: `specs/001-core-mechanics/tasks.md`
-- Total task count: 31 (T001–T031)
+- Total task count: 36 (T001–T036)
 - Task count per user story:
-  - US1: 5 tasks (T010–T014)
+  - US1: 4 tasks (T011–T014)
   - US2: 4 tasks (T015–T018)
-  - US3: 4 tasks (T019–T022)
-  - US4: 3 tasks (T023–T025)
-  - US5: 2 tasks (T026–T027)
-  - Setup/Foundational/Polish: remaining tasks
+  - US3: 5 tasks (T019–T023)
+  - US4: 3 tasks (T024–T026)
+  - US5: 2 tasks (T027–T028)
+  - Setup/Foundational/Polish: remaining tasks (T001–T010, T029–T034)
+- Parallel opportunities identified: T005/T006/T007/T009/T010
+- Suggested MVP scope: Complete US1 (T011–T014) as Phase 1 MVP
+
+```
 - Parallel opportunities identified: T005/T006/T007/T008/T009 and test scaffolding
-- Suggested MVP scope: Complete US1 (T010–T014) first
+```

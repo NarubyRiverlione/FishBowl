@@ -1,5 +1,5 @@
 import { IFish } from '../../models/types/fish'
-import { ITank } from '../../models/types/tank'
+import { ITank } from '../../models/types'
 import { WATER_LEVEL } from '../../lib/constants'
 
 export const detectFishCollision = (f1: IFish, f2: IFish): boolean => {

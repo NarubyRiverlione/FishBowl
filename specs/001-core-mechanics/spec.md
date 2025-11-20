@@ -72,7 +72,7 @@ As a new player, I want to start with a small bowl to learn the basics before ma
 1. **Given** a new game, **When** the game starts, **Then** the player has a small bowl (capacity 1) and 50 starting credits.
 2. **Given** a small bowl, **When** viewing the store, **Then** the filter option is not available (prevents confusion).
 3. **Given** a fish reaches mature age (>2 minutes), **When** the fish is still alive, **Then** the player receives 50 bonus credits.
-4. **Given** sufficient credits, **When** the player buys a larger tank, **Then** the tank capacity increases to 10, filter becomes available, and breeding is unlocked.
+4. **Given** sufficient credits, **When** the player buys a larger tank, **Then** the tank capacity increases to the next tier (STANDARD = 10 capacity). The project also supports a `BIG` tank tier (capacity = 20) for later progression; filters become available for non-BOWL tanks and breeding is unlocked on STANDARD/BIG. Multiple tanks (up to 2–3 by default) may be owned concurrently, each subject to its capacity limit.
 5. **Given** tutorial mode enabled, **When** key events occur (first fish, first feed, first death, maturity, etc.), **Then** helpful popup explanations appear and must be manually dismissed by clicking OK or X button.
 6. **Given** tutorial mode disabled, **When** playing, **Then** no tutorial popups appear.
 7. **Given** developer mode enabled, **When** the game starts, **Then** the player starts with the larger tank and 100 credits (skip tutorial).

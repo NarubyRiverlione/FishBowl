@@ -75,30 +75,39 @@ SPAWNED → LIVING → STARVING → DEAD
 
 **Fields**:
 
-| Field          | Type            | Range              | Notes                                                  |
-| -------------- | --------------- | ------------------ | ------------------------------------------------------ |
-| `id`           | `string` (UUID) | -                  | Unique identifier for the tank                         |
-| `size`         | `TankSize` enum | `BOWL \| STANDARD` | Tank size: BOWL (capacity 1), STANDARD (capacity 10)   |
-| `capacity`     | `number`        | 1 or 10            | Max fish allowed (derived from size)                   |
-| `waterQuality` | `number`        | 0-100              | Health of environment; calculated as 100 - pollution   |
-| `pollution`    | `number`        | 0-100              | Pollution level from fish waste and feeding            |
-| `hasFilter`    | `boolean`       | true/false         | Whether a filter is installed (reduces pollution rate) |
-| `temperature`  | `number`        | 0-40 °C            | Tank temperature; affects metabolism (future)          |
-| `fish`         | `IFish[]`       | -                  | List of living fish in tank                            |
-| `createdAt`    | `timestamp`     | -                  | When tank was created                                  |
+| Field          | Type            | Range                     | Notes                                                                                           |
+| -------------- | --------------- | ------------------------- | ----------------------------------------------------------------------------------------------- |
+| `id`           | `string` (UUID) | -                         | Unique identifier for the tank                                                                  |
+| `size`         | `TankSize` enum | `BOWL \| STANDARD \| BIG` | Tank size: BOWL (capacity 1), STANDARD (capacity 10), BIG (capacity 20)                         |
+| `capacity`     | `number`        | 1, 10 or 20               | Max fish allowed (derived from size)                                                            |
+| `waterQuality` | `number`        | 0-100                     | Health of environment; calculated as 100 - pollution                                            |
+| `pollution`    | `number`        | 0-100                     | Pollution level from fish waste and feeding                                                     |
+| `hasFilter`    | `boolean`       | true/false                | Whether a filter is installed (reduces pollution rate). Filters are not allowed for BOWL tanks. |
+| `temperature`  | `number`        | 0-40 °C                   | Tank temperature; affects metabolism (future)                                                   |
+| `fish`         | `IFish[]`       | -                         | List of living fish in tank                                                                     |
+| `createdAt`    | `timestamp`     | -                         | When tank was created                                                                           |
 
 **Validation Rules**:
 
 - `id` must be a valid UUID v4.
-- `size` must be `BOWL` or `STANDARD`.
-- `capacity` must match size: BOWL = 1, STANDARD = 10.
-- `hasFilter` can only be true if `size === 'STANDARD'` (BOWL cannot have filters).
+- `size` must be `BOWL`, `STANDARD`, or `BIG`.
+- `capacity` must match size: BOWL = 1, STANDARD = 10, BIG = 20.
+- `hasFilter` can only be true if `size !== 'BOWL'` (BOWL cannot have filters).
 - `waterQuality` is clamped to 0-100 (calculated as `100 - pollution`).
 - `pollution` is clamped to 0-100.
 - `hasFilter` defaults to false.
 - `temperature` is clamped to 0-40.
 - `fish.length ≤ capacity`.
 - Cannot add more fish if `fish.length === capacity`.
+
+**Canonical Type Location**:
+
+- The authoritative TypeScript definitions for `IFish`, `ITank`, and related domain types live in `src/models/types/index.ts` in the codebase. Keep `data-model.md` and `src/models/types/index.ts` synced when fields change.
+
+**Multi-Tank Support**:
+
+- Players may own multiple tanks (array of `ITank` instances). By default the game supports owning up to 2–3 tanks; each tank enforces its own `capacity`.
+- Game state should model `tanks: ITank[]` instead of a single `tank` to allow transfers, per-tank upgrades, and independent maintenance actions.
 
 **Example Instance**:
 
@@ -132,7 +141,7 @@ SPAWNED → LIVING → STARVING → DEAD
 | `maturityBonusAwarded` | `boolean`        | Whether the 50 credit maturity bonus has been given                     |
 | `tutorialEnabled`      | `boolean`        | Whether tutorial popups are enabled                                     |
 | `tutorialEvents`       | `string[]`       | List of tutorial events already shown (e.g., "first_buy", "first_feed") |
-| `tank`                 | `ITank`          | The player's tank                                                       |
+| `tanks`                | `ITank[]`        | The player's tanks (array). By default allow owning up to 2–3 tanks.    |
 | `credits`              | `number`         | Player's currency                                                       |
 | `storeInventory`       | `IStoreItem[]`   | Available items for purchase                                            |
 | `selectedFishId`       | `string \| null` | Currently selected fish for UI                                          |
@@ -409,7 +418,7 @@ interface IGameState {
   currentTick: number
   totalTime: number
   isPaused: boolean
-  tank: ITank
+  tanks: ITank[] // Support multiple tanks per player (default 1 at game start)
   credits: Credits
   storeInventory: IStoreItem[]
   selectedFishId?: UUID

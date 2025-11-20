@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js'
-import { ITank } from '../../models/types/tank'
+import { ITank } from '../../models/types'
 import { IFish } from '../../models/types/fish'
 import { FishSprite } from './FishSprite'
 import { WATER_LEVEL } from '../../lib/constants'
