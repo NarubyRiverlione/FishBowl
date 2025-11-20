@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { TankView } from '../../src/game/TankView'
+import { TankContainer } from '../../src/game/views/TankContainer'
 import { Tank } from '../../src/models/Tank'
 
 // Mock Pixi.js
@@ -38,11 +38,11 @@ vi.mock('pixi.js', () => {
 
 describe('TankView', () => {
   let tank: Tank
-  let tankView: TankView
+  let tankView: TankContainer
 
   beforeEach(() => {
     tank = new Tank(800, 600, 0x0000ff)
-    tankView = new TankView(tank)
+    tankView = new TankContainer(tank)
   })
 
   it('should initialize with a tank model', () => {

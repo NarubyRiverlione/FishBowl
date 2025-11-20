@@ -1,22 +1,24 @@
 import { Application } from 'pixi.js'
 import { Tank } from '../models/Tank'
-import { TankView } from './TankView'
-import { Fish } from '../models/Fish'
-import { randomColor, randomPosition, randomVelocity, randomSize } from '../lib/random'
-import { WATER_LEVEL } from '../lib/constants'
+import { TankContainer } from './views/TankContainer'
+import { FishController } from './controllers/FishController'
+import { PerformanceMonitor } from './PerformanceMonitor'
 
 export class RenderingEngine {
   private app: Application
   public tank: Tank // Public for testing/inspection
-  private tankView: TankView
+  private tankView: TankContainer
+  private fishManager: FishController
+  private performanceMonitor: PerformanceMonitor
   private isInitialized: boolean = false
   private isDestroyed: boolean = false
-  private lastLogTime: number = 0
 
   constructor(width: number, height: number, backgroundColor: number) {
     this.app = new Application()
     this.tank = new Tank(width, height, backgroundColor)
-    this.tankView = new TankView(this.tank)
+    this.tankView = new TankContainer(this.tank)
+    this.fishManager = new FishController(this.tank, this.tankView)
+    this.performanceMonitor = new PerformanceMonitor(this.tank)
     console.log('RenderingEngine initialized with tank:', { width, height, backgroundColor })
   }
 
@@ -67,43 +69,14 @@ export class RenderingEngine {
     }
   }
 
-  spawnFish(count: number): void {
-    const waterHeight = this.tank.height * WATER_LEVEL
-    const waterTop = this.tank.height - waterHeight
-
-    for (let i = 0; i < count; i++) {
-      const id = Math.random().toString(36).substring(7)
-      const x = randomPosition(0, this.tank.width)
-      // Spawn only within water boundaries
-      const y = randomPosition(waterTop + 50, this.tank.height - 50) // Add padding from edges
-      const color = randomColor()
-      const scale = randomSize(0.5, 1.5)
-
-      const fish = new Fish(id, x, y, color, scale)
-      // Reduced initial velocity for more natural spawn (was 5)
-      fish.vx = randomVelocity(2)
-      fish.vy = randomVelocity(2)
-
-      this.tank.addFish(fish)
-      this.tankView.addFish(fish)
-    }
+  spawnFish(amountNewFish: number): void {
+    this.fishManager.spawn(amountNewFish)
   }
 
   update(delta: number): void {
     this.tank.update(delta)
     this.tankView.update()
-
-    // Log metrics every second
-    const now = performance.now()
-    if (now - this.lastLogTime > 1000) {
-      const fps = this.lastLogTime ? 1000 / (now - this.lastLogTime) : 60
-      const fishCount = this.tank.fish.length
-      const checks = this.tank.collisionChecks
-      const collisions = this.tank.collisionsResolved
-
-      console.log(`FPS: ${fps.toFixed(1)} | Fish: ${fishCount} | Checks: ${checks} | Collisions: ${collisions}`)
-      this.lastLogTime = now
-    }
+    this.performanceMonitor.update()
   }
 
   destroy(): void {

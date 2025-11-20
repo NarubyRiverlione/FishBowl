@@ -1,10 +1,10 @@
 import { Container, Graphics } from 'pixi.js'
-import { ITank } from '../types/tank'
-import { IFish } from '../types/fish'
+import { ITank } from '../../models/types/tank'
+import { IFish } from '../../models/types/fish'
 import { FishSprite } from './FishSprite'
-import { WATER_LEVEL } from '../lib/constants'
+import { WATER_LEVEL } from '../../lib/constants'
 
-export class TankView extends Container {
+export class TankContainer extends Container {
   private tank: ITank
   private background: Graphics
   private fishSprites: Map<string, FishSprite> = new Map()
@@ -21,6 +21,14 @@ export class TankView extends Container {
     const sprite = new FishSprite(fish)
     this.fishSprites.set(fish.id, sprite)
     this.addChild(sprite)
+  }
+
+  removeFish(id: string): void {
+    const sprite = this.fishSprites.get(id)
+    if (sprite) {
+      if (sprite.parent) this.removeChild(sprite)
+      this.fishSprites.delete(id)
+    }
   }
 
   update(): void {
@@ -49,3 +57,5 @@ export class TankView extends Container {
       .stroke({ width: 2, color: 0x66aaff, alpha: 0.6 })
   }
 }
+
+export default TankContainer

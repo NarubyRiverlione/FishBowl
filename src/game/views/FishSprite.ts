@@ -1,6 +1,6 @@
 import { Sprite, Texture, Assets } from 'pixi.js'
-import { IFish } from '../types/fish'
-import fishSvg from '../assets/fish.svg'
+import { IFish } from '../../models/types/fish'
+import fishSvg from '../../assets/fish.svg'
 
 export class FishSprite extends Sprite {
   private fish: IFish
@@ -47,3 +47,5 @@ export class FishSprite extends Sprite {
     }
   }
 }
+
+export default FishSprite

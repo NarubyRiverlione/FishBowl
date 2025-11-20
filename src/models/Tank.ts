@@ -1,6 +1,10 @@
-import { ITank } from '../types/tank'
-import { IFish } from '../types/fish'
-import { resolveBoundaryCollision, resolveFishCollision, detectFishCollision } from '../lib/collision'
+import { ITank } from './types/tank'
+import { IFish } from './types/fish'
+import {
+  resolveBoundaryCollision,
+  resolveFishCollision,
+  detectFishCollision,
+} from '../services/physics/CollisionService'
 
 export class Tank implements ITank {
   width: number

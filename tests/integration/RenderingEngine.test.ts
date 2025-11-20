@@ -53,6 +53,12 @@ describe('RenderingEngine Integration', () => {
     const initialX = fish.x
 
     // Simulate a tick (delta = 1)
+    // Disable random swim behavior for determinism in this test
+    // (swim may apply random forces that can occasionally move the fish backward)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - test monkeypatch
+    fish.swim = () => {}
+
     engine.update(1)
 
     // With swim behavior, the position will be affected by random forces

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { FishSprite } from '../../src/game/FishSprite'
+import { FishSprite } from '../../src/game/views/FishSprite'
 import { Fish } from '../../src/models/Fish'
 
 // Mock PixiJS Texture and Assets

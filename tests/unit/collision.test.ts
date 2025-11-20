@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { detectFishCollision, resolveBoundaryCollision, resolveFishCollision } from '../../src/lib/collision'
-import { IFish } from '../../src/types/fish'
+import {
+  detectFishCollision,
+  resolveBoundaryCollision,
+  resolveFishCollision,
+} from '../../src/services/physics/CollisionService'
+import { IFish } from '../../src/models/types/fish'
 
 const mockFish = (props: Partial<IFish> = {}): IFish => ({
   id: '1',

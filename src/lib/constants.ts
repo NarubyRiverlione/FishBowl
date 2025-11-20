@@ -12,3 +12,19 @@ export const SWIM_BOOST_FORCE = 1.0 // Force multiplier for speed boost
 
 // Tank Constants
 export const WATER_LEVEL = 0.85 // Water fills 85% of tank height (from bottom)
+
+/**
+ * Palette of fish colors.
+ * - Orange (Clownfish)
+ * - Blue (Tang)
+ * - Yellow (Tang)
+ * - Purple (Basslet)
+ * - Red (Snapper)
+ */
+export const FISH_PALETTE = [
+  '#FF7F50', // Coral
+  '#00BFFF', // Deep Sky Blue
+  '#FFD700', // Gold
+  '#9370DB', // Medium Purple
+  '#FF6347', // Tomato
+]

@@ -1,5 +1,5 @@
-import { IFish } from '../types/fish'
-import { updateVelocity, calculateAcceleration } from '../lib/physics'
+import { IFish } from './types/fish'
+import { updateVelocity, calculateAcceleration } from '../services/physics/PhysicsService'
 import {
   FISH_BASE_SIZE,
   FISH_BASE_RADIUS,

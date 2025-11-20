@@ -207,6 +207,16 @@ RenderingEngine (Game Loop)
 - Color tinting
 - Texture loading (async)
 
+**Architecture Pattern (Policy)**:
+
+- **Pattern**: Model-View-Controller (MVC)
+- **Guideline**: Future development MUST follow the MVC separation:
+  - Domain logic goes in `src/models` (Models).
+  - Rendering and visual code goes in `src/game/views` (Views).
+  - Orchestration and game-loop controllers go in `src/game/controllers` or `RenderingEngine` (Controllers).
+  - Reusable business or simulation logic belongs in `src/services` and utilities in `src/lib`.
+- **Rationale**: Keeping rendering concerns separate from domain logic improves testability, reduces accidental coupling, and makes it clearer where new features should live.
+
 ### Separation of Concerns
 
 - **Models**: Pure TypeScript logic, no rendering
