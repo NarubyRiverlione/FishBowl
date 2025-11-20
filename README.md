@@ -2,20 +2,20 @@
 
 A web-based fish breeding simulation game built with React, Pixi.js, and TypeScript.
 
-**Current Status**: 🚧 Core Mechanics In Progress (Phase 1.5)
+**Current Status**: 🚧 Core Mechanics In Progress (Milestone 2)
 
 ## Features
 
 ### ✅ Implemented
 
-**Visual Prototype** (Phase 1):
+**Visual Prototype** (Milestone 1):
 
 - Physics-based fish swimming with collision detection
 - SVG graphics with 8 colors and varied sizes
 - 60 FPS performance with 50+ fish
 - Realistic open-top aquarium tank
 
-**Core Mechanics** (Phase 1.5 - In Progress):
+**Core Mechanics** (Milestone 2 - In Progress):
 
 - Game loop with pause/resume (1 tick/second)
 - Fish lifecycle: aging, hunger, health, death
@@ -108,11 +108,11 @@ src/
 
 ## Roadmap
 
-- ✅ **Phase 1**: Visual Prototype (swimming, physics, rendering)
-- 🚧 **Phase 1.5**: Core Mechanics (economy, survival, progression) - **Current**
-- 🔮 **Phase 2**: Breeding & Genetics
-- 🔮 **Phase 3**: Advanced Environment (oxygen, plants, stress)
-- 🔮 **Phase 4**: Extended Economy & Multi-tank
+- ✅ **Milestone 1**: Visual Prototype (swimming, physics, rendering)
+- 🚧 **Milestone 2**: Core Mechanics (economy, survival, progression) - **Current**
+- 🔮 **Milestone 3**: Breeding & Genetics
+- 🔮 **Milestone 4**: Advanced Environment (oxygen, plants, stress)
+- 🔮 **Milestone 5**: Extended Economy & Multi-tank
 
 See [docs/IMPLEMENTATION_STATUS.md](./docs/IMPLEMENTATION_STATUS.md) for detailed progress.
 

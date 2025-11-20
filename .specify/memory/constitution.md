@@ -1,16 +1,17 @@
 <!--
 Sync Impact Report:
-- Version change: 0.0.0 -> 1.0.0 (Initial Ratification)
-- Principles Defined:
-  - Feature-Centric Architecture
-  - Test-First (TDD)
-  - Type Safety
-  - Separation of Concerns
-  - Continuous Quality (Added Linter Rule)
-- Added Sections:
-  - Tech Stack & Standards
-  - Development Workflow (Includes mandatory linting step)
-- Templates requiring updates: None (Initial setup)
+- Version change: 1.0.0 -> 1.1.0 (Added Terminology Section)
+- Modified sections: None
+- Added sections:
+  - Project Organization Standards (Milestone vs Phase Terminology)
+- Removed sections: None
+- Templates requiring updates: ✅ None (terminology applies to existing docs)
+- Follow-up TODOs: None
+- Rationale: MINOR version bump - new guidance section added without changing existing principles
+- Previous changes:
+  - 0.0.0 -> 1.0.0 (2025-11-19): Initial Ratification
+    - Principles Defined: Feature-Centric Architecture, Test-First (TDD), Type Safety, Separation of Concerns, Continuous Quality
+    - Added Sections: Tech Stack & Standards, Development Workflow
 -->
 
 # FishBowl Constitution
@@ -59,8 +60,26 @@ The codebase must remain clean and error-free at all times. The linter (`pnpm li
 6.  **View**: Implement visual representation in `src/game/` or `src/components/`.
 7.  **Verify**: Run `pnpm lint` and `pnpm test` to ensure quality gates are passed before moving to the next phase.
 
+## Project Organization Standards
+
+### Milestone vs Phase Terminology
+
+To avoid confusion in project planning and execution:
+
+- **Milestone**: Use for high-level project roadmap and feature delivery checkpoints
+  - Example: "Milestone 1: Visual Prototype", "Milestone 2: Core Mechanics"
+  - Represents major feature sets or product increments
+  - Tracked in README.md roadmap
+
+- **Phase**: Use for task execution stages within a single feature specification
+  - Example: "Phase 1: Setup", "Phase 2: Tests", "Phase 3: Implementation"
+  - Represents sequential work stages within a spec's tasks.md
+  - Appears in feature branch specifications (e.g., `specs/001-core-mechanics/tasks.md`)
+
+**Rationale**: Consistent terminology prevents ambiguity when discussing project progress. "Are we in Phase 2?" could mean either the second milestone OR the second execution phase of current work. Separating these concepts improves communication clarity.
+
 ## Governance
 
 This Constitution is the primary source of truth for the FishBowl project. All code changes, pull requests, and architectural decisions must align with these principles. Amendments require a version bump and documentation in the Sync Impact Report.
 
-**Version**: 1.0.0 | **Ratified**: 2025-11-19 | **Last Amended**: 2025-11-19
+**Version**: 1.1.0 | **Ratified**: 2025-11-19 | **Last Amended**: 2025-11-20

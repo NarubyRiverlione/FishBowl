@@ -6,7 +6,7 @@
 
 FishBowl is a web-based fish breeding simulation game. This document tracks the implementation progress across planned features.
 
-## Current Status: Phase 1 & Core Mechanics In Progress 🚧
+## Current Status: Milestone 2 (Core Mechanics) In Progress 🚧
 
 ### ⚠️ Spec Alignment Required
 
@@ -34,7 +34,7 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 3. Identify features that belong in MVP (001-core-mechanics) vs future specs
 4. Add missing MVP features to spec.md or create new feature specs for post-MVP items
 
-### Phase 1: Visual Prototype (✅ Completed)
+### Milestone 1: Visual Prototype (✅ Completed)
 
 **Objective**: Create a physics-based visual prototype of fish swimming in an aquarium tank.
 
@@ -89,7 +89,7 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 
 ---
 
-## Phase 1.5: Core Game Mechanics (🚧 In Progress)
+## Milestone 2: Core Game Mechanics (🚧 In Progress)
 
 **Branch**: `001-core-mechanics`  
 **Objective**: Implement core gameplay loop - fish survival, feeding, economy, progression.
@@ -165,7 +165,7 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 
 ## Planned Features (Not Yet Implemented)
 
-### Phase 2: Breeding System (Planned)
+### Milestone 3: Breeding System (Planned)
 
 **Objective**: Implement fish genetics, life cycle, and reproduction mechanics.
 
@@ -188,7 +188,7 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 
 ---
 
-### Phase 3: Environment & Water Quality (Planned)
+### Milestone 4: Advanced Environment & Water Quality (Planned)
 
 **Objective**: Extend water quality simulation with advanced mechanics.
 
@@ -211,11 +211,11 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 - School behavior:
   - Some species need companions for health/happiness
 
-**Status**: Not started (some basics implemented in Phase 1.5)
+**Status**: Not started (some basics implemented in Milestone 2)
 
 ---
 
-### Phase 4: Economy System (Planned)
+### Milestone 5: Extended Economy System (Planned)
 
 **Objective**: Extend economy with equipment shop and progression.
 
@@ -232,11 +232,11 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 - Multiple tank management (partially implemented)
 - Unlock progression system
 
-**Status**: Core economy implemented in Phase 1.5, advanced features pending
+**Status**: Core economy implemented in Milestone 2, advanced features pending
 
 ---
 
-### Phase 5: Advanced Features (Future)
+### Milestone 6: Advanced Features (Future)
 
 **Objective**: Add depth and complexity to the simulation.
 
@@ -310,21 +310,21 @@ src/
 
 ## Next Steps
 
-### Immediate (Complete Phase 1.5)
+### Immediate (Complete Milestone 2)
 
 1. ✅ Implement fish selection UI (T037-T040)
 2. ✅ Add life stage visual rendering (T041-T043)
 3. Verify and align spec with PRD
 4. Complete any remaining MVP tasks
 
-### Short-term (Phase 2 - Breeding System)
+### Short-term (Milestone 3 - Breeding System)
 
 1. Design genetic system (traits, inheritance rules)
 2. Implement breeding mechanics (mate selection, egg laying)
 3. Add visual indicators for gender and fertility
 4. Test genetic inheritance with multiple generations
 
-### Medium-term (Phase 3 - Enhanced Environment)
+### Medium-term (Milestone 4 - Enhanced Environment)
 
 1. Implement biomass-based pollution
 2. Add plants and decorations
@@ -332,7 +332,7 @@ src/
 4. Implement stress mechanics
 5. Add food particle simulation
 
-### Long-term (Phase 4+ - Advanced Features)
+### Long-term (Milestones 5-6 - Economy & Advanced Features)
 
 1. Expand equipment shop
 2. Implement save/load system
@@ -346,7 +346,7 @@ src/
 
 - [PRD.md](./PRD.md) - Product Requirements (Dutch)
 - [HighLevel.md](./HighLevel.md) - High-level design (Dutch)
-- [specs/001-core-mechanics/](../specs/001-core-mechanics/) - Phase 1.5 specification (In Progress)
-- [specs/002-visual-prototype/](../specs/002-visual-prototype/) - Phase 1 specification (Complete)
+- [specs/001-core-mechanics/](../specs/001-core-mechanics/) - Milestone 2 specification (In Progress)
+- [specs/002-visual-prototype/](../specs/002-visual-prototype/) - Milestone 1 specification (Complete)
 - [QUICKSTART.md](../QUICKSTART.md) - User setup guide
 - [README.md](../README.md) - Technical documentation
