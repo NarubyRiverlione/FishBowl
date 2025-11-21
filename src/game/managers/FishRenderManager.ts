@@ -9,19 +9,19 @@ export class FishRenderManager {
   }
 
   addFish(fish: Fish): void {
-    console.log(
-      '🎨 FishRenderManager.addFish called for:',
-      fish.id,
-      'at position',
-      fish.x.toFixed(1),
-      fish.y.toFixed(1)
-    )
+    // console.log(
+    //   '🎨 FishRenderManager.addFish called for:',
+    //   fish.id,
+    //   'at position',
+    //   fish.x.toFixed(1),
+    //   fish.y.toFixed(1)
+    // )
     this.tankView.addFish(fish)
-    console.log('✅ Fish added to TankView')
+    // console.log('✅ Fish added to TankView')
   }
 
   removeFish(fishId: string): void {
-    console.log('🗑️ FishRenderManager.removeFish called for:', fishId)
+    // console.log('🗑️ FishRenderManager.removeFish called for:', fishId)
     this.tankView.removeFish(fishId)
   }
 }

@@ -1,17 +1,27 @@
 import { describe, it, expect } from 'vitest'
-import { randomColor, randomSize, randomVelocity, randomPosition } from '../../src/lib/random'
+import { getSpeciesColor, randomSize, randomVelocity, randomPosition } from '../../src/lib/random'
+import { FishSpecies } from '../../src/models/types'
 
 describe('Random Utilities', () => {
-  it('randomColor should return a valid hex string from the palette', () => {
-    const color = randomColor()
-    expect(color).toMatch(/^#[0-9A-F]{6}$/i)
+  it('getSpeciesColor should return a valid hex string with species-specific base', () => {
+    const guppyColor = getSpeciesColor(FishSpecies.GUPPY)
+    expect(guppyColor).toMatch(/^#[0-9A-F]{6}$/i)
 
-    // Check if it returns distinct colors (run multiple times)
+    // Test multiple species return different color families
+    const goldfishColor = getSpeciesColor(FishSpecies.GOLDFISH)
+    const tetraColor = getSpeciesColor(FishSpecies.TETRA)
+    const bettaColor = getSpeciesColor(FishSpecies.BETTA)
+
+    expect(goldfishColor).toMatch(/^#[0-9A-F]{6}$/i)
+    expect(tetraColor).toMatch(/^#[0-9A-F]{6}$/i)
+    expect(bettaColor).toMatch(/^#[0-9A-F]{6}$/i)
+
+    // Check if multiple calls for same species produce variations
     const colors = new Set()
-    for (let i = 0; i < 20; i++) {
-      colors.add(randomColor())
+    for (let i = 0; i < 10; i++) {
+      colors.add(getSpeciesColor(FishSpecies.GUPPY))
     }
-    // If we use a palette, we expect a limited number of unique colors, but > 1
+    // Should have some variation (but not necessarily all different)
     expect(colors.size).toBeGreaterThan(1)
   })
 

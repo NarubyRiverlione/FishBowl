@@ -1,5 +1,6 @@
 
 - after changing random direction it seams fish can be rendered upside down (eye below the mouth)
+- pause stops the ticker but fish keep swimming
 
 # health
 - health should regenerate (slowly), of course not above 100M
@@ -9,3 +10,6 @@
 # message bar
 Add a footer bar to display automatically messages like "a fish is very hunger", "a fish has pore health", "water is dirty"
 
+# collision
+no fish collision
+better tank boundaries

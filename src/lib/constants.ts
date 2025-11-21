@@ -52,8 +52,8 @@ export default {
   MATURITY_BONUS,
 }
 // Fish Physics Constants
-export const FISH_BASE_SIZE = 48 // Base width/height in pixels
-export const FISH_BASE_RADIUS = 24 // Base collision radius in pixels
+export const FISH_BASE_SIZE = 150 // Base width/height in pixels
+export const FISH_BASE_RADIUS = 25 // Base collision radius in pixels
 export const FISH_BASE_MASS = 1 // Base mass for physics calculations
 export const FISH_FRICTION = 0.002 // Water resistance coefficient
 
@@ -112,20 +112,19 @@ export const FISH_AGE_MAX_MULTIPLIER_DIVISOR = 300 // Used for age-based calcula
 export const FISH_VALUE_MAX_MULTIPLIER = 2.0 // Maximum age multiplier for fish value
 
 /**
- * Palette of fish colors.
- * - Orange (Clownfish)
- * - Blue (Tang)
- * - Yellow (Tang)
- * - Purple (Basslet)
- * - Red (Snapper)
+ * Base colors for fish species.
+ * Each species gets a fixed base color with individual variations.
+ * - GUPPY: Coral (Orange/Red family)
+ * - GOLDFISH: Gold (Yellow family)
+ * - TETRA: Deep Sky Blue (Blue family)
+ * - BETTA: Medium Purple (Purple family)
  */
-export const FISH_PALETTE = [
-  '#FF7F50', // Coral
-  '#00BFFF', // Deep Sky Blue
-  '#FFD700', // Gold
-  '#9370DB', // Medium Purple
-  '#FF6347', // Tomato
-]
+export const FISH_SPECIES_BASE_COLORS = {
+  GUPPY: '#FF7F50', // Coral - Orange/Red family
+  GOLDFISH: '#FFD700', // Gold - Yellow family
+  TETRA: '#00BFFF', // Deep Sky Blue - Blue family
+  BETTA: '#9370DB', // Medium Purple - Purple family
+}
 
 // Fish spawn size range
 export const FISH_SPAWN_SIZE_MIN = 0.5

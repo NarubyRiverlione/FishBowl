@@ -25,15 +25,6 @@ export class FishSprite extends Sprite {
     this.applyLifeStageVisuals()
     this.anchor.set(0.5) // Center anchor
 
-    console.log('🎨 Fish sprite initial state:', {
-      id: fish.id,
-      position: { x: this.x, y: this.y },
-      size: { width: this.width, height: this.height },
-      visible: this.visible,
-      alpha: this.alpha,
-      tint: this.tint.toString(16),
-    })
-
     // Load texture asynchronously
     this.loadTexture()
 
@@ -93,16 +84,14 @@ export class FishSprite extends Sprite {
       this.texture = texture
       // Reapply visual effects after texture loads
       this.applyLifeStageVisuals()
-      console.log(
-        '🎨 Texture applied to fish:',
-        this.fish.id,
-        'Final sprite size:',
-        this.width,
-        'x',
-        this.height,
-        'Visible:',
-        this.visible
-      )
+      console.log('🎨 Fish sprite initial state:', {
+        id: this.fish.id,
+        position: { x: this.x, y: this.y },
+        size: { width: this.width, height: this.height },
+        visible: this.visible,
+        alpha: this.alpha,
+        tint: this.tint.toString(16),
+      })
     } catch (error) {
       console.error('Failed to load fish texture:', error)
     }
@@ -123,14 +112,14 @@ export class FishSprite extends Sprite {
       this.scale.set(finalSize)
     }
 
-    console.log('🎨 Applied life stage visuals:', {
-      fishId: this.fish.id,
-      lifeStage,
-      baseSize,
-      sizeMultiplier,
-      finalSize,
-      scale: this.scale ? this.scale.x : 'undefined',
-    })
+    // console.log('🎨 Applied life stage visuals:', {
+    //   fishId: this.fish.id,
+    //   lifeStage,
+    //   baseSize,
+    //   sizeMultiplier,
+    //   finalSize,
+    //   scale: this.scale ? this.scale.x : 'undefined',
+    // })
 
     // Apply color with saturation modification for old fish
     const baseColor = parseInt(this.fish.color.replace('#', ''), 16)
@@ -167,22 +156,22 @@ export class FishSprite extends Sprite {
       this.rotation = Math.atan2(this.fish.vy, this.fish.vx)
     }
 
-    console.log('🎨 FishSprite.update synced with Fish model:', {
-      fishId: this.fish.id,
-      modelPos: {
-        x: this.fish.x ? this.fish.x.toFixed(1) : '0',
-        y: this.fish.y ? this.fish.y.toFixed(1) : '0',
-      },
-      spritePos: {
-        x: this.x ? this.x.toFixed(1) : '0',
-        y: this.y ? this.y.toFixed(1) : '0',
-      },
-      velocity: {
-        vx: this.fish.vx ? this.fish.vx.toFixed(2) : '0',
-        vy: this.fish.vy ? this.fish.vy.toFixed(2) : '0',
-      },
-      effectiveRadius: this.fish.getEffectiveRadius ? this.fish.getEffectiveRadius().toFixed(1) : 'N/A',
-    })
+    // console.log('🎨 FishSprite.update synced with Fish model:', {
+    //   fishId: this.fish.id,
+    //   modelPos: {
+    //     x: this.fish.x ? this.fish.x.toFixed(1) : '0',
+    //     y: this.fish.y ? this.fish.y.toFixed(1) : '0',
+    //   },
+    //   spritePos: {
+    //     x: this.x ? this.x.toFixed(1) : '0',
+    //     y: this.y ? this.y.toFixed(1) : '0',
+    //   },
+    //   velocity: {
+    //     vx: this.fish.vx ? this.fish.vx.toFixed(2) : '0',
+    //     vy: this.fish.vy ? this.fish.vy.toFixed(2) : '0',
+    //   },
+    //   effectiveRadius: this.fish.getEffectiveRadius ? this.fish.getEffectiveRadius().toFixed(1) : 'N/A',
+    // })
   }
 }
 

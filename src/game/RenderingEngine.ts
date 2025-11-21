@@ -74,11 +74,11 @@ export class RenderingEngine {
   }
 
   syncFish(fish: IFish[]): void {
-    console.log('🎯 RenderingEngine.syncFish called with:', fish.length, 'fish')
-    console.log(
-      '🔍 Fish details:',
-      fish.map((f) => ({ id: f.id, species: f.species, age: f.age }))
-    )
+    // console.log('🎯 RenderingEngine.syncFish called with:', fish.length, 'fish')
+    // console.log(
+    //   '🔍 Fish details:',
+    //   fish.map((f) => ({ id: f.id, species: f.species, age: f.age }))
+    // )
     // Record diagnostic info when test helpers are enabled, but do not let errors escape.
     try {
       const helpers = (
@@ -102,7 +102,7 @@ export class RenderingEngine {
     }
 
     this.fishManager.syncFish(fish)
-    console.log('✅ RenderingEngine sync completed')
+    // console.log('✅ RenderingEngine sync completed')
   }
 
   // Expose fish positions in stage coordinates (useful for deterministic tests)

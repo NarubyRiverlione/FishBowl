@@ -49,7 +49,7 @@ export class TankContainer extends Container {
   }
 
   addFish(fish: IFish): void {
-    console.log('🏠 TankContainer.addFish called for:', fish.id, 'Tank size:', this.tank.width, 'x', this.tank.height)
+    // console.log('🏠 TankContainer.addFish called for:', fish.id, 'Tank size:', this.tank.width, 'x', this.tank.height)
     // Generate random initial position within tank bounds, below water line
     const tankWidth = this.tank.width || TANK_DEFAULT_WIDTH
     const tankHeight = this.tank.height || TANK_DEFAULT_HEIGHT
@@ -69,26 +69,26 @@ export class TankContainer extends Container {
     // Position fish in water area only (below water line)
     const initialY = Math.random() * (maxY - minY) + minY
 
-    console.log('📍 Fish position calculated:', {
-      initialX: initialX.toFixed(1),
-      initialY: initialY.toFixed(1),
-      waterTop: waterTop.toFixed(1),
-      waterLevel: waterLevel.toFixed(1),
-      effectiveRadius: effectiveRadius.toFixed(1),
-      safeMargin: safeMargin.toFixed(1),
-    })
+    // console.log('📍 Fish position calculated:', {
+    //   initialX: initialX.toFixed(1),
+    //   initialY: initialY.toFixed(1),
+    //   waterTop: waterTop.toFixed(1),
+    //   waterLevel: waterLevel.toFixed(1),
+    //   effectiveRadius: effectiveRadius.toFixed(1),
+    //   safeMargin: safeMargin.toFixed(1),
+    // })
 
     const sprite = new FishSprite(fish, initialX, initialY)
     this.fishSprites.set(fish.id, sprite)
     this.addChild(sprite)
-    console.log(
-      '🎭 Fish sprite created and added to container. Sprite visible?',
-      sprite.visible,
-      'Alpha:',
-      sprite.alpha,
-      'Scale:',
-      sprite.scale ? sprite.scale.x : 'undefined'
-    )
+    // console.log(
+    //   '🎭 Fish sprite created and added to container. Sprite visible?',
+    //   sprite.visible,
+    //   'Alpha:',
+    //   sprite.alpha,
+    //   'Scale:',
+    //   sprite.scale ? sprite.scale.x : 'undefined'
+    // )
     try {
       // If test helpers are enabled, expose diagnostic info when sprites are added
 

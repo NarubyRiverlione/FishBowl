@@ -1,5 +1,5 @@
 import { IFish, FishSpecies, FISH_SPECIES_CONFIG } from '../models/types'
-import { randomColor, randomSize } from '../lib/random'
+import { getSpeciesColor, randomSize } from '../lib/random'
 import {
   HEALTH_DECREMENT_ON_STARVATION,
   HUNGER_STARVATION_THRESHOLD,
@@ -17,7 +17,7 @@ export class FishService {
     const fish = {
       id: crypto.randomUUID(),
       species,
-      color: randomColor(),
+      color: getSpeciesColor(species),
       size: randomSize(config.sizeRange[0], config.sizeRange[1]),
       age: 0,
       health: config.health,

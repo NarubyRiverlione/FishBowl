@@ -56,11 +56,11 @@ export function getLifeStageColorSaturation(lifeStage: LifeStage): number {
   switch (lifeStage) {
     case 'young':
     case 'mature':
-      return FISH_LIFE_STAGE_YOUNG_SCALE
+      return 1.0 // Full saturation for young and mature fish
     case 'old':
       return FISH_LIFE_STAGE_OLD_SATURATION
     default:
-      return FISH_LIFE_STAGE_YOUNG_SCALE
+      return 1.0 // Default to full saturation
   }
 }
 
