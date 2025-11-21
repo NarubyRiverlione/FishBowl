@@ -69,9 +69,9 @@ Independent test criteria: selling a fish calculates value using baseValue × ag
 - [ ] T040 [US5] Add integration test `tests/integration/FishSelection.test.ts` verifying click → select → display info → sell flow — file: `tests/integration/FishSelection.test.ts`
 
 - [x] T035 [FR-012] Implement Developer Mode initialization (parse `?dev=true` & `?tutorial=false`), set starting state (100 credits, STANDARD tank), and add unit/integration tests — files: `src/store/useGameStore.ts`, `tests/unit/DeveloperMode.test.ts`
-- [ ] T041 [FR-015] Add life stage helper function: create `getLifeStage(age: number)` utility that returns 'young' | 'mature' | 'old' based on age thresholds (0-119, 120-299, 300+) — file: `src/lib/fishHelpers.ts`
-- [ ] T042 [FR-015] Implement life stage visual rendering in `FishSprite`: apply size multiplier (1.0x young, 1.3x mature/old) and color desaturation (0.8x for old fish only) based on fish age — file: `src/game/views/FishSprite.ts`
-- [ ] T043 [FR-015] Add unit test `tests/unit/LifeStage.test.ts` verifying age thresholds and visual parameters (size, saturation) for each life stage — file: `tests/unit/LifeStage.test.ts`
+- [x] T041 [FR-015] Add life stage helper function: create `getLifeStage(age: number)` utility that returns 'young' | 'mature' | 'old' based on age thresholds (0-119, 120-299, 300+) — file: `src/lib/fishHelpers.ts`
+- [x] T042 [FR-015] Implement life stage visual rendering in `FishSprite`: apply size multiplier (1.0x young, 1.3x mature/old) and color desaturation (0.8x for old fish only) based on fish age — file: `src/game/views/FishSprite.ts`
+- [x] T043 [FR-015] Add unit test `tests/unit/LifeStage.test.ts` verifying age thresholds and visual parameters (size, saturation) for each life stage — file: `tests/unit/LifeStage.test.ts`
 
 **Hover / Selection UX tasks (recommended)**
 

@@ -1,4 +1,4 @@
-import { TICK_RATE_SECONDS } from '../lib/constants'
+import { TICK_RATE_SECONDS, MILLISECONDS_PER_SECOND } from '../lib/constants'
 
 export type TickCallback = () => void
 
@@ -8,7 +8,7 @@ export class GameLoopService {
   private tickRateMs: number
 
   constructor() {
-    this.tickRateMs = TICK_RATE_SECONDS * 1000
+    this.tickRateMs = TICK_RATE_SECONDS * MILLISECONDS_PER_SECOND
   }
 
   setCallback(callback: TickCallback) {

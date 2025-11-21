@@ -1,38 +1,46 @@
 import { IFish } from '../../models/types/fish'
 import { ITank } from '../../models/types'
-import { WATER_LEVEL } from '../../lib/constants'
+import { WATER_LEVEL, COLLISION_RESTITUTION } from '../../lib/constants'
 
 export const detectFishCollision = (f1: IFish, f2: IFish): boolean => {
   const dx = f1.x - f2.x
   const dy = f1.y - f2.y
   const distance = Math.sqrt(dx * dx + dy * dy)
-  return distance < f1.radius + f2.radius
+
+  // Use effective radius that accounts for life stage scaling
+  const radius1 = f1.getEffectiveRadius ? f1.getEffectiveRadius() : f1.radius
+  const radius2 = f2.getEffectiveRadius ? f2.getEffectiveRadius() : f2.radius
+
+  return distance < radius1 + radius2
 }
 
 export const resolveBoundaryCollision = (fish: IFish, tank: ITank): void => {
-  const restitution = 0.8 // Bounciness factor (0-1)
+  const restitution = COLLISION_RESTITUTION // Bounciness factor (0-1)
   const waterHeight = tank.height * WATER_LEVEL
   const waterTop = tank.height - waterHeight
 
+  // Use effective radius that accounts for life stage scaling
+  const effectiveRadius = fish.getEffectiveRadius ? fish.getEffectiveRadius() : fish.radius
+
   // Left wall
-  if (fish.x - fish.radius < 0) {
-    fish.x = fish.radius
+  if (fish.x - effectiveRadius < 0) {
+    fish.x = effectiveRadius
     fish.vx *= -restitution
   }
   // Right wall
-  else if (fish.x + fish.radius > tank.width) {
-    fish.x = tank.width - fish.radius
+  else if (fish.x + effectiveRadius > tank.width) {
+    fish.x = tank.width - effectiveRadius
     fish.vx *= -restitution
   }
 
   // Water surface (top boundary for fish)
-  if (fish.y - fish.radius < waterTop) {
-    fish.y = waterTop + fish.radius
+  if (fish.y - effectiveRadius < waterTop) {
+    fish.y = waterTop + effectiveRadius
     fish.vy *= -restitution
   }
   // Bottom wall
-  else if (fish.y + fish.radius > tank.height) {
-    fish.y = tank.height - fish.radius
+  else if (fish.y + effectiveRadius > tank.height) {
+    fish.y = tank.height - effectiveRadius
     fish.vy *= -restitution
   }
 }
@@ -67,7 +75,11 @@ export const resolveFishCollision = (f1: IFish, f2: IFish): void => {
   f2.vx = tx * dpTan2 + nx * mom2
   f2.vy = ty * dpTan2 + ny * mom2
 
-  const overlap = f1.radius + f2.radius - distance
+  // Use effective radii for overlap correction
+  const radius1 = f1.getEffectiveRadius ? f1.getEffectiveRadius() : f1.radius
+  const radius2 = f2.getEffectiveRadius ? f2.getEffectiveRadius() : f2.radius
+
+  const overlap = radius1 + radius2 - distance
   if (overlap > 0) {
     const separationX = (overlap * nx) / 2
     const separationY = (overlap * ny) / 2

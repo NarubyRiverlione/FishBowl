@@ -25,7 +25,7 @@ describe('Multi-tank support', () => {
     const tankB = {
       id: 'tank-b',
       size: 'STANDARD',
-      capacity: 10,
+      capacity: 15,
       waterQuality: 100,
       pollution: 0,
       hasFilter: false,
@@ -70,7 +70,7 @@ describe('Multi-tank support', () => {
     const t2 = {
       id: 't2',
       size: 'STANDARD',
-      capacity: 10,
+      capacity: 15,
       waterQuality: 100,
       pollution: 0,
       hasFilter: false,

@@ -11,6 +11,8 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<RenderingEngine | null>(null)
   const fish = useGameStore((state) => state.tanks[0]?.fish)
+  const developerMode = useGameStore((state) => state.developerMode)
+  const currentTank = useGameStore((state) => state.tank)
 
   // Handle window resize
   useEffect(() => {
@@ -140,12 +142,15 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
     }
   }, [])
 
-  // Sync fish from store to engine
+  // Sync fish from store to engine (consolidate all fish sync logic)
   useEffect(() => {
-    if (engineRef.current && fish) {
-      engineRef.current.syncFish(fish)
+    // Use currentTank fish if available (dev mode), otherwise use fish from tanks[0]
+    const fishToSync = currentTank?.fish || fish || []
+
+    if (engineRef.current && fishToSync.length >= 0) {
+      engineRef.current.syncFish(fishToSync)
     }
-  }, [fish])
+  }, [fish, currentTank, developerMode])
 
   return (
     <div

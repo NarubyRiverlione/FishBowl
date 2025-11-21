@@ -5,12 +5,13 @@ import {
   resolveFishCollision,
   detectFishCollision,
 } from '../services/physics/CollisionService'
+import { PERCENTAGE_MAX } from '../lib/constants'
 
 export class Tank implements ITank {
   id: UUID = crypto.randomUUID()
   size: TankSize = 'BOWL'
   capacity: number = 1
-  waterQuality: number = 100
+  waterQuality: number = PERCENTAGE_MAX
   pollution: number = 0
   hasFilter: boolean = false
   temperature: number = 24

@@ -35,9 +35,18 @@ export interface IFish {
   /** Collision radius of the fish in pixels */
   radius: number
 
+  /** Age of the fish in ticks for life stage calculation */
+  age: number
+
   /**
    * Updates the fish state based on the time delta.
    * @param delta Time elapsed since last tick
    */
   update(delta: number): void
+
+  /**
+   * Gets the effective collision radius including life stage scaling.
+   * @returns Effective radius for collision detection
+   */
+  getEffectiveRadius(): number
 }

@@ -20,7 +20,7 @@ describe('Pollution System Integration', () => {
     useGameStore.getState().addOrSelectTank({
       id: 'pollution-tank',
       size: 'STANDARD',
-      capacity: 10,
+      capacity: 15,
       waterQuality: 100,
       pollution: 0,
       hasFilter: false,

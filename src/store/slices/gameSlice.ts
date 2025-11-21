@@ -2,12 +2,25 @@ import { StateCreator } from 'zustand'
 import { ITank, IStoreItem, UUID } from '../../models/types'
 import { TankState } from './tankSlice'
 import { FishService } from '../../services/FishService'
+import { createDeveloperModeFish } from '../../lib/fishHelpers'
 import {
   TICK_RATE_SECONDS,
   POLLUTION_PER_FISH_PER_TICK,
   FILTER_POLLUTION_REDUCTION_PER_TICK,
   MATURE_AGE_SECONDS,
   MATURITY_BONUS,
+  GAME_DEV_MODE_CREDITS,
+  GAME_INITIAL_CREDITS,
+  TANK_CAPACITY_STANDARD,
+  TANK_CAPACITY_BOWL,
+  TANK_UPGRADED_WIDTH,
+  TANK_UPGRADED_HEIGHT,
+  TANK_DEFAULT_WIDTH,
+  TANK_DEFAULT_HEIGHT,
+  WATER_QUALITY_INITIAL,
+  POLLUTION_INITIAL,
+  TEMPERATURE_DEFAULT,
+  PERCENTAGE_MAX,
 } from '../../lib/constants'
 
 export interface GameState {
@@ -39,7 +52,7 @@ export interface GameState {
 // allow unused get/api params required by zustand StateCreator signature
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const createGameSlice: StateCreator<GameState & TankState, [], [], GameState> = (set, get, _api) => ({
-  credits: 100,
+  credits: GAME_DEV_MODE_CREDITS,
   currentTick: 0,
   totalTime: 0,
   isPaused: false,
@@ -56,29 +69,32 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
 
   setMode: (mode) => {
     if (mode === 'dev') {
-      set({ developerMode: true, credits: 100, tutorialEnabled: false })
+      set({ developerMode: true, credits: GAME_DEV_MODE_CREDITS, tutorialEnabled: false })
 
       // Set dev tank
       const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
       if (typeof maybeSetTank === 'function') {
+        const devFish = createDeveloperModeFish()
         const devTank: ITank = {
           id: 'dev-standard-tank',
           size: 'STANDARD',
-          capacity: 10,
-          waterQuality: 100,
-          pollution: 0,
+          capacity: TANK_CAPACITY_STANDARD,
+          waterQuality: WATER_QUALITY_INITIAL,
+          pollution: POLLUTION_INITIAL,
           hasFilter: false,
-          temperature: 24,
-          fish: [],
+          temperature: TEMPERATURE_DEFAULT,
+          fish: devFish,
           createdAt: Date.now(),
-          width: 800,
-          height: 600,
+          width: TANK_UPGRADED_WIDTH,
+          height: TANK_UPGRADED_HEIGHT,
           backgroundColor: 0x87ceeb,
         }
         maybeSetTank(devTank)
+      } else {
+        console.error('❌ setTank function not available!')
       }
     } else {
-      set({ developerMode: false, credits: 50, tutorialEnabled: true })
+      set({ developerMode: false, credits: GAME_INITIAL_CREDITS, tutorialEnabled: true })
 
       // Set default bowl tank
       const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
@@ -86,15 +102,15 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
         const bowlTank: ITank = {
           id: 'default-bowl-tank',
           size: 'BOWL',
-          capacity: 1,
-          waterQuality: 100,
-          pollution: 0,
+          capacity: TANK_CAPACITY_BOWL,
+          waterQuality: WATER_QUALITY_INITIAL,
+          pollution: POLLUTION_INITIAL,
           hasFilter: false,
-          temperature: 24,
+          temperature: TEMPERATURE_DEFAULT,
           fish: [],
           createdAt: Date.now(),
-          width: 400,
-          height: 400,
+          width: TANK_DEFAULT_WIDTH,
+          height: TANK_DEFAULT_HEIGHT,
           backgroundColor: 0x87ceeb,
         }
         maybeSetTank(bowlTank)
@@ -110,23 +126,24 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
     const tutorialParam = params.get('tutorial')
 
     if (dev) {
-      set({ developerMode: true, credits: 100, tutorialEnabled: false })
+      set({ developerMode: true, credits: GAME_DEV_MODE_CREDITS, tutorialEnabled: false })
 
       // If tank slice is present, set a STANDARD tank for dev convenience
       const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
       if (typeof maybeSetTank === 'function') {
+        const devFish = createDeveloperModeFish()
         const devTank: ITank = {
           id: 'dev-standard-tank',
           size: 'STANDARD',
-          capacity: 10,
-          waterQuality: 100,
-          pollution: 0,
+          capacity: TANK_CAPACITY_STANDARD,
+          waterQuality: WATER_QUALITY_INITIAL,
+          pollution: POLLUTION_INITIAL,
           hasFilter: false,
-          temperature: 24,
-          fish: [],
+          temperature: TEMPERATURE_DEFAULT,
+          fish: devFish,
           createdAt: Date.now(),
-          width: 800,
-          height: 600,
+          width: TANK_UPGRADED_WIDTH,
+          height: TANK_UPGRADED_HEIGHT,
           backgroundColor: 0x87ceeb,
         }
         maybeSetTank(devTank)
@@ -154,8 +171,8 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
       const pollutionIncrease = livingFishCount * POLLUTION_PER_FISH_PER_TICK
       const pollutionDecrease = tank.hasFilter ? FILTER_POLLUTION_REDUCTION_PER_TICK : 0
 
-      const newPollution = Math.min(100, Math.max(0, tank.pollution + pollutionIncrease - pollutionDecrease))
-      const newWaterQuality = Math.max(0, 100 - newPollution)
+      const newPollution = Math.min(PERCENTAGE_MAX, Math.max(0, tank.pollution + pollutionIncrease - pollutionDecrease))
+      const newWaterQuality = Math.max(0, PERCENTAGE_MAX - newPollution)
 
       const newFish = tank.fish.map((fish) => {
         if (!fish.isAlive) return fish

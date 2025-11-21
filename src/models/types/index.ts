@@ -25,6 +25,13 @@ export interface IFish {
   genetics: Record<string, unknown>
   createdAt: Timestamp
   lastFedAt?: Timestamp
+  // Physics properties
+  x: number
+  y: number
+  vx: number
+  vy: number
+  radius: number
+  getEffectiveRadius?: () => number
 }
 
 export interface ITank {

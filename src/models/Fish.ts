@@ -9,6 +9,12 @@ import {
   SWIM_DIRECTION_CHANGE_FORCE,
   SWIM_MIN_SPEED,
   SWIM_BOOST_FORCE,
+  FISH_AGE_YOUNG_MAX,
+  FISH_AGE_MATURE_MAX,
+  FISH_LIFE_STAGE_YOUNG_SCALE,
+  FISH_LIFE_STAGE_MATURE_SCALE,
+  FISH_LIFE_STAGE_OLD_SCALE,
+  PERCENTAGE_MAX,
 } from '../lib/constants'
 
 export class Fish implements IFish {
@@ -17,7 +23,7 @@ export class Fish implements IFish {
   species: FishSpecies = FishSpecies.GUPPY
   size: number = 1.0
   age: number = 0
-  health: number = 100
+  health: number = PERCENTAGE_MAX
   hunger: number = 0
   isAlive: boolean = true
   genetics: Record<string, unknown> = {}
@@ -74,6 +80,44 @@ export class Fish implements IFish {
       const angle = Math.random() * Math.PI * 2
       const force = SWIM_BOOST_FORCE * this.mass
       this.applyForce(Math.cos(angle) * force, Math.sin(angle) * force)
+    }
+  }
+
+  /**
+   * Get the effective collision radius including life stage scaling
+   * @returns Radius accounting for both base scale and life stage multiplier
+   */
+  getEffectiveRadius(): number {
+    const lifeStage = this.getLifeStage()
+    const lifeStageMult = this.getLifeStageSizeMultiplier(lifeStage)
+    return this.radius * lifeStageMult
+  }
+
+  /**
+   * Get the life stage based on fish age
+   * @returns Life stage: 'young', 'mature', or 'old'
+   */
+  private getLifeStage(): 'young' | 'mature' | 'old' {
+    if (this.age < FISH_AGE_YOUNG_MAX) return 'young'
+    if (this.age < FISH_AGE_MATURE_MAX) return 'mature'
+    return 'old'
+  }
+
+  /**
+   * Get the size multiplier for life stage
+   * @param lifeStage The life stage
+   * @returns Size multiplier (1.0 for young, 1.3 for mature/old)
+   */
+  private getLifeStageSizeMultiplier(lifeStage: 'young' | 'mature' | 'old'): number {
+    switch (lifeStage) {
+      case 'young':
+        return FISH_LIFE_STAGE_YOUNG_SCALE
+      case 'mature':
+        return FISH_LIFE_STAGE_MATURE_SCALE
+      case 'old':
+        return FISH_LIFE_STAGE_OLD_SCALE
+      default:
+        return FISH_LIFE_STAGE_YOUNG_SCALE
     }
   }
 

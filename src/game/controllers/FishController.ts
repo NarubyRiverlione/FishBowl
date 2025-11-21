@@ -23,13 +23,21 @@ export class FishController {
   }
 
   syncFish(storeFish: IFish[]): void {
+    console.log('🎣 FishController.syncFish called with:', storeFish.length, 'fish')
     // 1. Identify fish to add (in store, not in tank)
     const currentFishIds = new Set(this.tank.fish.map((f) => f.id))
     const fishToAdd = storeFish.filter((f) => !currentFishIds.has(f.id))
+    console.log(
+      '➕ Fish to add:',
+      fishToAdd.length,
+      'fish IDs:',
+      fishToAdd.map((f) => f.id)
+    )
 
     // 2. Identify fish to remove (in tank, not in store)
     const storeFishIds = new Set(storeFish.map((f) => f.id))
     const fishToRemove = this.tank.fish.filter((f) => !storeFishIds.has(f.id))
+    console.log('➖ Fish to remove:', fishToRemove.length)
 
     // 3. Add new fish
     fishToAdd.forEach((f) => {
@@ -46,14 +54,17 @@ export class FishController {
       fishModel.health = f.health
       fishModel.age = f.age
 
+      console.log('🐟 Adding fish to tank and render:', f.id, 'at', x.toFixed(1), y.toFixed(1))
       this.tank.addFish(fishModel)
       this.renderManager.addFish(fishModel)
     })
     // 4. Remove old fish
     fishToRemove.forEach((f) => {
+      console.log('🗑️ Removing fish:', f.id)
       this.tank.removeFish(f.id)
       this.renderManager.removeFish(f.id)
     })
+    console.log('✅ FishController sync complete. Tank fish:', this.tank.fish.length, 'Render manager ready')
   }
 }
 

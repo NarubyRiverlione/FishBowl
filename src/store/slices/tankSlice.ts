@@ -12,6 +12,15 @@ import {
   FILTER_COST,
   TANK_UPGRADE_COST,
   TANK_CAPACITY_STANDARD,
+  TANK_CAPACITY_BOWL,
+  TANK_DEFAULT_WIDTH,
+  TANK_DEFAULT_HEIGHT,
+  TANK_UPGRADED_WIDTH,
+  TANK_UPGRADED_HEIGHT,
+  WATER_QUALITY_INITIAL,
+  POLLUTION_INITIAL,
+  TEMPERATURE_DEFAULT,
+  PERCENTAGE_MAX,
 } from '../../lib/constants'
 
 export interface TankState {
@@ -46,15 +55,15 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
   const defaultTank: ITank = {
     id: 'default-bowl-tank',
     size: 'BOWL',
-    capacity: 1,
-    waterQuality: 100,
-    pollution: 0,
+    capacity: TANK_CAPACITY_BOWL,
+    waterQuality: WATER_QUALITY_INITIAL,
+    pollution: POLLUTION_INITIAL,
     hasFilter: false,
-    temperature: 24,
+    temperature: TEMPERATURE_DEFAULT,
     fish: [],
     createdAt: Date.now(),
-    width: 400,
-    height: 400,
+    width: TANK_DEFAULT_WIDTH,
+    height: TANK_DEFAULT_HEIGHT,
     backgroundColor: 0x87ceeb, // Sky blue
   }
 
@@ -123,7 +132,7 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
         const updatedTank = {
           ...tank,
           fish: updatedFish,
-          pollution: Math.min(100, tank.pollution + POLLUTION_PER_FEEDING),
+          pollution: Math.min(PERCENTAGE_MAX, tank.pollution + POLLUTION_PER_FEEDING),
           waterQuality: Math.max(0, tank.waterQuality - POLLUTION_PER_FEEDING),
         }
 
@@ -148,7 +157,7 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
         if (state.credits < cost) return state
 
         const newPollution = Math.max(0, tank.pollution - CLEAN_POLLUTION_REDUCTION)
-        const newWaterQuality = Math.min(100, tank.waterQuality + CLEAN_POLLUTION_REDUCTION)
+        const newWaterQuality = Math.min(PERCENTAGE_MAX, tank.waterQuality + CLEAN_POLLUTION_REDUCTION)
 
         const updatedTank = {
           ...tank,
@@ -208,8 +217,8 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
           ...tank,
           size: 'STANDARD',
           capacity: TANK_CAPACITY_STANDARD,
-          width: 800,
-          height: 600,
+          width: TANK_UPGRADED_WIDTH,
+          height: TANK_UPGRADED_HEIGHT,
         } as ITank // Cast to ensure type safety if needed, though should be inferred
 
         const newTanks = [...state.tanks]
@@ -227,16 +236,21 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
       const tank = state.tanks.find((t) => t.id === tankId)
       if (!tank) return
 
+      console.log('🛒 buyFish called for species:', species, 'in tank:', tankId)
       if (EconomyService.canBuyFish(state.credits, tank, species)) {
         const cost = EconomyService.getFishCost(species)
         const newFish = FishService.createFish(species)
+        console.log('💰 Buying fish:', { id: newFish.id, species: newFish.species, cost })
 
         // Update credits
         set((s) => ({ credits: s.credits - cost }))
 
         // Update tank
         const updatedTank = { ...tank, fish: [...tank.fish, newFish] }
+        console.log('🏠 Tank updated with new fish. Total fish:', updatedTank.fish.length)
         get().setTank(updatedTank)
+      } else {
+        console.warn('❌ Cannot buy fish - not enough credits or tank full')
       }
     },
     sellFish: (tankId: UUID, fishId: UUID) => {

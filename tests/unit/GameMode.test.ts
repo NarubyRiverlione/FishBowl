@@ -43,6 +43,6 @@ describe('Game mode helpers', () => {
     expect(s.isTutorialMode?.()).toBe(false)
     expect(s.tank).toBeDefined()
     expect(s.tank?.size).toBe('STANDARD')
-    expect(s.tank?.capacity).toBe(10)
+    expect(s.tank?.capacity).toBe(15)
   })
 })

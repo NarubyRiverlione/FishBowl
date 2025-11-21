@@ -5,12 +5,16 @@ import {
   HUNGER_STARVATION_THRESHOLD,
   HUNGER_REDUCTION_ON_FEED,
   HEALTH_DECREMENT_ON_POLLUTION,
+  WATER_QUALITY_POOR_THRESHOLD,
+  FISH_AGE_MAX_MULTIPLIER_DIVISOR,
+  FISH_VALUE_MAX_MULTIPLIER,
+  PERCENTAGE_MAX,
 } from '../lib/constants'
 
 export class FishService {
   static createFish(species: FishSpecies): IFish {
     const config = FISH_SPECIES_CONFIG[species]
-    return {
+    const fish = {
       id: crypto.randomUUID(),
       species,
       color: randomColor(),
@@ -21,22 +25,37 @@ export class FishService {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      // Physics properties required by IFish interface
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      radius: 24, // Default fish radius
     }
+    console.log('🏭 FishService.createFish created:', {
+      id: fish.id,
+      species: fish.species,
+      color: fish.color,
+      size: fish.size,
+      health: fish.health,
+      isAlive: fish.isAlive,
+    })
+    return fish
   }
 
-  static tickFish(fish: IFish, waterQuality: number = 100): IFish {
+  static tickFish(fish: IFish, waterQuality: number = PERCENTAGE_MAX): IFish {
     if (!fish.isAlive) return fish
 
     const config = FISH_SPECIES_CONFIG[fish.species]
     const newAge = fish.age + 1
-    const newHunger = Math.min(100, fish.hunger + config.hungerRate)
+    const newHunger = Math.min(PERCENTAGE_MAX, fish.hunger + config.hungerRate)
 
     let newHealth = fish.health
     if (newHunger >= HUNGER_STARVATION_THRESHOLD) {
       newHealth = Math.max(0, newHealth - HEALTH_DECREMENT_ON_STARVATION)
     }
 
-    if (waterQuality < 50) {
+    if (waterQuality < WATER_QUALITY_POOR_THRESHOLD) {
       newHealth = Math.max(0, newHealth - HEALTH_DECREMENT_ON_POLLUTION)
     }
 
@@ -51,8 +70,8 @@ export class FishService {
 
   static calculateFishValue(fish: IFish): number {
     const config = FISH_SPECIES_CONFIG[fish.species]
-    const ageMultiplier = Math.min(1 + fish.age / 300, 2.0)
-    const healthModifier = fish.health / 100
+    const ageMultiplier = Math.min(1 + fish.age / FISH_AGE_MAX_MULTIPLIER_DIVISOR, FISH_VALUE_MAX_MULTIPLIER)
+    const healthModifier = fish.health / PERCENTAGE_MAX
     return Math.floor(config.baseValue * ageMultiplier * healthModifier)
   }
 

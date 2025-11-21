@@ -29,7 +29,17 @@ describe('Developer Mode Initialization Integration', () => {
     expect(state.tutorialEnabled).toBe(false)
     expect(state.tank).toBeDefined()
     expect(state.tank?.size).toBe('STANDARD')
-    expect(state.tank?.capacity).toBe(10)
+    expect(state.tank?.capacity).toBe(15)
+
+    // Verify dev mode creates fish of all species and age groups
+    expect(state.tank?.fish).toBeDefined()
+    expect(state.tank?.fish.length).toBe(12) // 4 species x 3 age groups
+
+    // Check that we have fish of all different ages
+    const ages = state.tank?.fish.map((f) => f.age).sort((a, b) => a - b)
+    expect(ages).toContain(50) // young
+    expect(ages).toContain(200) // mature
+    expect(ages).toContain(400) // old
   })
 
   it('honors tutorial=false query param when not in dev mode', () => {

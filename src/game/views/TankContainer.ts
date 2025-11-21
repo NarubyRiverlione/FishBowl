@@ -1,8 +1,17 @@
 import { Container, Graphics } from 'pixi.js'
-import { ITank } from '../../models/types'
-import { IFish } from '../../models/types/fish'
+import { ITank, IFish } from '../../models/types'
 import { FishSprite } from './FishSprite'
-import { WATER_LEVEL } from '../../lib/constants'
+import {
+  WATER_LEVEL,
+  TANK_DEFAULT_WIDTH,
+  TANK_DEFAULT_HEIGHT,
+  FISH_SPAWN_POSITION_BUFFER,
+  TANK_BORDER_WIDTH,
+  TANK_BORDER_COLOR,
+  WATER_SURFACE_WIDTH,
+  WATER_SURFACE_COLOR,
+  WATER_SURFACE_ALPHA,
+} from '../../lib/constants'
 import useGameStore from '../../store/useGameStore'
 
 export class TankContainer extends Container {
@@ -40,9 +49,46 @@ export class TankContainer extends Container {
   }
 
   addFish(fish: IFish): void {
-    const sprite = new FishSprite(fish)
+    console.log('🏠 TankContainer.addFish called for:', fish.id, 'Tank size:', this.tank.width, 'x', this.tank.height)
+    // Generate random initial position within tank bounds, below water line
+    const tankWidth = this.tank.width || TANK_DEFAULT_WIDTH
+    const tankHeight = this.tank.height || TANK_DEFAULT_HEIGHT
+    const waterLevel = tankHeight * WATER_LEVEL
+    const waterTop = tankHeight - waterLevel
+
+    // Use effective radius that accounts for life stage scaling for safe positioning
+    const effectiveRadius = fish.getEffectiveRadius ? fish.getEffectiveRadius() : fish.radius
+    const safeMargin = effectiveRadius + FISH_SPAWN_POSITION_BUFFER // Extra buffer
+
+    const minX = safeMargin
+    const maxX = tankWidth - safeMargin
+    const minY = waterTop + safeMargin
+    const maxY = tankHeight - safeMargin
+
+    const initialX = Math.random() * (maxX - minX) + minX
+    // Position fish in water area only (below water line)
+    const initialY = Math.random() * (maxY - minY) + minY
+
+    console.log('📍 Fish position calculated:', {
+      initialX: initialX.toFixed(1),
+      initialY: initialY.toFixed(1),
+      waterTop: waterTop.toFixed(1),
+      waterLevel: waterLevel.toFixed(1),
+      effectiveRadius: effectiveRadius.toFixed(1),
+      safeMargin: safeMargin.toFixed(1),
+    })
+
+    const sprite = new FishSprite(fish, initialX, initialY)
     this.fishSprites.set(fish.id, sprite)
     this.addChild(sprite)
+    console.log(
+      '🎭 Fish sprite created and added to container. Sprite visible?',
+      sprite.visible,
+      'Alpha:',
+      sprite.alpha,
+      'Scale:',
+      sprite.scale ? sprite.scale.x : 'undefined'
+    )
     try {
       // If test helpers are enabled, expose diagnostic info when sprites are added
 
@@ -144,13 +190,13 @@ export class TankContainer extends Container {
 
     // Draw tank walls (bottom and sides only, no top)
     this.background.rect(0, 0, this.tank.width, this.tank.height)
-    this.background.stroke({ width: 4, color: 0x888888 })
+    this.background.stroke({ width: TANK_BORDER_WIDTH, color: TANK_BORDER_COLOR })
 
     // Draw water surface line
     this.background
       .moveTo(0, this.tank.height - waterLevel)
       .lineTo(this.tank.width, this.tank.height - waterLevel)
-      .stroke({ width: 2, color: 0x66aaff, alpha: 0.6 })
+      .stroke({ width: WATER_SURFACE_WIDTH, color: WATER_SURFACE_COLOR, alpha: WATER_SURFACE_ALPHA })
   }
 }
 
