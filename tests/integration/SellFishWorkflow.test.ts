@@ -3,7 +3,7 @@ import useGameStore from '../../src/store/useGameStore'
 import { FishSpecies } from '../../src/models/types'
 import { FishService } from '../../src/services/FishService'
 
-describe('Sell Fish Mechanics', () => {
+describe('Sell Fish Workflow Integration', () => {
   beforeEach(() => {
     useGameStore.setState({
       credits: 0,

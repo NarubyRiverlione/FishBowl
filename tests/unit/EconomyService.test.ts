@@ -59,20 +59,3 @@ describe('EconomyService', () => {
     expect(EconomyService.canUpgradeTank(1000, tankStandard)).toBe(false)
   })
 })
-
-describe('EconomyService 2', () => {
-  it('should return correct fish cost', () => {
-    expect(EconomyService.getFishCost(FishSpecies.GUPPY)).toBe(50)
-  })
-
-  it('should calculate feed cost correctly', () => {
-    expect(EconomyService.getFeedCost(1)).toBeGreaterThan(0)
-  })
-
-  it('should validate purchase capability', () => {
-    // Mock tank
-    const tank = { fish: [], capacity: 10 } as unknown as import('../../src/models/types').ITank
-    expect(EconomyService.canBuyFish(100, tank, FishSpecies.GUPPY)).toBe(true)
-    expect(EconomyService.canBuyFish(0, tank, FishSpecies.GUPPY)).toBe(false)
-  })
-})

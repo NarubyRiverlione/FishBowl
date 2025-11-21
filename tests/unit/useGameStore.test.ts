@@ -20,21 +20,4 @@ describe('useGameStore selectors and basic behaviors', () => {
     expect(selectTankFish(state)).toEqual([])
     expect(selectSelectedFish(state)).toBeNull()
   })
-
-  it('setMode("dev") enables developer mode and sets a STANDARD tank when tank slice present', () => {
-    const useTestStore = create((set, get, api) => ({
-      ...createTankSlice(set, get, api),
-      ...createFishSlice(set, get, api),
-      ...createGameSlice(set, get, api),
-    }))
-
-    // call setMode from the composed store
-    useTestStore.getState().setMode('dev')
-
-    const state = useTestStore.getState()
-    expect(state.developerMode).toBe(true)
-    expect(state.credits).toBe(100)
-    expect(state.tank).toBeDefined()
-    expect(state.tank?.size).toBe('STANDARD')
-  })
 })

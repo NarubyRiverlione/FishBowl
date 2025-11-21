@@ -15,7 +15,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "coverage:badges": "node scripts/update-coverage-badges.js",
+    "coverage:badges:dry": "node scripts/update-coverage-badges.js --dry-run",
+    "test:coverage:update": "pnpm test:coverage && pnpm coverage:badges"
   },
   "dependencies": {
     "pixi.js": "^8.14.2",

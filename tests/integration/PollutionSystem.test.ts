@@ -8,7 +8,7 @@ import {
   HEALTH_DECREMENT_ON_POLLUTION,
 } from '../../src/lib/constants'
 
-describe('Pollution and Water Quality', () => {
+describe('Pollution System Integration', () => {
   beforeEach(() => {
     useGameStore.setState({
       credits: 1000,

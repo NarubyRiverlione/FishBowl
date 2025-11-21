@@ -3,7 +3,7 @@ import useGameStore from '../../src/store/useGameStore'
 import { FishSpecies } from '../../src/models/types'
 import { FEED_BASE_COST, FEED_PER_FISH_COST, POLLUTION_PER_FEEDING } from '../../src/lib/constants'
 
-describe('Feeding Mechanics', () => {
+describe('Feeding Workflow Integration', () => {
   beforeEach(() => {
     useGameStore.setState({
       credits: 100,

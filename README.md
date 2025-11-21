@@ -1,8 +1,27 @@
 # FishBowl
 
+<!-- Test Coverage Badges -->
+
+![Coverage: Statements](https://img.shields.io/badge/Statements-87.28%25-green)
+![Coverage: Branches](https://img.shields.io/badge/Branches-66.34%25-orange)
+![Coverage: Functions](https://img.shields.io/badge/Functions-87.26%25-green)
+![Coverage: Lines](https://img.shields.io/badge/Lines-90.91%25-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-103%20passing-brightgreen)
+![Test Files](<https://img.shields.io/badge/Test%20Files-31%20(18%20unit%20+%2013%20integration)-blue>)
+
 A web-based fish breeding simulation game built with React, Pixi.js, and TypeScript.
 
-**Current Status**: 🚧 Core Mechanics In Progress (Milestone 2)
+**Current Status**: 🚧 Core Mechanics In Progress (Milestone 2 - 90% Complete)
+
+## Recent Progress
+
+### ✅ **Latest Achievements** (November 2025)
+
+- **Test Suite Reorganization**: Established clear unit vs integration test patterns
+- **Comprehensive Test Coverage**: Added AquariumCanvas integration tests (83.6% coverage)
+- **Code Quality**: Eliminated all duplicate tests and `any` type usage
+- **TypeScript Strict Mode**: 100% compliance with no explicit `any` types
+- **Test Organization**: Clear separation of 18 unit tests vs 13 integration tests
 
 ## Features
 
@@ -62,8 +81,9 @@ pnpm install
 ```bash
 pnpm dev              # Start dev server (http://localhost:5173)
 pnpm test             # Run unit & integration tests
+pnpm test --coverage  # Run tests with coverage report
 pnpm test:e2e         # Run E2E tests (Playwright)
-pnpm lint             # Lint code (ESLint)
+pnpm lint             # Lint code (ESLint + TypeScript strict)
 pnpm build            # Build for production
 ```
 
@@ -100,11 +120,30 @@ src/
 
 ## Testing
 
-**Coverage**: 40+ tests passing (unit, integration, E2E)
+**Coverage**: 103 tests passing across 31 test files
 
-- Models: 100%, Lib: 98.78%, Game: 74%, Components: 86.66%
+| Metric     | Coverage | Status                    |
+| ---------- | -------- | ------------------------- |
+| Statements | 87.28%   | 🟡 Approaching 90% target |
+| Functions  | 87.26%   | 🟡 Approaching 90% target |
+| Lines      | 90.9%    | ✅ Above 90% target       |
+| Branches   | 66.33%   | 🔴 Needs improvement      |
 
-**Strategy**: TDD approach with Vitest (unit/integration) and Playwright (E2E). See test files in `tests/` directory.
+**Test Organization** (Reorganized November 2025):
+
+- **Unit Tests** (18 files): Isolated component testing with mocked dependencies
+  - Models, Services, Physics, Utilities, State Management
+- **Integration Tests** (13 files): Multi-component workflow testing
+  - Game mechanics, UI workflows, System interactions
+- **E2E Tests**: Playwright browser testing
+- **Performance Tests**: Stress testing with 50+ fish
+
+**Key Coverage Areas**:
+
+- Models: 100%, Physics: 98.41%, Services: 83.33%
+- Game Engine: 64.7%, Components: 83.6%, Store: 87.3%
+
+**Strategy**: TDD approach with clear test classification. See `docs/TEST_ORGANIZATION_GUIDE.md` for patterns.
 
 ## Roadmap
 
@@ -123,10 +162,23 @@ Key principles:
 
 ## Documentation
 
+### Setup & Development
+
 - [QUICKSTART.md](./QUICKSTART.md) - Setup and troubleshooting
 - [docs/IMPLEMENTATION_STATUS.md](./docs/IMPLEMENTATION_STATUS.md) - Implementation progress
+
+### Testing & Quality
+
+- [docs/TEST_ORGANIZATION_GUIDE.md](./docs/TEST_ORGANIZATION_GUIDE.md) - Test classification patterns
+- [docs/TEST_ANALYSIS_REPORT.md](./docs/TEST_ANALYSIS_REPORT.md) - Test suite analysis
+
+### Technical Documentation
+
 - [docs/PHYSICS.md](./docs/PHYSICS.md) - Physics engine details
-- [docs/PRD.md](./docs/PRD.md) - Product requirements (Dutch)
+- [docs/PRD_Eng.md](./docs/PRD_Eng.md) - Product requirements 
+
+### Specifications
+
 - [specs/001-core-mechanics/](./specs/001-core-mechanics/) - Core mechanics spec (in progress)
 - [specs/002-visual-prototype/](./specs/002-visual-prototype/) - Visual prototype spec (complete)
 

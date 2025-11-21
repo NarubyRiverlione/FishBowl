@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
 import { CLEAN_COST, CLEAN_POLLUTION_REDUCTION } from '../../src/lib/constants'
 
-describe('Cleaning Mechanics', () => {
+describe('Cleaning Workflow Integration', () => {
   beforeEach(() => {
     useGameStore.setState({
       credits: 100,

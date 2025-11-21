@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
 
-describe('Developer Mode initialization', () => {
+describe('Developer Mode Initialization Integration', () => {
   beforeEach(() => {
     // reset relevant parts of the store to defaults
     const store = useGameStore.getState()
