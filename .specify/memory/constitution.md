@@ -1,17 +1,16 @@
 <!--
 Sync Impact Report:
-- Version change: 1.0.0 -> 1.1.0 (Added Terminology Section)
-- Modified sections: None
+- Version change: 1.1.0 -> 1.2.0 (Added No Magic Numbers Principle + Milestone Quality Gate)
+- Modified sections: Continuous Quality (enhanced with magic numbers policy)
 - Added sections:
-  - Project Organization Standards (Milestone vs Phase Terminology)
+  - VI. No Magic Numbers (New Core Principle)
+  - Milestone Completion Quality Gate (New Governance Step)
 - Removed sections: None
-- Templates requiring updates: ✅ None (terminology applies to existing docs)
+- Templates requiring updates: ⚠️ Pending
+  - .specify/templates/tasks-template.md: Add magic number scan step to completion checklist
+  - .specify/templates/plan-template.md: Reference quality gate requirements
 - Follow-up TODOs: None
-- Rationale: MINOR version bump - new guidance section added without changing existing principles
-- Previous changes:
-  - 0.0.0 -> 1.0.0 (2025-11-19): Initial Ratification
-    - Principles Defined: Feature-Centric Architecture, Test-First (TDD), Type Safety, Separation of Concerns, Continuous Quality
-    - Added Sections: Tech Stack & Standards, Development Workflow
+- Rationale: MINOR version bump (1.2.0) - New principle added (magic numbers) + enhanced quality gate procedure. Non-breaking change to existing architecture.
 -->
 
 # FishBowl Constitution
@@ -40,6 +39,18 @@ No `any`. Define explicit interfaces in `src/types` before coding logic. TypeScr
 ### V. Continuous Quality
 
 The codebase must remain clean and error-free at all times. The linter (`pnpm lint`) MUST be executed successfully after the completion of every implementation phase and before marking the phase as complete. Zero warnings allowed.
+
+### VI. No Magic Numbers
+
+All numeric constants MUST have meaningful, self-documenting names. Define them centrally in `src/lib/constants.ts` using descriptive identifiers. Numeric literals in code (conditionals, calculations, comparisons) are prohibited.
+
+**Examples of correct usage:**
+
+- ❌ `if (fish.age > 120)` → ✅ `if (fish.age > MATURE_AGE_SECONDS)`
+- ❌ `pollution *= 0.8` → ✅ `pollution *= FILTER_EFFICIENCY_RATE`
+- ❌ `radius = 25` → ✅ `radius = FISH_BASE_RADIUS`
+
+**Rationale**: Magic numbers create technical debt, reduce readability, and make refactoring error-prone. Named constants self-document code intent and enable easy parameterization. All numeric values must be centralizable and intentional.
 
 ## Tech Stack & Standards
 
@@ -80,6 +91,37 @@ To avoid confusion in project planning and execution:
 
 ## Governance
 
-This Constitution is the primary source of truth for the FishBowl project. All code changes, pull requests, and architectural decisions must align with these principles. Amendments require a version bump and documentation in the Sync Impact Report.
+### Milestone Completion Quality Gate
 
-**Version**: 1.1.0 | **Ratified**: 2025-11-19 | **Last Amended**: 2025-11-20
+At the completion of each milestone (after all features are implemented), the following quality checks MUST be performed BEFORE merging to main:
+
+1. **Automated Checks**
+   - Run `pnpm test` – All tests must pass with target coverage maintained
+   - Run `pnpm lint` – Zero lint warnings allowed
+
+2. **Manual Magic Number Scan**
+   - Search codebase for remaining numeric literals in logic files (not config/constants)
+   - Pattern: Numbers appearing in conditionals, calculations, comparisons
+   - Example scan command:
+     ```bash
+     grep -r "[0-9]\+" src/ --include="*.ts" --include="*.tsx" | grep -v "constants.ts" | head -20
+     ```
+   - For each match: Move to `src/lib/constants.ts` with a meaningful name, update all references in code
+
+3. **Code Review Checklist**
+   - All numeric constants are self-documenting (names clearly indicate purpose)
+   - Constants are logically grouped by domain (Physics, Tank, Fish, Economy, etc.)
+   - No numeric literals remain in business logic or calculations
+   - Test coverage for critical paths maintained or improved
+
+**Rationale**: Magic numbers are technical debt that accumulate over time. Proactive scanning at milestone boundaries prevents the codebase from becoming unmaintainable. Named constants enable easier feature iteration and reduce bugs from inconsistent values.
+
+### Constitution Amendments
+
+This Constitution is the primary source of truth for the FishBowl project. All code changes, pull requests, and architectural decisions must align with these principles. Amendments require:
+
+1. Version bump following semantic versioning (see version history in Sync Impact Report)
+2. Detailed documentation of changes in the Sync Impact Report header comment
+3. Ratification date update in the Version line
+
+**Version**: 1.2.0 | **Ratified**: 2025-11-19 | **Last Amended**: 2025-11-21

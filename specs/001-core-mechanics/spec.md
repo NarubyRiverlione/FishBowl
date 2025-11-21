@@ -69,13 +69,13 @@ As a new player, I want to start with a small bowl to learn the basics before ma
 
 **Acceptance Scenarios**:
 
-1. **Given** a new game, **When** the game starts, **Then** the player has a small bowl (capacity 1) and 50 starting credits.
-2. **Given** a small bowl, **When** viewing the store, **Then** the filter option is not available (prevents confusion).
+1. **Given** a new game, **When** the game starts, **Then** the player has a BOWL tank (capacity 2, circular shape) and 50 starting credits.
+2. **Given** a BOWL tank, **When** viewing the store, **Then** the filter option is not available (prevents confusion).
 3. **Given** a fish reaches mature age (>2 minutes), **When** the fish is still alive, **Then** the player receives 50 bonus credits.
-4. **Given** sufficient credits, **When** the player buys a larger tank, **Then** the tank capacity increases to the next tier (STANDARD = 10 capacity). The project also supports a `BIG` tank tier (capacity = 20) for later progression; filters become available for non-BOWL tanks and breeding is unlocked on STANDARD/BIG. Multiple tanks (up to 2–3 by default) may be owned concurrently, each subject to its capacity limit.
+4. **Given** sufficient credits, **When** the player buys a larger tank, **Then** the tank capacity increases to the next tier. Progression: BOWL (2 capacity, circular) → STANDARD (15 capacity, square, costs 75 credits) → BIG (30 capacity, wide rectangle, costs 150 credits). Filters become available for STANDARD/BIG tanks only. Multiple tanks (up to 2–3 by default) may be owned concurrently, each subject to its capacity limit.
 5. **Given** tutorial mode enabled, **When** key events occur (first fish, first feed, first death, maturity, etc.), **Then** helpful popup explanations appear and must be manually dismissed by clicking OK or X button.
 6. **Given** tutorial mode disabled, **When** playing, **Then** no tutorial popups appear.
-7. **Given** developer mode enabled, **When** the game starts, **Then** the player starts with the larger tank and 100 credits (skip tutorial).
+7. **Given** developer mode enabled, **When** the game starts, **Then** the player starts with a STANDARD tank and 1000 credits (skip tutorial).
 
 ---
 
@@ -115,20 +115,27 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 - **FR-007**: The system MUST implement **Water Quality**: Water quality is calculated as `100 - pollution` (clamped 0-100). When water quality < 50, fish health decreases per tick.
 - **FR-008**: The system MUST implement **Tank Maintenance**: Allow "Clean Tank" action (manual, costs credits, reduces pollution) and "Install Filter" (one-time purchase, reduces pollution rate).
 - **FR-009**: The system MUST implement an **Economy**: Track "AquaCredits" currency. Allow purchasing items (fish, filters, cleaning, tanks) and selling fish.
-- **FR-010**: The system MUST implement **Tank Progression**: Start with small bowl (capacity 1). Award 50 bonus credits when first fish reaches mature age. Allow purchasing larger tank (10 capacity) for 75 credits. BOWL tanks cannot have filters installed.
+- **FR-010**: The system MUST implement **Tank Progression**: Start with BOWL tank (capacity 2, circular shape). Award 50 bonus credits when first fish reaches mature age. Allow purchasing STANDARD tank (15 capacity, square shape, costs 75 credits) and BIG tank (30 capacity, wide rectangular shape, costs 150 credits). Filters become available only for STANDARD and BIG tanks. Multiple tanks (2–3 concurrent) supported with independent management.
 - **FR-011**: The system MUST implement **Tutorial System**: Show contextual popup explanations for key events (first buy, first feed, hunger warning, low water quality, fish death, maturity bonus, tank upgrade). Popups require manual dismissal (OK or X button click). Tutorial can be enabled/disabled via query param or UI toggle.
-- **FR-012**: The system MUST implement **Developer Mode**: When enabled (query param or button), start with large tank, skip tutorial, and disable tutorial popups.
+- **FR-012**: The system MUST implement **Developer Mode**: When enabled (query param or button), start with STANDARD tank and 1000 credits, skip tutorial, and disable tutorial popups.
 - **FR-013**: The system MUST calculate **Fish Value** dynamically based on species, size, health, and age.
 - **FR-014**: The system MUST handle **Fish Death**: When health reaches zero, the fish is marked as dead and removed from the active population.
 - **FR-015**: The system MUST render **Life Stage Visual Variations**: Fish sprites must adjust size and appearance based on age. Young fish (0–119s) render at base size. Mature fish (120–299s) render at 1.3× base size. Old fish (≥300s) render at 1.3× base size with 0.8× color saturation (slight desaturation to indicate aging).
-- **FR-016**: The system SHOULD provide an in-game **fish inspection UI**: clicking a fish selects it and opens an info panel showing species, age, life stage, hunger, health, estimated sell price, and actions (sell, inspect). This is preferred over hover-only tooltips for accessibility and mobile support.
-- **FR-017**: The system SHOULD provide **Water Visual Feedback**: use a background image/texture behind the tank rendering and apply a dynamic blur/tint based on the tank's pollution grade to communicate water quality non-verbally. Provide a performant shader or Canvas fallback and allow disabling on low-end devices.
+- **FR-016**: The system MUST implement **Fish-to-Fish Collision Removal**: Fish sprites are allowed to overlap visually (no collision detection between fish). This creates a 3D depth illusion while simplifying physics. Fish still collide with tank boundaries (walls, water surface, and decorative floor).
+- **FR-017**: The system MUST implement **Decorative Tank Floor**: STANDARD and BIG tanks feature a visible floor with pebble/sand texture (base color with random specs). BOWL tank has an invisible 1-pixel floor boundary. All tank types use the floor as a "rest place" with gentle collision physics (0.2 restitution) encouraging fish to settle naturally. Fish-to-boundary collisions use 0.8 restitution; floor collisions use 0.2 restitution for peaceful settling behavior.
+- **FR-018**: The system MUST implement **Tank Visual Design**: BOWL tanks render as circles (circular glass effect, 300×300px). STANDARD tanks render as squares (rectangular glass, 500×500px). BIG tanks render as wide rectangles (wide panoramic glass, 800×400px). All tanks are procedurally drawn using Pixi.js Graphics (no external SVG assets required). Tank rendering scales responsively to viewport size without affecting physics simulation.
+- **FR-019**: The system MUST support **Multi-Tank Display (Responsive Layout)**: Desktop displays all 2–3 tanks simultaneously in a grid. Tablets and mobile devices display one tank at a time with tab-based navigation. Tab buttons indicate tank type (●=BOWL, ◯=STANDARD, ▭=BIG) and active state. Keyboard shortcuts (1/2/3 keys or arrow keys) allow switching between tanks.
+- **FR-020**: The system SHOULD provide **Water Visual Feedback** (Optional): Use a background image/texture behind tank rendering and apply dynamic blur/tint based on pollution grade. Provide performant shader or Canvas2D fallback and allow disabling on low-end devices.
 
 ### Key Entities
 
-- **Fish**: The primary agent. State includes hunger, health, age, and genetics.
-- **Tank**: The environment containing fish and water properties (water quality, pollution). Comes in two sizes: Bowl (capacity 1) and Standard Tank (capacity 10).
-- **Filter**: Equipment that reduces pollution rate. Can be installed in tank.
+- **Fish**: The primary agent. State includes hunger, health, age, and genetics. Renders with overlapping allowed (no fish-to-fish collision).
+- **Tank**: The environment containing fish and water properties (water quality, pollution). Comes in three sizes with distinct visual shapes:
+  - **BOWL**: Circular tank, capacity 2, starting tank (free). Invisible 1px floor for gentle settling.
+  - **STANDARD**: Square tank, capacity 15, costs 75 credits to upgrade. Visible pebble floor (30px).
+  - **BIG**: Wide rectangular tank, capacity 30, costs 150 credits to upgrade. Visible pebble floor (40px).
+- **Filter**: Equipment that reduces pollution rate. Can be installed in STANDARD and BIG tanks only.
+- **Floor**: Decorative boundary layer with gentle collision physics (0.2 restitution) that encourages fish to rest naturally. Visible (with pebble texture) in STANDARD/BIG, invisible (1px) in BOWL.
 - **Store**: The interface for exchanging Credits for Entities (fish, filters, cleanings, tanks).
 - **GameLoop**: The orchestrator of time and state updates.
 
@@ -147,15 +154,24 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 
 ## Assumptions
 
-- **Starting State**: Player starts with 50 AquaCredits, 1 Small Bowl (capacity 1), and tutorial mode active.
-- **Tutorial Mode**: Enabled by default. Can be disabled via URL query param `?tutorial=false` or UI toggle in settings. Shows popup explanations for key game events.
-- **Developer Mode**: Accessible via URL query param `?dev=true` or debug button. Starts with 100 credits, Standard Tank (capacity 10), and tutorial disabled.
-- **Filter Restriction**: BOWL tanks cannot have filters installed (option hidden in store). Prevents overwhelming new players with too many choices.
+- **Starting State**: Player starts with 50 AquaCredits, 1 BOWL tank (capacity 2, circular shape), and tutorial mode active.
+- **Tank Types**:
+  - BOWL (circular, 300×300px): Starting tank, capacity 2 fish, no filters.
+  - STANDARD (square, 500×500px): Intermediate tank, capacity 15 fish, filters available, costs 75 credits.
+  - BIG (wide rectangle, 800×400px): Advanced tank, capacity 30 fish, filters available, costs 150 credits.
+- **Tank Visuals**: All tanks drawn procedurally using Pixi.js Graphics (no SVG assets). Rendering scales responsively without affecting physics simulation.
+- **Floor Mechanic**: All tanks feature a floor boundary with gentle collision (0.2 restitution) creating a "rest place" where fish naturally settle. BOWL floor is invisible (1px). STANDARD/BIG floors are visible with pebble/sand texture (30px and 40px respectively).
+- **Fish Collision**: Fish sprites overlap visually (no collision between fish). Creates 3D depth illusion. Fish collide with tank boundaries (walls, water surface, floor) with standard restitution (0.8 for walls, 0.2 for floor).
+- **Multi-Tank Display**: Desktop shows 2–3 tanks simultaneously in a responsive grid. Tablets show 1–2 tanks. Mobile shows 1 tank at a time with tab navigation. Tab buttons use symbols: ● for BOWL, ◯ for STANDARD, ▭ for BIG.
+- **Tutorial Mode**: Enabled by default. Can be disabled via URL query param `?tutorial=false` or UI toggle. Shows popup explanations for key game events requiring manual dismissal.
+- **Developer Mode**: Accessible via URL query param `?dev=true` or debug button. Starts with STANDARD tank and 1000 credits with tutorial disabled.
+- **Filter Restriction**: BOWL tanks cannot have filters installed (option hidden in store).
 - **Life Stages**: Fish have three visual life stages based on age:
-  - **Young (Jong)**: Age 0–119 seconds. Renders at base size (current sprite size).
-  - **Mature (Volwassen)**: Age 120–299 seconds. Renders at 1.3× base size (slightly bigger).
-  - **Old (Oud)**: Age ≥300 seconds. Renders at 1.3× base size with slight color desaturation (0.8× saturation to indicate aging).
+  - **Young**: Age 0–119 seconds. Renders at base size.
+  - **Mature**: Age 120–299 seconds. Renders at 1.3× base size.
+  - **Old**: Age ≥300 seconds. Renders at 1.3× base size with 0.8× color saturation.
 - **Mature Age**: Fish reach maturity at 120 seconds (2 minutes).
-- **Tank Upgrade**: First mature fish awards 50 bonus credits. Standard Tank costs 75 credits and unlocks filters.
+- **Tank Upgrade**: First mature fish awards 50 bonus credits. Tank upgrades unlock at specific progression points.
 - **Time Scale**: 1 Tick = 1 Second (real-time).
 - **Persistence**: State is lost on refresh (for MVP/Prototype phase).
+- **Responsive Scaling**: Tank display sizes scale based on viewport (300–600px per tank on desktop, full-width on mobile) without affecting physics simulation or collision bounds.
