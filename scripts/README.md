@@ -41,6 +41,7 @@ chmod +x .git/hooks/pre-commit
 ```
 
 **How it works:**
+
 - Runs before every `git commit`
 - Checks if coverage data exists
 - Updates badges if needed
@@ -71,7 +72,7 @@ For GitHub Actions, add to your workflow:
   run: |
     pnpm test:coverage
     pnpm coverage:badges
-    
+
 - name: Commit Badge Updates
   uses: stefanzweifel/git-auto-commit-action@v4
   with:
@@ -91,7 +92,7 @@ For real-time badges without manual updates, consider services like:
 The script automatically assigns colors based on coverage percentages:
 
 - **90%+**: Bright Green
-- **80-89%**: Green  
+- **80-89%**: Green
 - **70-79%**: Yellow
 - **60-69%**: Orange
 - **<60%**: Red
@@ -103,6 +104,7 @@ Modify `getCoverageColor()` in `update-coverage-badges.js` to customize threshol
 ### Badge URL Template
 
 Badges use shields.io format:
+
 ```
 https://img.shields.io/badge/{label}-{value}-{color}
 ```
@@ -110,14 +112,16 @@ https://img.shields.io/badge/{label}-{value}-{color}
 ### Coverage Calculation
 
 The script calculates coverage from Vitest's `coverage-final.json`:
+
 - **Statements**: Executed vs total statements
-- **Branches**: Covered vs total branches  
+- **Branches**: Covered vs total branches
 - **Functions**: Called vs total functions
 - **Lines**: Covered vs total lines
 
 ## 🚀 Quick Start
 
 1. **Install the automation:**
+
    ```bash
    # Set up git hook
    cp scripts/pre-commit-coverage .git/hooks/pre-commit
@@ -125,19 +129,21 @@ The script calculates coverage from Vitest's `coverage-final.json`:
    ```
 
 2. **Test the system:**
+
    ```bash
    # Generate coverage and update badges
    pnpm test:coverage:update
-   
+
    # Verify badges were updated
    git diff README.md
    ```
 
 3. **Normal workflow:**
+
    ```bash
    # Your regular development...
    pnpm test
-   
+
    # Commit (badges update automatically via hook)
    git commit -m "Add new feature"
    ```
@@ -147,17 +153,20 @@ The script calculates coverage from Vitest's `coverage-final.json`:
 ### Common Issues
 
 **"Coverage file not found"**
+
 ```bash
 # Generate coverage first
 pnpm test:coverage
 ```
 
 **"Could not find badge pattern"**
+
 - Check README.md format matches expected patterns
 - Ensure badges use shields.io format
 - Run with `--dry-run` to debug
 
 **Git hook not working**
+
 ```bash
 # Verify hook is executable
 ls -la .git/hooks/pre-commit
