@@ -19,6 +19,7 @@ export class TankContainer extends Container {
     // Allow clicking on empty tank area to clear selection
     this.interactive = true
     // Attach pointer handler defensively (tests may not provide Pixi event methods)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const attach = (obj: any, ev: string, cb: (...args: any[]) => void) => {
       if (typeof obj.on === 'function') return obj.on(ev, cb)
       if (typeof obj.addEventListener === 'function') return obj.addEventListener(ev, cb)
@@ -28,7 +29,8 @@ export class TankContainer extends Container {
       obj.__events[ev].push(cb)
     }
 
-    attach(this, 'pointerdown', (e: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    attach(this as any, 'pointerdown', (e: any) => {
       // If the click target is not a FishSprite, clear selection
       const target = e.target
       if (!(target instanceof FishSprite)) {
@@ -41,6 +43,80 @@ export class TankContainer extends Container {
     const sprite = new FishSprite(fish)
     this.fishSprites.set(fish.id, sprite)
     this.addChild(sprite)
+    try {
+      // If test helpers are enabled, expose diagnostic info when sprites are added
+
+      ;(
+        globalThis as typeof globalThis & {
+          __TEST_HELPERS__?: {
+            _lastAddedFishId?: string
+            _addedSpritesCount?: number
+          }
+        }
+      ).__TEST_HELPERS__ =
+        (
+          globalThis as typeof globalThis & {
+            __TEST_HELPERS__?: {
+              _lastAddedFishId?: string
+              _addedSpritesCount?: number
+            }
+          }
+        ).__TEST_HELPERS__ || {}
+      ;(
+        globalThis as typeof globalThis & {
+          __TEST_HELPERS__?: {
+            _lastAddedFishId?: string
+            _addedSpritesCount?: number
+          }
+        }
+      ).__TEST_HELPERS__!._lastAddedFishId = fish.id
+      // `fishSprites` is a Map, use `size` to report accurate count
+      ;(
+        globalThis as typeof globalThis & {
+          __TEST_HELPERS__?: {
+            _lastAddedFishId?: string
+            _addedSpritesCount?: number
+          }
+        }
+      ).__TEST_HELPERS__!._addedSpritesCount = this.fishSprites.size
+      // Also write a debug console so browser logs capture sprite adds
+
+      console.debug('TankContainer.addFish - added', fish.id, 'sprites=', this.fishSprites.size)
+    } catch {
+      // ignore
+    }
+  }
+
+  // Return fish positions in container/global stage coordinates
+  public getFishScreenPositions(): Array<{ id: string; x: number; y: number }> {
+    const out: Array<{ id: string; x: number; y: number }> = []
+    for (const [id, sprite] of this.fishSprites.entries()) {
+      let gx = sprite.x
+      let gy = sprite.y
+      try {
+        if ('getGlobalPosition' in sprite && typeof sprite.getGlobalPosition === 'function') {
+          const pt = sprite.getGlobalPosition()
+          gx = pt.x
+          gy = pt.y
+        } else {
+          // Fallback: accumulate parent positions
+          let node: { x?: number; y?: number; parent?: unknown } | null = sprite
+          let accX = 0
+          let accY = 0
+          while (node) {
+            accX += node.x || 0
+            accY += node.y || 0
+            node = node.parent as { x?: number; y?: number; parent?: unknown } | null
+          }
+          gx = accX
+          gy = accY
+        }
+      } catch {
+        // ignore and use local coords
+      }
+      out.push({ id, x: gx, y: gy })
+    }
+    return out
   }
 
   removeFish(id: string): void {

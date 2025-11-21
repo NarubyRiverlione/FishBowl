@@ -21,8 +21,9 @@ export class FishSprite extends Sprite {
     this.update()
     // Make interactive for click/select/sell
     this.interactive = true
-    this.buttonMode = true
+    ;(this as Sprite & { buttonMode?: boolean }).buttonMode = true
     // Attach pointer handler defensively (some test environments don't expose Pixi event methods)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const attach = (obj: any, ev: string, cb: (...args: any[]) => void) => {
       if (typeof obj.on === 'function') return obj.on(ev, cb)
       if (typeof obj.addEventListener === 'function') return obj.addEventListener(ev, cb)
@@ -33,14 +34,15 @@ export class FishSprite extends Sprite {
       obj.__events[ev].push(cb)
     }
 
-    attach(this, 'pointerdown', this.handlePointerDown.bind(this))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    attach(this as any, 'pointerdown', this.handlePointerDown.bind(this))
   }
 
   private handlePointerDown(): void {
     try {
       const store = useGameStore.getState()
       // Log the fish GUID for debugging when clicked
-      // eslint-disable-next-line no-console
+
       console.log('Fish clicked id:', this.fish.id)
       if (store.sellMode) {
         // Find the tank that contains this fish
@@ -55,7 +57,7 @@ export class FishSprite extends Sprite {
       }
     } catch (error) {
       // swallow errors to avoid crashing renderer
-      // eslint-disable-next-line no-console
+
       console.error('Error handling fish click:', error)
     }
   }

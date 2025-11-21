@@ -74,7 +74,72 @@ export class RenderingEngine {
   }
 
   syncFish(fish: IFish[]): void {
+    // Record diagnostic info when test helpers are enabled, but do not let errors escape.
+    try {
+      const helpers = (
+        globalThis as typeof globalThis & {
+          __TEST_HELPERS__?: {
+            _lastSyncFishCount?: number
+            _lastSyncTimestamp?: number
+          }
+        }
+      ).__TEST_HELPERS__
+      if (helpers) {
+        try {
+          helpers._lastSyncFishCount = fish?.length ?? 0
+          helpers._lastSyncTimestamp = Date.now()
+        } catch {
+          // ignore diagnostics failures
+        }
+      }
+    } catch {
+      // ignore
+    }
+
     this.fishManager.syncFish(fish)
+  }
+
+  // Expose fish positions in stage coordinates (useful for deterministic tests)
+  getFishScreenPositions(): Array<{ id: string; x: number; y: number }> {
+    try {
+      if (
+        this.tankView &&
+        'getFishScreenPositions' in this.tankView &&
+        typeof this.tankView.getFishScreenPositions === 'function'
+      ) {
+        return this.tankView.getFishScreenPositions()
+      }
+    } catch {
+      // ignore
+    }
+    return []
+  }
+
+  // Wait until the rendering layer reports at least one fish position.
+  // Useful for deterministic e2e tests that need to know when sprites are present.
+  async waitForFishRendered(timeout = 5000, pollInterval = 100): Promise<boolean> {
+    const start = Date.now()
+    // Quick path: check immediately
+    try {
+      const initial = this.getFishScreenPositions()
+      if (initial && initial.length > 0) return true
+    } catch {
+      // ignore
+    }
+
+    while (Date.now() - start < timeout) {
+      await new Promise((res) => setTimeout(res, pollInterval))
+      try {
+        const positions = this.getFishScreenPositions()
+        if (positions && positions.length > 0) {
+          return true
+        }
+      } catch {
+        // ignore and retry
+      }
+    }
+
+    return false
   }
 
   update(delta: number): void {
