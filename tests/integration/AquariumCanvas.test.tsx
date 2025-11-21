@@ -10,6 +10,7 @@ vi.mock('../../src/game/RenderingEngine', () => {
       destroy = vi.fn()
       resize = vi.fn()
       spawnFish = vi.fn()
+      syncFish = vi.fn()
     },
   }
 })

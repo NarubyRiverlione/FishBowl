@@ -3,6 +3,7 @@ import { ITank } from '../../models/types'
 import { IFish } from '../../models/types/fish'
 import { FishSprite } from './FishSprite'
 import { WATER_LEVEL } from '../../lib/constants'
+import useGameStore from '../../store/useGameStore'
 
 export class TankContainer extends Container {
   private tank: ITank
@@ -15,6 +16,25 @@ export class TankContainer extends Container {
     this.background = new Graphics()
     this.addChild(this.background)
     this.draw()
+    // Allow clicking on empty tank area to clear selection
+    this.interactive = true
+    // Attach pointer handler defensively (tests may not provide Pixi event methods)
+    const attach = (obj: any, ev: string, cb: (...args: any[]) => void) => {
+      if (typeof obj.on === 'function') return obj.on(ev, cb)
+      if (typeof obj.addEventListener === 'function') return obj.addEventListener(ev, cb)
+      if (typeof obj.addListener === 'function') return obj.addListener(ev, cb)
+      obj.__events = obj.__events || {}
+      obj.__events[ev] = obj.__events[ev] || []
+      obj.__events[ev].push(cb)
+    }
+
+    attach(this, 'pointerdown', (e: any) => {
+      // If the click target is not a FishSprite, clear selection
+      const target = e.target
+      if (!(target instanceof FishSprite)) {
+        useGameStore.getState().selectFish(null)
+      }
+    })
   }
 
   addFish(fish: IFish): void {

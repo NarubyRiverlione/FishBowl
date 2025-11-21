@@ -2,7 +2,12 @@ import React, { useEffect, useRef } from 'react'
 import { RenderingEngine } from '../game/RenderingEngine'
 import useGameStore from '../store/useGameStore'
 
-const AquariumCanvas: React.FC = () => {
+type AquariumCanvasProps = {
+  width?: number
+  height?: number
+}
+
+const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<RenderingEngine | null>(null)
   const fish = useGameStore((state) => state.tanks[0]?.fish)
@@ -71,8 +76,8 @@ const AquariumCanvas: React.FC = () => {
       ref={containerRef}
       data-testid="aquarium-container"
       style={{
-        width: '100%',
-        height: '100%',
+        width: width ? `${width}px` : '100%',
+        height: height ? `${height}px` : '100%',
         border: '2px solid #333',
         boxShadow: '0 0 20px rgba(0,0,0,0.3)',
       }}

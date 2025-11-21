@@ -16,6 +16,7 @@ export class PerformanceService {
       const checks = this.tank.collisionChecks
       const collisions = this.tank.collisionsResolved
 
+      // Performance logging - keep enabled so tests observing metrics can verify behavior
       console.log(`FPS: ${fps.toFixed(1)} | Fish: ${fishCount} | Checks: ${checks} | Collisions: ${collisions}`)
       this.lastLogTime = now
     }

@@ -22,12 +22,26 @@ export class FishSprite extends Sprite {
     // Make interactive for click/select/sell
     this.interactive = true
     this.buttonMode = true
-    this.on('pointerdown', this.handlePointerDown.bind(this))
+    // Attach pointer handler defensively (some test environments don't expose Pixi event methods)
+    const attach = (obj: any, ev: string, cb: (...args: any[]) => void) => {
+      if (typeof obj.on === 'function') return obj.on(ev, cb)
+      if (typeof obj.addEventListener === 'function') return obj.addEventListener(ev, cb)
+      if (typeof obj.addListener === 'function') return obj.addListener(ev, cb)
+      // Fallback: store handlers on instance for test shims
+      obj.__events = obj.__events || {}
+      obj.__events[ev] = obj.__events[ev] || []
+      obj.__events[ev].push(cb)
+    }
+
+    attach(this, 'pointerdown', this.handlePointerDown.bind(this))
   }
 
   private handlePointerDown(): void {
     try {
       const store = useGameStore.getState()
+      // Log the fish GUID for debugging when clicked
+      // eslint-disable-next-line no-console
+      console.log('Fish clicked id:', this.fish.id)
       if (store.sellMode) {
         // Find the tank that contains this fish
         const tank = store.tanks.find((t) => t.fish.some((f) => f.id === this.fish.id))

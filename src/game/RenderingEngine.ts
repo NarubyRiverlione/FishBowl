@@ -20,7 +20,6 @@ export class RenderingEngine {
     this.tankView = new TankContainer(this.tank)
     this.fishManager = new FishController(this.tank, this.tankView)
     this.performanceMonitor = new PerformanceMonitor(this.tank)
-    console.log('RenderingEngine initialized with tank:', { width, height, backgroundColor })
   }
 
   async init(element: HTMLElement): Promise<void> {

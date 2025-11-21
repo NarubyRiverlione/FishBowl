@@ -65,7 +65,7 @@ Independent test criteria: selling a fish calculates value using baseValue × ag
 - [x] T028 [US5] Add unit test `tests/unit/SellFish.test.ts` verifying value formula and credit update — file: `tests/unit/SellFish.test.ts`
 - [ ] T037 [US5] Implement fish selection mechanism: add `selectedFishId` to game state, add `selectFish(fishId)` action, wire click handlers in `FishSprite` to detect fish clicks — files: `src/store/slices/gameSlice.ts`, `src/game/views/FishSprite.ts`, `src/models/types/index.ts`
 - [ ] T038 [US5] Add visual highlight for selected fish: modify `FishSprite` to render selection indicator (outline/glow) when fish is selected — file: `src/game/views/FishSprite.ts`
-- [ ] T039 [US5] Create `FishInfoPanel` component: display selected fish stats (age, health, hunger, calculated value) and "Sell Fish" button that calls `sellFish(selectedFishId)` — file: `src/components/FishInfoPanel.tsx`
+- [x] T039 [US5] Create `FishInfoPanel` component: display selected fish stats (age, health, hunger, calculated value) and "Sell Fish" button that calls `sellFish(selectedFishId)` — file: `src/components/FishInfoPanel.tsx`
 - [ ] T040 [US5] Add integration test `tests/integration/FishSelection.test.ts` verifying click → select → display info → sell flow — file: `tests/integration/FishSelection.test.ts`
 
 - [x] T035 [FR-012] Implement Developer Mode initialization (parse `?dev=true` & `?tutorial=false`), set starting state (100 credits, STANDARD tank), and add unit/integration tests — files: `src/store/useGameStore.ts`, `tests/unit/DeveloperMode.test.ts`
@@ -76,8 +76,8 @@ Independent test criteria: selling a fish calculates value using baseValue × ag
 **Hover / Selection UX tasks (recommended)**
 
 - [ ] T044 [FR-016] Implement `selectFish(fishId)` state and `selectedFishId` in store; wire click events from `FishSprite` to dispatch selection — files: `src/store/slices/gameSlice.ts`, `src/game/views/FishSprite.ts`
-- [ ] T045 [FR-016] Create `FishInfoPanel` component showing selected fish stats and actions (Sell/Inspect) — file: `src/components/FishInfoPanel.tsx`
-- [ ] T046 [FR-016] Add integration test `tests/integration/FishInspect.test.ts` verifying click → select → panel open → sell flow — file: `tests/integration/FishInspect.test.ts`
+- [x] T045 [FR-016] Create `FishInfoPanel` component showing selected fish stats and actions (Sell/Inspect) — file: `src/components/FishInfoPanel.tsx`
+- [x] T046 [FR-016] Add integration test `tests/integration/FishInspect.test.ts` verifying click → select → panel open → sell flow — file: `tests/integration/FishInspect.test.ts`
 
 **Water Visuals (pollution-driven) tasks**
 

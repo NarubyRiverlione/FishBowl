@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import AquariumCanvas from './components/AquariumCanvas'
 import HUD from './components/HUD'
 import StoreMenu from './components/StoreMenu'
+import FishInfoPanel from './components/FishInfoPanel'
 import useGameStore from './store/useGameStore'
 
 const App: React.FC = () => {
@@ -88,6 +89,7 @@ const App: React.FC = () => {
         }}
       >
         <AquariumCanvas />
+        <FishInfoPanel />
       </div>
     </div>
   )
