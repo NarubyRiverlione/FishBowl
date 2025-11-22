@@ -178,6 +178,24 @@ Output summary (generated)
   - Phase 4: T047/T049 (multi-tank layout)
   - Phase 4: T051/T052 (developer mode updates)
 
+## Test Strategy Recommendations
+
+**Issue**: Tests break when constants are updated for better game experience due to magic numbers.
+
+**Solution**: Hybrid approach documented in `docs/TEST_STRATEGY.md`:
+
+- ✅ **Use constants in unit/integration tests** for business logic and calculations
+- ❌ **Keep magic numbers in E2E tests** for user experience verification
+- 🔄 **Create test configuration** for common scenarios (dev mode, normal mode)
+
+**Next Steps**:
+
+- [ ] **T060** Create `tests/config/testConstants.ts` with scenario-based test data
+- [ ] **T061** Refactor unit tests to import and use business logic constants
+- [ ] **T062** Add regression protection tests for critical user-facing values
+- [ ] **T063** Update integration tests to use constant-based calculations
+- [ ] **T064** Document which values are "contracts" vs "tuneable parameters"
+
 ```
 - Parallel opportunities identified: T005/T006/T007/T008/T009 and test scaffolding
 ```

@@ -660,7 +660,7 @@ describe('FishService', () => {
     for (let i = 0; i < 80; i++) {
       fish = FishService.tickFish(fish)
     }
-    expect(fish.hunger).toBe(100) // Clamped
+    expect(fish.hunger).toBe(1000) // Clamped
     expect(fish.health).toBe(80) // Not dead yet
 
     // One more tick should reduce health

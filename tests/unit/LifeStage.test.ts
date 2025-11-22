@@ -62,8 +62,8 @@ describe('Fish Life Stage Utilities', () => {
       expect(getLifeStageColorSaturation('mature')).toBe(1.0)
     })
 
-    it('should return 0.8 for old fish (reduced saturation)', () => {
-      expect(getLifeStageColorSaturation('old')).toBe(0.8)
+    it('should return 0.6 for old fish (reduced saturation)', () => {
+      expect(getLifeStageColorSaturation('old')).toBe(0.6)
     })
 
     it('should handle invalid life stages gracefully', () => {
@@ -92,7 +92,7 @@ describe('Fish Life Stage Utilities', () => {
       const oldStage = getLifeStage(oldAge)
       expect(oldStage).toBe('old')
       expect(getLifeStageSizeMultiplier(oldStage)).toBe(1.3)
-      expect(getLifeStageColorSaturation(oldStage)).toBe(0.8)
+      expect(getLifeStageColorSaturation(oldStage)).toBe(0.6)
     })
 
     it('should demonstrate size progression through life stages', () => {
@@ -117,7 +117,7 @@ describe('Fish Life Stage Utilities', () => {
       expect(getLifeStageColorSaturation(getLifeStage(200))).toBe(1.0) // mature
 
       // Old fish have reduced saturation (faded appearance)
-      expect(getLifeStageColorSaturation(getLifeStage(400))).toBe(0.8) // old
+      expect(getLifeStageColorSaturation(getLifeStage(400))).toBe(0.6) // old
     })
   })
 
@@ -138,7 +138,7 @@ describe('Fish Life Stage Utilities', () => {
       // - Old: Desaturated (0.8x)
       expect(getLifeStageColorSaturation(getLifeStage(119))).toBe(1.0)
       expect(getLifeStageColorSaturation(getLifeStage(299))).toBe(1.0)
-      expect(getLifeStageColorSaturation(getLifeStage(300))).toBe(0.8)
+      expect(getLifeStageColorSaturation(getLifeStage(300))).toBe(0.6)
     })
   })
 })

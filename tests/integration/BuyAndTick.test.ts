@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
 import { FishSpecies, FISH_SPECIES_CONFIG } from '../../src/models/types'
+import { TEST_VALUES } from '../config/testConstants'
 
 describe('Buy and Tick Integration', () => {
   beforeEach(() => {
     useGameStore.setState({
-      credits: 50,
+      credits: TEST_VALUES.CREDITS.MODERATE,
       tanks: [],
       currentTick: 0,
       totalTime: 0,

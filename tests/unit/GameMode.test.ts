@@ -39,7 +39,7 @@ describe('Game mode helpers', () => {
     const s = useGameStore.getState()
     expect(s.developerMode).toBe(true)
     expect(s.tutorialEnabled).toBe(false)
-    expect(s.credits).toBe(100)
+    expect(s.credits).toBe(1000)
     expect(s.isTutorialMode?.()).toBe(false)
     expect(s.tank).toBeDefined()
     expect(s.tank?.size).toBe('STANDARD')

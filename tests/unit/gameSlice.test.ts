@@ -100,7 +100,7 @@ describe('Game slice - tick and mode behaviors', () => {
     useTestStore.getState().setMode('dev')
     const s = useTestStore.getState()
     expect(s.developerMode).toBe(true)
-    expect(s.credits).toBe(100)
+    expect(s.credits).toBe(1000)
     expect(s.tank?.size).toBe('STANDARD')
   })
 

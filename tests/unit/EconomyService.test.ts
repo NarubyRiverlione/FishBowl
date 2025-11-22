@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { EconomyService } from '../../src/services/EconomyService'
 import { FishSpecies, FISH_SPECIES_CONFIG, ITank, IFish } from '../../src/models/types'
+import { BUSINESS_LOGIC } from '../config/testConstants'
 
 describe('EconomyService', () => {
   it('returns correct fish cost from species config', () => {
@@ -17,16 +18,19 @@ describe('EconomyService', () => {
     } as unknown as ITank
 
     // Enough credits and empty tank -> can buy
-    const can = EconomyService.canBuyFish(100, tank, FishSpecies.GUPPY)
+    const sufficientCredits = BUSINESS_LOGIC.COSTS.GUPPY * 2 // More than enough
+    const can = EconomyService.canBuyFish(sufficientCredits, tank, FishSpecies.GUPPY)
     expect(can).toBe(true)
 
     // Not enough credits -> cannot buy
-    const cannotAfford = EconomyService.canBuyFish(0, tank, FishSpecies.GUPPY)
+    const insufficientCredits = BUSINESS_LOGIC.COSTS.GUPPY - 1
+    const cannotAfford = EconomyService.canBuyFish(insufficientCredits, tank, FishSpecies.GUPPY)
     expect(cannotAfford).toBe(false)
 
     // Tank full -> cannot buy even with credits
     tank.fish = [{ id: 'f1', isAlive: true } as IFish]
-    const isFull = EconomyService.canBuyFish(1000, tank, FishSpecies.GUPPY)
+    const abundantCredits = BUSINESS_LOGIC.COSTS.GUPPY * 10
+    const isFull = EconomyService.canBuyFish(abundantCredits, tank, FishSpecies.GUPPY)
     expect(isFull).toBe(false)
   })
 

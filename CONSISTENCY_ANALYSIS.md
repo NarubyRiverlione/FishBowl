@@ -129,7 +129,7 @@ The constant is correct (1000), but test must be verified to expect this value:
 ```typescript
 // tests/unit/DeveloperMode.test.ts - VERIFY TEST
 // Should expect: expect(state.credits).toBe(1000)
-// NOT: expect(state.credits).toBe(100)  ← OLD VALUE (remove if present)
+// NOT: expect(state.credits).toBe(1000)  ← OLD VALUE (remove if present)
 ```
 
 - New spec value: 1000 credits (ratified 2025-11-21)

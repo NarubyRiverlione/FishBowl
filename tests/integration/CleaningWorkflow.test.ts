@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
 import { CLEAN_COST, CLEAN_POLLUTION_REDUCTION } from '../../src/lib/constants'
+import { TEST_VALUES, BUSINESS_LOGIC } from '../config/testConstants'
 
 describe('Cleaning Workflow Integration', () => {
   beforeEach(() => {
     useGameStore.setState({
-      credits: 100,
+      credits: TEST_VALUES.CREDITS.MODERATE,
       tanks: [],
       tank: null,
     })
@@ -14,14 +15,14 @@ describe('Cleaning Workflow Integration', () => {
       id: 'test-tank',
       size: 'BOWL',
       capacity: 5,
-      waterQuality: 50,
-      pollution: 50,
+      waterQuality: TEST_VALUES.WATER.MODERATE_POLLUTION.waterQuality,
+      pollution: TEST_VALUES.WATER.MODERATE_POLLUTION.pollution,
       hasFilter: false,
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: 100,
-      height: 100,
+      width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
+      height: TEST_VALUES.DIMENSIONS.TANK_HEIGHT,
       backgroundColor: 0x000000,
     })
   })
@@ -53,19 +54,21 @@ describe('Cleaning Workflow Integration', () => {
 
     const newState = useGameStore.getState()
 
-    expect(newState.tank!.waterQuality).toBe(Math.min(100, initialWaterQuality + CLEAN_POLLUTION_REDUCTION))
+    expect(newState.tank!.waterQuality).toBe(
+      Math.min(BUSINESS_LOGIC.TANK_VALUES.PERCENTAGE_MAX, initialWaterQuality + CLEAN_POLLUTION_REDUCTION)
+    )
   })
 
   it('should not clean if insufficient credits', () => {
     const store = useGameStore.getState()
     const tankId = store.tank!.id
 
-    useGameStore.setState({ credits: 0 })
+    useGameStore.setState({ credits: TEST_VALUES.CREDITS.INSUFFICIENT })
 
     useGameStore.getState().cleanTank(tankId)
 
     const newState = useGameStore.getState()
-    expect(newState.credits).toBe(0)
-    expect(newState.tank!.pollution).toBe(50)
+    expect(newState.credits).toBe(TEST_VALUES.CREDITS.INSUFFICIENT)
+    expect(newState.tank!.pollution).toBe(TEST_VALUES.WATER.MODERATE_POLLUTION.pollution)
   })
 })

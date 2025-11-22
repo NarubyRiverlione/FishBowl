@@ -2,11 +2,12 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
 import { FishSpecies } from '../../src/models/types'
 import { FishService } from '../../src/services/FishService'
+import { TEST_VALUES, BUSINESS_LOGIC } from '../config/testConstants'
 
 describe('Sell Fish Workflow Integration', () => {
   beforeEach(() => {
     useGameStore.setState({
-      credits: 0,
+      credits: TEST_VALUES.CREDITS.INSUFFICIENT,
       tanks: [],
       tank: null,
       currentTick: 0,
@@ -16,14 +17,14 @@ describe('Sell Fish Workflow Integration', () => {
       id: 'sell-tank',
       size: 'BOWL',
       capacity: 5,
-      waterQuality: 100,
-      pollution: 0,
+      waterQuality: BUSINESS_LOGIC.TANK_VALUES.WATER_QUALITY_MAX,
+      pollution: BUSINESS_LOGIC.TANK_VALUES.POLLUTION_MIN,
       hasFilter: false,
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: 100,
-      height: 100,
+      width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
+      height: TEST_VALUES.DIMENSIONS.TANK_HEIGHT,
       backgroundColor: 0x000000,
     })
   })

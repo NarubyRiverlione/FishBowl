@@ -25,7 +25,7 @@ describe('Developer Mode Initialization Integration', () => {
     const state = useGameStore.getState()
 
     expect(state.developerMode).toBe(true)
-    expect(state.credits).toBe(100)
+    expect(state.credits).toBe(1000)
     expect(state.tutorialEnabled).toBe(false)
     expect(state.tank).toBeDefined()
     expect(state.tank?.size).toBe('STANDARD')

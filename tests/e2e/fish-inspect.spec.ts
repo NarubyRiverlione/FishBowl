@@ -18,8 +18,8 @@ test.describe('Fish Inspect E2E', () => {
     await expect(canvas).toBeVisible()
 
     // Prefer deterministic helper flow (enabled via URL flag)
-    // Wait for HUD to show the fish was added
-    await page.getByText(/1\//).waitFor({ timeout: 3000 })
+    // Wait for HUD to show the fish was added (12 dev fish + 1 bought = 13)
+    await page.getByText(/STANDARD 13\/15/).waitFor({ timeout: 3000 })
 
     // If the helper is available, wait for the store to show the fish, then wait for renderer
     let helperPositions: Array<{ id: string; x: number; y: number }> | null = null

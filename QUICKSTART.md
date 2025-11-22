@@ -67,7 +67,7 @@ pnpm test:coverage
 
 **Coverage Targets**:
 
-- **models/**: >90% ✅ (Currently: 100%)
+- **models/**: >90% ✅ (Currently: 1000%)
 - **lib/**: >90% ✅ (Currently: 98.78%)
 - **game/**: >85% ✅ (Currently: 74% - acceptable for MVP)
 - **components/**: >85% ✅ (Currently: 86.66%)

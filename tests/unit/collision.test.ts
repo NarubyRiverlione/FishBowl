@@ -53,14 +53,14 @@ describe('Collision Utilities', () => {
     })
 
     it('should prevent fish from going above water level', () => {
-      // Tank height 100, water level 85% = 85px high, top at y=15
+      // Tank height 100, water level 95% = 95px high, top at y=5
       const fish = mockFish({ y: 10, vy: -5, radius: 10 })
       resolveBoundaryCollision(fish, { width: 100, height: 100, backgroundColor: 0 })
 
       // Fish should be pushed down to waterTop + radius
-      // waterTop = 100 - (100 * 0.85) = 15
-      // Expected y = 15 + 10 = 25
-      expect(fish.y).toBe(25)
+      // waterTop = 100 - (100 * 0.95) = 5
+      // Expected y = 5 + 10 = 15
+      expect(fish.y).toBe(15)
       expect(fish.vy).toBe(4) // Reversed with restitution 0.8
     })
   })

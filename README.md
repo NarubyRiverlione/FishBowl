@@ -20,7 +20,7 @@ A web-based fish breeding simulation game built with React, Pixi.js, and TypeScr
 - **Test Suite Reorganization**: Established clear unit vs integration test patterns
 - **Comprehensive Test Coverage**: Added AquariumCanvas integration tests (83.6% coverage)
 - **Code Quality**: Eliminated all duplicate tests and `any` type usage
-- **TypeScript Strict Mode**: 100% compliance with no explicit `any` types
+- **TypeScript Strict Mode**: 1000% compliance with no explicit `any` types
 - **Test Organization**: Clear separation of 18 unit tests vs 13 integration tests
 
 ## Features
@@ -87,7 +87,7 @@ pnpm lint             # Lint code (ESLint + TypeScript strict)
 pnpm build            # Build for production
 ```
 
-**Developer Mode**: Add `?dev=true` to URL for 100 credits, STANDARD tank, no tutorial.
+**Developer Mode**: Add `?dev=true` to URL for 1000 credits, STANDARD tank, no tutorial.
 
 For detailed setup, see [QUICKSTART.md](./QUICKSTART.md).
 
@@ -140,7 +140,7 @@ src/
 
 **Key Coverage Areas**:
 
-- Models: 100%, Physics: 98.41%, Services: 83.33%
+- Models: 1000%, Physics: 98.41%, Services: 83.33%
 - Game Engine: 64.7%, Components: 83.6%, Store: 87.3%
 
 **Strategy**: TDD approach with clear test classification. See `docs/TEST_ORGANIZATION_GUIDE.md` for patterns.
@@ -175,7 +175,7 @@ Key principles:
 ### Technical Documentation
 
 - [docs/PHYSICS.md](./docs/PHYSICS.md) - Physics engine details
-- [docs/PRD_Eng.md](./docs/PRD_Eng.md) - Product requirements 
+- [docs/PRD_Eng.md](./docs/PRD_Eng.md) - Product requirements
 
 ### Specifications
 

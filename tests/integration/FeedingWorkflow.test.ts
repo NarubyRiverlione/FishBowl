@@ -2,11 +2,12 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
 import { FishSpecies } from '../../src/models/types'
 import { FEED_BASE_COST, FEED_PER_FISH_COST, POLLUTION_PER_FEEDING } from '../../src/lib/constants'
+import { TEST_VALUES, BUSINESS_LOGIC } from '../config/testConstants'
 
 describe('Feeding Workflow Integration', () => {
   beforeEach(() => {
     useGameStore.setState({
-      credits: 100,
+      credits: TEST_VALUES.CREDITS.MODERATE,
       tanks: [],
       tank: null,
     })
@@ -14,15 +15,15 @@ describe('Feeding Workflow Integration', () => {
     useGameStore.getState().addOrSelectTank({
       id: 'test-tank',
       size: 'BOWL',
-      capacity: 5,
-      waterQuality: 100,
-      pollution: 0,
+      capacity: BUSINESS_LOGIC.TANK_VALUES.BOWL_CAPACITY,
+      waterQuality: BUSINESS_LOGIC.TANK_VALUES.WATER_QUALITY_MAX,
+      pollution: BUSINESS_LOGIC.TANK_VALUES.POLLUTION_MIN,
       hasFilter: false,
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: 100,
-      height: 100,
+      width: TEST_VALUES.DIMENSIONS.WIDTH,
+      height: TEST_VALUES.DIMENSIONS.HEIGHT,
       backgroundColor: 0x000000,
     })
   })
@@ -59,7 +60,7 @@ describe('Feeding Workflow Integration', () => {
     const fish = tank.fish[0]
 
     // Update fish hunger in state directly for setup
-    const hungryFish = { ...fish, hunger: 50 }
+    const hungryFish = { ...fish, hunger: TEST_VALUES.FEEDING.INITIAL_HUNGER }
     const updatedTank = { ...tank, fish: [hungryFish] }
     useGameStore.setState({
       tanks: [updatedTank],
@@ -72,7 +73,7 @@ describe('Feeding Workflow Integration', () => {
     const newState = useGameStore.getState()
     const fedFish = newState.tank!.fish[0]
 
-    expect(fedFish.hunger).toBeLessThan(50)
+    expect(fedFish.hunger).toBeLessThan(TEST_VALUES.FEEDING.INITIAL_HUNGER)
     expect(fedFish.lastFedAt).toBeDefined()
   })
 
