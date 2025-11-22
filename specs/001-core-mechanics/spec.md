@@ -125,7 +125,12 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 - **FR-017**: The system MUST implement **Decorative Tank Floor**: STANDARD and BIG tanks feature a visible floor with pebble/sand texture (base color with random specs). BOWL tank has an invisible 1-pixel floor boundary. All tank types use the floor as a "rest place" with gentle collision physics (0.2 restitution) encouraging fish to settle naturally. Fish-to-boundary collisions use 0.8 restitution; floor collisions use 0.2 restitution for peaceful settling behavior.
 - **FR-018**: The system MUST implement **Tank Visual Design**: BOWL tanks render as circles (circular glass effect, 300×300px). STANDARD tanks render as squares (rectangular glass, 500×500px). BIG tanks render as wide rectangles (wide panoramic glass, 800×400px). All tanks are procedurally drawn using Pixi.js Graphics (no external SVG assets required). Tank rendering scales responsively to viewport size without affecting physics simulation.
 - **FR-019**: The system MUST support **Multi-Tank Display (Responsive Layout)**: Desktop displays all 2–3 tanks simultaneously in a grid. Tablets and mobile devices display one tank at a time with tab-based navigation. Tab buttons indicate tank type (●=BOWL, ◯=STANDARD, ▭=BIG) and active state. Keyboard shortcuts (1/2/3 keys or arrow keys) allow switching between tanks.
-- **FR-020**: The system SHOULD provide **Water Visual Feedback** (Optional): Use a background image/texture behind tank rendering and apply dynamic blur/tint based on pollution grade. Provide performant shader or Canvas2D fallback and allow disabling on low-end devices.
+- **FR-020**: The system MUST implement **Tank Shape Abstraction**: Support multiple tank geometries (circular, rectangular) through a unified ITankShape interface with consistent collision detection, boundary resolution, and spawn area calculation across all shapes.
+- **FR-021**: The system MUST implement **Rendering Engine Lifecycle Management**: Ensure only one rendering engine instance exists per tank, properly destroy previous instances on tank changes, and prevent memory leaks or duplicate rendering.
+- **FR-022**: The system MUST implement **Feature Flag Safety**: Provide feature flags for all Phase 4 functionality (circular tanks, shape collision, multi-tank display) allowing safe rollback to rectangular-only tank system if issues occur.
+- **FR-023**: The system MUST implement **Debug Infrastructure**: Provide debugging tools to identify tank state inconsistencies, collision detection issues, and rendering engine problems during development and testing.
+- **FR-024**: The system MUST maintain **Comprehensive E2E Test Coverage**: All major user workflows must be covered by end-to-end tests to achieve 90% overall test coverage. E2E tests must validate complete user journeys including tank management, fish lifecycle, economic transactions, and tank progression flows.
+- **FR-025**: The system SHOULD provide **Water Visual Feedback** (Optional): Use a background image/texture behind tank rendering and apply dynamic blur/tint based on pollution grade. Provide performant shader or Canvas2D fallback and allow disabling on low-end devices.
 
 ### Key Entities
 
@@ -145,6 +150,11 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 - **Stability**: The game loop runs consistently for at least 10 minutes without performance degradation.
 - **Economic Balance**: The combined cost of food and maintenance is lower than the profit from selling a healthy adult fish, ensuring a win condition is possible.
 - **Resource Management**: Players must balance spending on feeding vs. water quality maintenance to maximize profit.
+- **Shape Abstraction**: Tank collision detection works identically for circular and rectangular tanks.
+- **Engine Stability**: No dual rendering engines or duplicate tank rendering occurs.
+- **Safe Rollback**: Feature flags allow immediate rollback to Phase 3 functionality.
+- **Debug Visibility**: Debug tools can quickly identify the root cause of tank/collision issues.
+- **E2E Test Coverage**: All major user flows must be covered by e2e tests to achieve 90% overall coverage target. E2E tests must be updated after each phase implementation to validate new functionality end-to-end.
 
 ## Clarifications
 

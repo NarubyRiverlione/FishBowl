@@ -1,4 +1,6 @@
-a# Tasks: Core Game Mechanics (MVP)
+# Tasks: Core Game Mechanics (MVP)
+
+> **🧪 E2E COVERAGE MANDATE**: Each phase MUST include an "E2E UPDATE" task to maintain 90% coverage target. Look for tasks marked with "**E2E UPDATE**" - these are mandatory for phase completion.
 
 Feature: Core Game Mechanics (MVP)
 
@@ -74,31 +76,111 @@ Independent test criteria: selling a fish calculates value using baseValue × ag
 
 Phase 4: Tank Design & Rendering (P2–P3)
 
-**Tank Visual Design & Collision Physics (New from Updated Spec)**
+**CRITICAL: Phase 4 Implementation Strategy Update**
 
-Independent test criteria: BOWL renders circular (300×300px), STANDARD square (500×500px), BIG wide-rect (800×400px); all procedurally drawn via Pixi.js Graphics; fish-to-fish collision removed (visual overlap allowed); floor renders visible/invisible per tank type with 0.2 restitution physics.
+Phase 4 has been restructured into safer sub-phases after rollback due to:
 
-- [ ] T037 [P] [FR-016] Remove fish-to-fish collision logic: update `CollisionService` to skip fish-fish collision checks, allowing visual overlap for 3D depth illusion — files: `src/services/physics/CollisionService.ts`, `src/models/types/index.ts`
-- [ ] T038 [P] [FR-016] Add unit test `tests/unit/FishCollision.test.ts` verifying fish-fish collision is disabled while boundary collisions remain — file: `tests/unit/FishCollision.test.ts`
-- [ ] T039 [FR-017] Implement floor entity as `IFloor` interface in types and add to tank model: defines floor type (visible/invisible), dimensions (30px/40px/1px), collision restitution (0.2) — file: `src/models/types/index.ts`
-- [ ] T040 [FR-017] Implement floor rendering in `TankContainer`: BOWL invisible 1px floor, STANDARD/BIG visible pebble/sand texture (procedurally generated, no assets) with color specs — files: `src/game/views/TankContainer.ts`, `src/lib/constants.ts`
-- [ ] T041 [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
-- [ ] T042 [P] [FR-017] Add integration test `tests/integration/FloorPhysics.test.ts` verifying fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
-- [ ] T043 [FR-018] Implement procedural tank rendering: BOWL as filled circle, STANDARD as filled square, BIG as filled rectangle (no SVG); use Pixi.js Graphics.drawCircle/drawRect with glass effect (semi-transparent border) — file: `src/game/views/TankContainer.ts`
-- [ ] T044 [FR-018] Add tank dimension constants to `src/lib/constants.ts`: `TANK_BOWL_SIZE: 300`, `TANK_STANDARD_SIZE: 500`, `TANK_BIG_WIDTH: 800`, `TANK_BIG_HEIGHT: 400` — file: `src/lib/constants.ts`
-- [ ] T045 [P] [FR-018] Implement responsive scaling in `TankContainer`: scale tank display (300–600px per tank desktop, full-width mobile) without affecting collision bounds or physics — file: `src/game/views/TankContainer.ts`
-- [ ] T046 [FR-018] Add unit test `tests/unit/TankVisuals.test.ts` verifying tank dimensions and shape types (circular, square, rectangle) render correctly — file: `tests/unit/TankVisuals.test.ts`
-- [ ] T047 [P] [FR-019] Implement multi-tank display layout: add `activeTabIndex` to game state, create responsive grid layout for desktop (all 2–3 tanks visible), tab navigation for mobile/tablet (one tank at a time) — files: `src/store/useGameStore.ts`, `src/components/AquariumCanvas.tsx`, `src/models/types/index.ts`
-- [ ] T048 [FR-019] Add tab buttons with visual indicators: ● for BOWL, ◯ for STANDARD, ▭ for BIG; highlight active tank; wire keyboard shortcuts (1/2/3 keys, arrow keys) — file: `src/components/AquariumCanvas.tsx`
-- [ ] T049 [P] [FR-019] Add responsive layout CSS/styles: use viewport queries to switch between grid (desktop ≥1024px), split layout (tablet 768–1024px), tabs (mobile <768px) — files: `src/index.css`, `src/components/AquariumCanvas.tsx`
-- [ ] T050 [FR-019] Add integration test `tests/integration/MultiTankLayout.test.ts` verifying desktop grid, tablet split, and mobile tab layouts; keyboard shortcut switching — file: `tests/integration/MultiTankLayout.test.ts`
+1. Dual bowl rendering (multiple engine instances)
+2. Circular collision detection failures (missing shape abstraction)
+3. Lack of debugging infrastructure
+4. No rollback safety mechanisms
 
-**Developer Mode Update (Updated Spec Value)**
+**Phase 4a: Tank Shape Foundation (Critical Prerequisites)**
 
-Independent test criteria: dev mode initializes with STANDARD tank (was just "large tank") and 1000 credits (was 100); tutorial disabled.
+**Tank Shape Abstraction (Critical for Circular Tanks)**
 
-- [ ] T051 [FR-012-Update] Update Developer Mode constants: change starting credits from 100 to 1000 in `src/lib/constants.ts` and verify `DeveloperMode.test.ts` — files: `src/lib/constants.ts`, `tests/unit/DeveloperMode.test.ts`
-- [ ] T052 [P] [FR-012-Update] Update tank progression code: verify BOWL capacity is 2 (was 1), STANDARD capacity is 15 (was 10), BIG is 30 (was 20); costs 75 (STANDARD) and 150 (BIG) — files: `src/store/useGameStore.ts`, `src/lib/constants.ts`, `tests/integration/Progression.test.ts`
+Independent test criteria: Tank shape system can handle both circular and rectangular boundaries independently; collision detection works for both shapes; tank creation uses shape factory pattern.
+
+- [ ] T037a [P] [NEW] Create tank shape abstraction: implement `ITankShape` interface with `checkBoundary()`, `resolveBoundary()`, `getSpawnBounds()` methods — file: `src/models/types/tankShape.ts`
+- [ ] T037b [P] [NEW] Implement `RectangularTankShape` class wrapping existing rectangular collision logic — file: `src/services/physics/shapes/RectangularTankShape.ts`
+- [ ] T037c [P] [NEW] Implement `CircularTankShape` class with proper circular collision math — file: `src/services/physics/shapes/CircularTankShape.ts`
+- [ ] T037d [P] [NEW] Add comprehensive unit tests for tank shapes: verify boundary detection, collision resolution, spawn bounds for both shapes — file: `tests/unit/TankShapes.test.ts`
+- [ ] T037e [P] [NEW] Create tank shape factory: `createTankShape(size: TankSize): ITankShape` function — file: `src/services/physics/TankShapeFactory.ts`
+- [ ] T037f [P] [NEW] **E2E UPDATE**: Update tank boundary e2e tests to validate both rectangular and circular collision detection work correctly — file: `tests/e2e/tank-boundaries.spec.ts`
+
+**Phase 4b: Rendering Engine Safety (Critical for Stability)**
+
+**Rendering Engine Lifecycle Management (Prevents Dual Rendering)**
+
+Independent test criteria: Only one rendering engine exists at a time; engine properly destroys previous instances; no duplicate tank rendering.
+
+- [ ] T038a [P] [NEW] Implement rendering engine singleton pattern: prevent multiple instances, proper cleanup on destroy — file: `src/game/RenderingEngineManager.ts`
+- [ ] T038b [P] [NEW] Add engine lifecycle debugging: log creation, destruction, tank assignment with unique IDs — file: `src/game/PerformanceMonitor.ts`
+- [ ] T038c [P] [NEW] Fix AquariumCanvas effect race conditions: ensure single engine instance per tank, proper cleanup on unmount — file: `src/components/AquariumCanvas.tsx`
+- [ ] T038d [P] [NEW] Add integration test for engine lifecycle: verify single instance, proper cleanup, no memory leaks — file: `tests/integration/RenderingEngineLifecycle.test.ts`
+- [ ] T038e [P] [NEW] **E2E UPDATE**: Add e2e test for rendering engine singleton behavior and tank switching scenarios — file: `tests/e2e/engine-lifecycle.spec.ts`
+
+**Phase 4c: Safe Tank Shape Integration (Modified from Original)**
+
+**Tank Shape Integration with Existing System**
+
+Independent test criteria: Existing rectangular tanks continue working; new circular tanks use circular collision; shape selection based on tank size.
+
+- [ ] T039a [P] [MODIFIED] Update CollisionService to use tank shape abstraction: replace hardcoded rectangular logic with `tank.shape.resolveBoundary(fish)` — file: `src/services/physics/CollisionService.ts`
+- [ ] T039b [P] [NEW] Add tank shape to ITank interface: `shape: ITankShape` property, update tank creation to assign shape — file: `src/models/types/index.ts`
+- [ ] T039c [P] [MODIFIED] Update Tank model to use shape-based collision: `resolveBoundaryCollision(fish, tank.shape)` instead of `resolveBoundaryCollision(fish, tank)` — file: `src/models/Tank.ts`
+- [ ] T039d [P] [NEW] Add feature flag for shape system: `USE_TANK_SHAPES` flag for safe rollback — file: `src/lib/constants.ts`
+- [ ] T039e [P] [NEW] Add integration test for shape-collision integration: verify both rectangular and circular collision work — file: `tests/integration/ShapeCollisionIntegration.test.ts`
+- [ ] T039f [P] [NEW] **E2E UPDATE**: Extend tank boundary e2e tests to cover feature flag rollback scenarios and shape integration — file: `tests/e2e/tank-boundaries.spec.ts`
+
+**Phase 4d: Debugging & Rollback Safety (Safety Net)**
+
+**Debugging Infrastructure & Feature Flags**
+
+Independent test criteria: Debug tools can identify dual tanks, collision issues, rendering problems; feature flags allow safe rollback.
+
+- [ ] T040a [P] [NEW] Create TankDebugger utility: log tank state, collision checks, rendering engine status — file: `src/lib/debug/TankDebugger.ts`
+- [ ] T040b [P] [NEW] Add feature flags for Phase 4 features: `ENABLE_CIRCULAR_TANKS`, `USE_SHAPE_COLLISION`, `ENABLE_MULTI_TANK_DISPLAY` — file: `src/lib/constants.ts`
+- [ ] T040c [P] [NEW] Create tank state validator: check for duplicate tanks, inconsistent tank arrays, missing required properties — file: `src/lib/validation/TankValidator.ts`
+- [ ] T040d [P] [NEW] Add debug UI overlay: show tank count, engine instance count, collision statistics (dev mode only) — file: `src/components/debug/DebugOverlay.tsx`
+- [ ] T040e [P] [NEW] **E2E UPDATE**: Add e2e tests for debug infrastructure and tank state validation in dev mode — file: `tests/e2e/debug-tools.spec.ts`
+
+**Phase 4e: Floor Physics (From Original FR-017)**
+
+**Floor Entity & Gentle Collision Physics**
+
+Independent test criteria: Floor renders visible/invisible per tank type; fish settle with 0.2 restitution vs 0.8 for walls; natural resting behavior.
+
+- [ ] T041a [FR-017] Implement floor entity as `IFloor` interface in types and add to tank model: defines floor type (visible/invisible), dimensions (30px/40px/1px), collision restitution (0.2) — file: `src/models/types/index.ts`
+- [ ] T041b [FR-017] Implement floor rendering in `TankContainer`: BOWL invisible 1px floor, STANDARD/BIG visible pebble/sand texture (procedurally generated, no assets) with color specs — files: `src/game/views/TankContainer.ts`, `src/lib/constants.ts`
+- [ ] T041c [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
+- [ ] T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
+
+**Phase 4f: Procedural Tank Rendering (From Original FR-018)**
+
+**Visual Tank Implementation**
+
+Independent test criteria: BOWL renders as circle, STANDARD as square, BIG as rectangle; rendering scales without affecting physics; proper glass effect.
+
+- [ ] T042a [FR-018] Add tank dimension constants with shape info: `TANK_BOWL_SIZE: 300`, `TANK_STANDARD_SIZE: 500`, `TANK_BIG_WIDTH: 800`, `TANK_BIG_HEIGHT: 400` — file: `src/lib/constants.ts`
+- [ ] T042b [FR-018] Implement shape-aware tank rendering in TankContainer: use tank.shape.type to determine render method (drawCircle vs drawRect) — file: `src/game/views/TankContainer.ts`
+- [ ] T042c [P] [FR-018] Implement responsive scaling: scale tank display (300–600px per tank desktop, full-width mobile) without affecting collision bounds or physics — file: `src/game/views/TankContainer.ts`
+- [ ] T042d [FR-018] Add unit test for tank visuals: verify dimensions and shape types (circular, square, rectangle) render correctly — file: `tests/unit/TankVisuals.test.ts`
+- [ ] T042e [P] [NEW] Add integration test for shape-visual consistency: verify rendered shape matches collision boundaries — file: `tests/integration/ShapeVisualConsistency.test.ts`
+- [ ] T042f [P] [NEW] **E2E UPDATE**: Add e2e tests for procedural tank rendering across different tank types and responsive scaling — file: `tests/e2e/tank-visuals.spec.ts`
+
+**Phase 4g: Multi-Tank Display (From Original FR-019)**
+
+**Responsive Multi-Tank Layout**
+
+Independent test criteria: Desktop shows all tanks in grid; tablets/mobile show one tank with tabs; keyboard shortcuts work; no duplicate rendering.
+
+- [ ] T043a [P] [FR-019] Implement multi-tank display layout: add `activeTabIndex` to game state, create responsive grid layout for desktop (all 2–3 tanks visible), tab navigation for mobile/tablet (one tank at a time) — files: `src/store/useGameStore.ts`, `src/components/AquariumCanvas.tsx`, `src/models/types/index.ts`
+- [ ] T043b [FR-019] Add tab buttons with visual indicators: ● for BOWL, ◯ for STANDARD, ▭ for BIG; highlight active tank; wire keyboard shortcuts (1/2/3 keys, arrow keys) — file: `src/components/AquariumCanvas.tsx`
+- [ ] T043c [P] [FR-019] Add responsive layout CSS/styles: use viewport queries to switch between grid (desktop ≥1024px), split layout (tablet 768–1024px), tabs (mobile <768px) — files: `src/index.css`, `src/components/AquariumCanvas.tsx`
+- [ ] T043d [FR-019] Add integration test: verify desktop grid, tablet split, and mobile tab layouts; keyboard shortcut switching — file: `tests/integration/MultiTankLayout.test.ts`
+- [ ] T043e [P] [NEW] **E2E UPDATE**: Add comprehensive e2e tests for multi-tank responsive layouts and tank switching across device sizes — file: `tests/e2e/multi-tank.spec.ts`
+
+**Phase 4h: Legacy Tasks (Updated)**
+
+**Fish-to-Fish Collision Removal & Developer Mode Updates**
+
+Independent test criteria: Fish-to-fish collision disabled (visual overlap allowed); dev mode starts with 1000 credits and STANDARD tank; tutorial disabled in dev mode.
+
+- [ ] T044a [P] [FR-016] Remove fish-to-fish collision logic: update `CollisionService` to skip fish-fish collision checks, allowing visual overlap for 3D depth illusion — files: `src/services/physics/CollisionService.ts`, `src/models/types/index.ts`
+- [ ] T044b [P] [FR-016] Add unit test: verify fish-fish collision is disabled while boundary collisions remain — file: `tests/unit/FishCollision.test.ts`
+- [ ] T044c [FR-012-Update] Update Developer Mode constants: change starting credits from 100 to 1000 in `src/lib/constants.ts` and verify `DeveloperMode.test.ts` — files: `src/lib/constants.ts`, `tests/unit/DeveloperMode.test.ts`
+- [ ] T044d [P] [FR-012-Update] Update tank progression code: verify BOWL capacity is 2 (was 1), STANDARD capacity is 15 (was 10), BIG is 30 (was 20); costs 75 (STANDARD) and 150 (BIG) — files: `src/store/useGameStore.ts`, `src/lib/constants.ts`, `tests/integration/Progression.test.ts`
 
 Phase 5: Enhanced UX & Polish (P2–P3)
 
@@ -106,8 +188,8 @@ Phase 5: Enhanced UX & Polish (P2–P3)
 
 Independent test criteria: click on fish → fish is selected and highlighted → info panel updates; selection persists until new fish clicked; sell button in panel works.
 
-- [ ] T053 [US5] Implement fish selection mechanism: add `selectedFishId` to game state, add `selectFish(fishId)` action, wire click handlers in `FishSprite` to detect fish clicks — files: `src/store/slices/gameSlice.ts`, `src/game/views/FishSprite.ts`, `src/models/types/index.ts`
-- [ ] T054 [US5] Add visual highlight for selected fish: modify `FishSprite` to render selection indicator (outline/glow) when fish is selected — file: `src/game/views/FishSprite.ts`
+- [ ] T045a [US5] Implement fish selection mechanism: add `selectedFishId` to game state, add `selectFish(fishId)` action, wire click handlers in `FishSprite` to detect fish clicks — files: `src/store/slices/gameSlice.ts`, `src/game/views/FishSprite.ts`, `src/models/types/index.ts`
+- [ ] T045b [US5] Add visual highlight for selected fish: modify `FishSprite` to render selection indicator (outline/glow) when fish is selected — file: `src/game/views/FishSprite.ts`
 - [ ] T055 [US5] Add integration test `tests/integration/FishSelection.test.ts` verifying click → select → display info → sell flow — file: `tests/integration/FishSelection.test.ts`
 - [ ] T056 [FR-016] Implement `selectFish(fishId)` state and `selectedFishId` in store; wire click events from `FishSprite` to dispatch selection — files: `src/store/slices/gameSlice.ts`, `src/game/views/FishSprite.ts`
 

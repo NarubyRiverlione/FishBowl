@@ -152,11 +152,12 @@ describe('AquariumCanvas', () => {
     render(<AquariumCanvas />)
     const container = screen.getByTestId('aquarium-container')
 
-    // Component uses responsive sizing, not percentages
-    // Check that the container has computed dimensions
-    const styles = getComputedStyle(container)
-    expect(styles.width).toMatch(/\d+px/)
-    expect(styles.height).toMatch(/\d+px/)
+    // Component uses responsive sizing with 100% when no props provided
+    // Check the actual style attribute values
+    expect(container).toHaveStyle({
+      width: '100%',
+      height: '100%',
+    })
   })
 
   it('should not throw errors during mounting and unmounting', () => {
