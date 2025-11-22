@@ -3,6 +3,7 @@ import AquariumCanvas from './components/AquariumCanvas'
 import HUD from './components/HUD'
 import StoreMenu from './components/StoreMenu'
 import FishInfoPanel from './components/FishInfoPanel'
+import DebugOverlay from './components/debug/DebugOverlay'
 import useGameStore from './store/useGameStore'
 
 const App: React.FC = () => {
@@ -91,6 +92,9 @@ const App: React.FC = () => {
         <AquariumCanvas />
         <FishInfoPanel />
       </div>
+
+      {/* Debug Overlay - only visible in developer mode */}
+      <DebugOverlay />
     </div>
   )
 }

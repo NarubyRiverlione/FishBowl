@@ -1,6 +1,19 @@
 import React, { useEffect, useRef } from 'react'
 import { RenderingEngine } from '../game/RenderingEngine'
+import { RenderingEngineManager } from '../game/RenderingEngineManager'
 import useGameStore from '../store/useGameStore'
+
+interface RenderingEngineWithUnsubscribe extends RenderingEngine {
+  __unsubscribeFromStore?: () => void
+}
+
+interface TestHelpers {
+  getFishScreenPositions: () => Array<{ id: string; x: number; y: number }>
+  awaitFishRendered: (timeoutMs?: number) => Promise<boolean>
+  getStoreFishCount: () => number
+  getStoreTanks: () => unknown
+  forceSync: () => void
+}
 
 type AquariumCanvasProps = {
   width?: number
@@ -10,6 +23,7 @@ type AquariumCanvasProps = {
 const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<RenderingEngine | null>(null)
+  const cleanupRef = useRef<(() => void) | null>(null)
   const fish = useGameStore((state) => state.tanks[0]?.fish)
   const developerMode = useGameStore((state) => state.developerMode)
   const currentTank = useGameStore((state) => state.tank)
@@ -30,20 +44,34 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
   useEffect(() => {
     if (!containerRef.current) return
 
+    let isInitializing = false
+
     const initializeEngine = async () => {
+      // Prevent race condition: multiple simultaneous initializations
+      if (isInitializing) return
+      isInitializing = true
+
       try {
-        // Clean up any existing engine first
+        // Clean up any existing engine first via singleton manager
         if (engineRef.current) {
-          engineRef.current.destroy()
+          try {
+            const unsubscribe = (engineRef.current as RenderingEngineWithUnsubscribe).__unsubscribeFromStore
+            if (unsubscribe) {
+              unsubscribe()
+            }
+          } catch {
+            // ignore cleanup errors
+          }
+          RenderingEngineManager.destroyInstance()
           engineRef.current = null
         }
 
         // Get container dimensions
-        const width = containerRef.current!.clientWidth
-        const height = containerRef.current!.clientHeight
+        const containerWidth = containerRef.current!.clientWidth
+        const containerHeight = containerRef.current!.clientHeight
 
-        // Initialize new engine
-        const engine = new RenderingEngine(width, height, 0x006994)
+        // Initialize new engine via singleton manager
+        const engine = RenderingEngineManager.getInstance(containerWidth, containerHeight, 0x006994)
         engineRef.current = engine
 
         await engine.init(containerRef.current!)
@@ -52,13 +80,9 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
         const currentFish = useGameStore.getState().tanks[0]?.fish || []
         engine.syncFish(currentFish)
 
-        // Also subscribe directly to the Zustand store so the engine receives
-        // updates even if React render effects miss an intermediate state.
-        // Keep the unsubscribe function for cleanup.
+        // Subscribe to store updates
         // Subscribe to the currently selected tank's fish array. Using `s.tank?.fish`
         // ensures updates are received when the selected tank changes (not only index 0).
-        // `subscribe` typing is a bit lax in our test environment; cast to unknown to avoid overload issues
-
         const unsubscribe = useGameStore.subscribe((state) => {
           try {
             engine.syncFish(state.tank?.fish || [])
@@ -66,9 +90,9 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
             // ignore for now
           }
         })
-        // Attach unsubscribe to engine for cleanup
 
-        ;(engine as RenderingEngine & { __unsubscribeFromStore?: () => void }).__unsubscribeFromStore = unsubscribe
+        // Attach unsubscribe to engine for cleanup
+        ;(engine as RenderingEngineWithUnsubscribe).__unsubscribeFromStore = unsubscribe
 
         // Expose a minimal read-only test helper when enabled at build/runtime or via URL.
         // Allow both: env flag `VITE_TEST_HELPERS=true` or query param `?testHelpers=true`.
@@ -90,13 +114,7 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
           if (envFlag || urlFlag) {
             ;(
               window as Window & {
-                __TEST_HELPERS__?: {
-                  getFishScreenPositions: () => Array<{ id: string; x: number; y: number }>
-                  awaitFishRendered: (timeoutMs?: number) => Promise<boolean>
-                  getStoreFishCount: () => number
-                  getStoreTanks: () => unknown
-                  forceSync: () => void
-                }
+                __TEST_HELPERS__?: TestHelpers
               }
             ).__TEST_HELPERS__ = {
               getFishScreenPositions: () => engine.getFishScreenPositions(),
@@ -116,19 +134,20 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
         }
       } catch (error) {
         console.error('Failed to initialize aquarium:', error)
+      } finally {
+        isInitializing = false
       }
     }
 
     initializeEngine()
 
-    return () => {
+    // Set up cleanup function
+    const cleanup = () => {
       if (engineRef.current) {
         // unsubscribe store subscription if present
-
-        if ((engineRef.current as RenderingEngine & { __unsubscribeFromStore?: () => void }).__unsubscribeFromStore) {
+        if ((engineRef.current as RenderingEngineWithUnsubscribe).__unsubscribeFromStore) {
           try {
-            const unsubscribeFn = (engineRef.current as RenderingEngine & { __unsubscribeFromStore?: () => void })
-              .__unsubscribeFromStore
+            const unsubscribeFn = (engineRef.current as RenderingEngineWithUnsubscribe).__unsubscribeFromStore
             if (unsubscribeFn) {
               unsubscribeFn()
             }
@@ -136,10 +155,14 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
             // ignore
           }
         }
-        engineRef.current.destroy()
+        RenderingEngineManager.destroyInstance()
         engineRef.current = null
       }
     }
+
+    cleanupRef.current = cleanup
+
+    return cleanup
   }, [])
 
   // Sync fish from store to engine (consolidate all fish sync logic)

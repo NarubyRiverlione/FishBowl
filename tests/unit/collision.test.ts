@@ -24,10 +24,10 @@ const mockFish = (props: Partial<IFish> = {}): IFish => ({
 
 describe('Collision Utilities', () => {
   describe('detectFishCollision', () => {
-    it('should return true if fish overlap', () => {
+    it('should return false for all fish pairs (disabled for 3D depth illusion)', () => {
       const f1 = mockFish({ x: 0, y: 0, radius: 10 })
-      const f2 = mockFish({ x: 15, y: 0, radius: 10 }) // Distance 15 < 20
-      expect(detectFishCollision(f1, f2)).toBe(true)
+      const f2 = mockFish({ x: 15, y: 0, radius: 10 }) // Distance 15 < 20 (would overlap)
+      expect(detectFishCollision(f1, f2)).toBe(false)
     })
 
     it('should return false if fish do not overlap', () => {
@@ -42,14 +42,14 @@ describe('Collision Utilities', () => {
       const fish = mockFish({ x: 5, vx: -10, radius: 10 })
       resolveBoundaryCollision(fish, { width: 100, height: 100, backgroundColor: 0 })
       expect(fish.vx).toBe(8) // Reversed with restitution 0.8
-      expect(fish.x).toBe(10) // Pushed back
+      expect(fish.x).toBe(12) // Pushed back to radius(10) + buffer(2) = 12
     })
 
-    it('should reverse vy if hitting y boundary', () => {
+    it('should reverse vy if hitting y boundary (with floor restitution)', () => {
       const fish = mockFish({ y: 95, vy: 10, radius: 10 })
       resolveBoundaryCollision(fish, { width: 100, height: 100, backgroundColor: 0 })
-      expect(fish.vy).toBe(-8) // Reversed with restitution 0.8
-      expect(fish.y).toBe(90) // Pushed back
+      expect(fish.vy).toBe(-2) // Reversed with floor restitution 0.2
+      expect(fish.y).toBe(88) // Pushed back to height(100) - radius(10) - buffer(2) = 88
     })
 
     it('should prevent fish from going above water level', () => {
@@ -57,21 +57,27 @@ describe('Collision Utilities', () => {
       const fish = mockFish({ y: 10, vy: -5, radius: 10 })
       resolveBoundaryCollision(fish, { width: 100, height: 100, backgroundColor: 0 })
 
-      // Fish should be pushed down to waterTop + radius
+      // Fish should be pushed down to waterTop + radius + buffer
       // waterTop = 100 - (100 * 0.95) = 5
-      // Expected y = 5 + 10 = 15
-      expect(fish.y).toBe(15)
+      // Expected y = 5 + 10 + 2 = 17
+      expect(fish.y).toBe(17)
       expect(fish.vy).toBe(4) // Reversed with restitution 0.8
     })
   })
 
   describe('resolveFishCollision', () => {
-    it('should swap velocities for equal mass head-on collision', () => {
+    it('should not change velocities (fish collision disabled)', () => {
       const f1 = mockFish({ x: 0, vx: 10, mass: 1 })
       const f2 = mockFish({ x: 20, vx: -10, mass: 1 })
+      
+      const originalF1vx = f1.vx
+      const originalF2vx = f2.vx
+      
       resolveFishCollision(f1, f2)
-      expect(f1.vx).toBeLessThan(0)
-      expect(f2.vx).toBeGreaterThan(0)
+      
+      // Velocities should remain unchanged since fish collision is disabled
+      expect(f1.vx).toBe(originalF1vx)
+      expect(f2.vx).toBe(originalF2vx)
     })
   })
 })

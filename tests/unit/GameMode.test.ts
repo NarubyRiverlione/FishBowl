@@ -29,7 +29,7 @@ describe('Game mode helpers', () => {
     expect(s.isTutorialMode?.()).toBe(true)
     expect(s.tank).toBeDefined()
     expect(s.tank?.size).toBe('BOWL')
-    expect(s.tank?.capacity).toBe(1)
+    expect(s.tank?.capacity).toBe(2)
   })
 
   it('setMode("dev") disables tutorial and provides a STANDARD tank with elevated credits', () => {

@@ -18,10 +18,12 @@ export const CLEAN_POLLUTION_REDUCTION = 30
 // Filter and tank upgrade costs
 export const FILTER_COST = 50
 export const TANK_UPGRADE_COST = 75
+export const TANK_UPGRADE_BIG_COST = 150
 
 // Tank capacities and multi-tank support
-export const TANK_CAPACITY_BOWL = 1
+export const TANK_CAPACITY_BOWL = 2
 export const TANK_CAPACITY_STANDARD = 15
+export const TANK_CAPACITY_BIG = 30
 export const MAX_TANKS_DEFAULT = 3
 
 // Hunger/health thresholds
@@ -64,7 +66,8 @@ export const SWIM_MIN_SPEED = 1 // Minimum speed threshold before boost
 export const SWIM_BOOST_FORCE = 1.0 // Force multiplier for speed boost
 
 // Tank Constants
-export const WATER_LEVEL = 0.95 // Water fills 85% of tank height (from bottom)
+export const WATER_LEVEL = 0.95 // Water fills 95% of tank height (from bottom)
+export const WATER_SURFACE_RATIO = 0.95 // Ratio of tank height/diameter for water surface boundary
 
 // Life Stage Constants
 export const FISH_AGE_YOUNG_MAX = 120 // Ticks when fish becomes mature
@@ -94,6 +97,7 @@ export const TEMPERATURE_DEFAULT = 24
 
 // Physics Constants
 export const COLLISION_RESTITUTION = 0.8 // Bounciness factor for collisions
+export const COLLISION_BOUNDARY_BUFFER = 2.0 // Safety buffer for boundary collision detection (pixels)
 export const SPAWN_MARGIN_BUFFER = 50 // Safe margin for fish spawning
 export const FISH_SPAWN_POSITION_BUFFER = 5 // Extra buffer for safe fish positioning
 export const SPAWN_BUFFER = 50 // Buffer for fish spawning
@@ -140,3 +144,36 @@ export const PERCENTAGE_MAX = 100 // Maximum value for percentages (health, hung
 export const PERFORMANCE_LOG_INTERVAL_MS = 1000 // Interval for performance logging
 export const MILLISECONDS_PER_SECOND = 1000 // Conversion factor
 export const DEFAULT_FPS_FALLBACK = 60 // Fallback FPS value for calculations
+
+// Phase 4 Feature Flags (T040b)
+// ⚠️  CRITICAL: Enable flags in this exact order for safe rollout:
+//
+// 🏗️  PHASE 4A: Foundation (Prerequisites)
+// 1️⃣  USE_TANK_SHAPES = true        // Tank shape abstraction system (T037a-f)
+//     ↳ Must be first - provides shape interface and factory
+// 2️⃣  USE_SHAPE_COLLISION = true    // Shape-based collision detection (T039a-f)
+//     ↳ Depends on USE_TANK_SHAPES - integrates shapes with collision
+//
+// 🎨 PHASE 4B: Visual Features (Safe after foundation)
+// 3️⃣  ENABLE_CIRCULAR_TANKS = true  // Circular tank shapes (T037c + T042b)
+//     ↳ Depends on both above - adds circular collision + rendering
+// 4️⃣  ENABLE_MULTI_TANK_DISPLAY = true // Multi-tank layout (T043a-e)
+//     ↳ Independent - can enable anytime after foundation
+//
+// 🚨 Never enable ENABLE_CIRCULAR_TANKS without the foundation flags!
+// 🚨 Test each flag independently in dev mode before production rollout
+//
+export const USE_TANK_SHAPES = false // 1️⃣  Tank shape abstraction system
+export const USE_SHAPE_COLLISION = false // 2️⃣  Shape-based collision detection
+export const ENABLE_CIRCULAR_TANKS = false // 3️⃣  Circular tank shapes
+export const ENABLE_MULTI_TANK_DISPLAY = true // 4️⃣  Multi-tank layout (already stable)
+
+// Tank Dimensions (T042a)
+export const TANK_BOWL_SIZE = 300 // Circular bowl diameter
+export const TANK_STANDARD_SIZE = 500 // Square standard tank size
+export const TANK_BIG_WIDTH = 800 // Rectangular big tank width
+export const TANK_BIG_HEIGHT = 400 // Rectangular big tank height
+
+// Physics restitution (T041c)
+export const FLOOR_RESTITUTION = 0.2 // Gentle bouncing on floor
+export const WALL_RESTITUTION = 0.8 // Normal bouncing on walls

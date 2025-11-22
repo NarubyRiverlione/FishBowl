@@ -162,23 +162,30 @@ export class RenderingEngine {
     this.isDestroyed = true
 
     try {
-      if (this.app && this.app.ticker) {
-        // Stop ticker
-        this.app.ticker.stop()
+      if (this.app) {
+        // Store reference to app before potential destruction
+        const app = this.app
 
-        // Remove canvas from DOM if it exists
-        if (this.app.canvas && this.app.canvas.parentNode) {
-          this.app.canvas.parentNode.removeChild(this.app.canvas)
+        // Stop ticker if available
+        if (app.ticker) {
+          app.ticker.stop()
+        }
+
+        // Remove canvas from DOM if it exists and is valid
+        try {
+          if (app.canvas && app.canvas.parentNode) {
+            app.canvas.parentNode.removeChild(app.canvas)
+          }
+        } catch (canvasError) {
+          // Canvas may already be destroyed or invalid
+          console.warn('Canvas cleanup warning:', canvasError)
         }
 
         // Destroy the application
-        this.app.destroy(true, { children: true })
-      } else if (this.app) {
-        // If no ticker but app exists, try to destroy anyway
-        if (this.app.canvas && this.app.canvas.parentNode) {
-          this.app.canvas.parentNode.removeChild(this.app.canvas)
-        }
-        this.app.destroy(true, { children: true })
+        app.destroy(true, { children: true })
+
+        // Clear our reference
+        this.app = null as any
       }
     } catch (error) {
       console.warn('Error during RenderingEngine cleanup:', error)

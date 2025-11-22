@@ -21,7 +21,9 @@ import {
   POLLUTION_INITIAL,
   TEMPERATURE_DEFAULT,
   PERCENTAGE_MAX,
+  USE_TANK_SHAPES,
 } from '../../lib/constants'
+import { createTankShape } from '../../services/physics/TankShapeFactory'
 
 export interface GameState {
   credits: number
@@ -88,6 +90,8 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
           width: TANK_UPGRADED_WIDTH,
           height: TANK_UPGRADED_HEIGHT,
           backgroundColor: 0x87ceeb,
+          // Assign shape if tank shapes are enabled (Phase 4c)
+          shape: USE_TANK_SHAPES ? createTankShape('STANDARD') : undefined,
         }
         maybeSetTank(devTank)
       } else {
@@ -145,6 +149,8 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
           width: TANK_UPGRADED_WIDTH,
           height: TANK_UPGRADED_HEIGHT,
           backgroundColor: 0x87ceeb,
+          // Assign shape if tank shapes are enabled (Phase 4c)
+          shape: USE_TANK_SHAPES ? createTankShape('STANDARD') : undefined,
         }
         maybeSetTank(devTank)
       }

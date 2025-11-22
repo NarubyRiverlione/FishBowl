@@ -9,6 +9,7 @@ import {
   FISH_AGE_MAX_MULTIPLIER_DIVISOR,
   FISH_VALUE_MAX_MULTIPLIER,
   PERCENTAGE_MAX,
+  FISH_BASE_RADIUS,
 } from '../lib/constants'
 
 export class FishService {
@@ -30,7 +31,7 @@ export class FishService {
       y: 0,
       vx: 0,
       vy: 0,
-      radius: 24, // Default fish radius
+      radius: FISH_BASE_RADIUS, // Use constant for consistency
     }
     console.log('🏭 FishService.createFish created:', {
       id: fish.id,

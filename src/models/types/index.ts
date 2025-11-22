@@ -48,6 +48,8 @@ export interface ITank {
   width: number
   height: number
   backgroundColor: number
+  // Shape for collision detection (Phase 4c)
+  shape?: import('./tankShape').ITankShape
 }
 
 export interface IStoreItem {

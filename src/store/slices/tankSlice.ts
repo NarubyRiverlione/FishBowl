@@ -21,7 +21,9 @@ import {
   POLLUTION_INITIAL,
   TEMPERATURE_DEFAULT,
   PERCENTAGE_MAX,
+  USE_TANK_SHAPES,
 } from '../../lib/constants'
+import { createTankShape } from '../../services/physics/TankShapeFactory'
 
 export interface TankState {
   /** Array of tanks (multi-tank support) */
@@ -65,6 +67,8 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
     width: TANK_DEFAULT_WIDTH,
     height: TANK_DEFAULT_HEIGHT,
     backgroundColor: 0x87ceeb, // Sky blue
+    // Assign shape if tank shapes are enabled (Phase 4c)
+    shape: USE_TANK_SHAPES ? createTankShape('BOWL') : undefined,
   }
 
   return {
@@ -219,6 +223,8 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
           capacity: TANK_CAPACITY_STANDARD,
           width: TANK_UPGRADED_WIDTH,
           height: TANK_UPGRADED_HEIGHT,
+          // Update shape for new tank size if tank shapes are enabled (Phase 4c)
+          shape: USE_TANK_SHAPES ? createTankShape('STANDARD' as const) : tank.shape,
         } as ITank // Cast to ensure type safety if needed, though should be inferred
 
         const newTanks = [...state.tanks]
