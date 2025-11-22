@@ -129,7 +129,7 @@ export const DebugOverlay: React.FC = () => {
   }
 
   return (
-    <div style={overlayStyles}>
+    <div className="debug-overlay" style={overlayStyles}>
       <div style={headerStyles}>
         <h3 style={{ margin: 0, fontSize: '14px', color: '#4ade80' }}>🛠️ Debug Info</h3>
         <span style={{ fontSize: '10px', color: '#94a3b8' }}>{stats.lastUpdate}</span>

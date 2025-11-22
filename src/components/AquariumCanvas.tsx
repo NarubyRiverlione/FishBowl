@@ -28,12 +28,14 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
   const developerMode = useGameStore((state) => state.developerMode)
   const currentTank = useGameStore((state) => state.tank)
 
-  // Handle window resize
+  // Handle window resize and update tank display scaling
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current && engineRef.current) {
-        // Note: We'd need to add a resize method to RenderingEngine to properly handle this
-        // For now, dimensions are set on mount
+        // Update tank container display scale on resize (T042c)
+        if (engineRef.current.tankContainer && 'updateDisplayScale' in engineRef.current.tankContainer) {
+          ;(engineRef.current.tankContainer as any).updateDisplayScale()
+        }
       }
     }
 

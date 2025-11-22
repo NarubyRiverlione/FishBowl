@@ -13,8 +13,7 @@ import {
   TANK_UPGRADE_COST,
   TANK_CAPACITY_STANDARD,
   TANK_CAPACITY_BOWL,
-  TANK_DEFAULT_WIDTH,
-  TANK_DEFAULT_HEIGHT,
+  TANK_BOWL_SIZE,
   TANK_UPGRADED_WIDTH,
   TANK_UPGRADED_HEIGHT,
   WATER_QUALITY_INITIAL,
@@ -64,8 +63,8 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
     temperature: TEMPERATURE_DEFAULT,
     fish: [],
     createdAt: Date.now(),
-    width: TANK_DEFAULT_WIDTH,
-    height: TANK_DEFAULT_HEIGHT,
+    width: TANK_BOWL_SIZE, // Use circular bowl size for consistent dimensions
+    height: TANK_BOWL_SIZE, // Use circular bowl size for consistent dimensions
     backgroundColor: 0x87ceeb, // Sky blue
     // Assign shape if tank shapes are enabled (Phase 4c)
     shape: USE_TANK_SHAPES ? createTankShape('BOWL') : undefined,

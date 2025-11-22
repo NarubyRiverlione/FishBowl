@@ -13,7 +13,7 @@ export const FILTER_POLLUTION_REDUCTION_PER_TICK = 0.5
 
 // Clean action
 export const CLEAN_COST = 10
-export const CLEAN_POLLUTION_REDUCTION = 30
+export const CLEAN_POLLUTION_REDUCTION = 100
 
 // Filter and tank upgrade costs
 export const FILTER_COST = 50
@@ -163,9 +163,9 @@ export const DEFAULT_FPS_FALLBACK = 60 // Fallback FPS value for calculations
 // 🚨 Never enable ENABLE_CIRCULAR_TANKS without the foundation flags!
 // 🚨 Test each flag independently in dev mode before production rollout
 //
-export const USE_TANK_SHAPES = false // 1️⃣  Tank shape abstraction system
-export const USE_SHAPE_COLLISION = false // 2️⃣  Shape-based collision detection
-export const ENABLE_CIRCULAR_TANKS = false // 3️⃣  Circular tank shapes
+export const USE_TANK_SHAPES = true // 1️⃣  Tank shape abstraction system
+export const USE_SHAPE_COLLISION = true // 2️⃣  Shape-based collision detection
+export const ENABLE_CIRCULAR_TANKS = true // 3️⃣  Circular tank shapes
 export const ENABLE_MULTI_TANK_DISPLAY = true // 4️⃣  Multi-tank layout (already stable)
 
 // Tank Dimensions (T042a)
@@ -173,6 +173,12 @@ export const TANK_BOWL_SIZE = 300 // Circular bowl diameter
 export const TANK_STANDARD_SIZE = 500 // Square standard tank size
 export const TANK_BIG_WIDTH = 800 // Rectangular big tank width
 export const TANK_BIG_HEIGHT = 400 // Rectangular big tank height
+
+// Responsive Scaling (T042c)
+export const TANK_DISPLAY_MIN_SIZE = 300 // Minimum display size per tank
+export const TANK_DISPLAY_MAX_SIZE = 600 // Maximum display size per tank (desktop)
+export const MOBILE_BREAKPOINT = 768 // Switch to full-width below this
+export const DESKTOP_BREAKPOINT = 1024 // Grid layout above this
 
 // Physics restitution (T041c)
 export const FLOOR_RESTITUTION = 0.2 // Gentle bouncing on floor

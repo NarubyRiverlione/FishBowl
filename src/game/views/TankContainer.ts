@@ -11,6 +11,10 @@ import {
   WATER_SURFACE_WIDTH,
   WATER_SURFACE_COLOR,
   WATER_SURFACE_ALPHA,
+  TANK_DISPLAY_MIN_SIZE,
+  TANK_DISPLAY_MAX_SIZE,
+  MOBILE_BREAKPOINT,
+  DESKTOP_BREAKPOINT,
 } from '../../lib/constants'
 import useGameStore from '../../store/useGameStore'
 
@@ -18,12 +22,14 @@ export class TankContainer extends Container {
   private tank: ITank
   private background: Graphics
   private fishSprites: Map<string, FishSprite> = new Map()
+  private displayScale: number = 1
 
   constructor(tank: ITank) {
     super()
     this.tank = tank
     this.background = new Graphics()
     this.addChild(this.background)
+    this.calculateDisplayScale()
     this.draw()
     // Allow clicking on empty tank area to clear selection
     this.interactive = true
@@ -179,11 +185,103 @@ export class TankContainer extends Container {
     }
   }
 
+  private calculateDisplayScale(): void {
+    // Get viewport dimensions
+    const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1024
+    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 768
+
+    if (viewportWidth < MOBILE_BREAKPOINT) {
+      // Mobile: full width with aspect ratio preservation
+      const availableWidth = viewportWidth - 40 // Account for padding
+      this.displayScale = Math.min(
+        availableWidth / this.tank.width,
+        TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.width, this.tank.height)
+      )
+    } else if (viewportWidth < DESKTOP_BREAKPOINT) {
+      // Tablet: constrained scaling
+      const availableWidth = viewportWidth / 2 - 60 // Two tanks side by side
+      this.displayScale = Math.min(
+        availableWidth / this.tank.width,
+        TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.width, this.tank.height)
+      )
+    } else {
+      // Desktop: optimized scaling (300-600px range)
+      const targetSize = Math.min(Math.max(TANK_DISPLAY_MIN_SIZE, viewportWidth / 4), TANK_DISPLAY_MAX_SIZE)
+      this.displayScale = targetSize / Math.max(this.tank.width, this.tank.height)
+    }
+
+    // Ensure scale never goes below minimum or above maximum
+    this.displayScale = Math.max(
+      TANK_DISPLAY_MIN_SIZE / Math.max(this.tank.width, this.tank.height),
+      Math.min(this.displayScale, TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.width, this.tank.height))
+    )
+
+    // Apply scale to this container (affects visual display only)
+    // Only set scale if this.scale is available (not in unit tests)
+    if (this.scale && typeof this.scale.set === 'function') {
+      this.scale.set(this.displayScale)
+    }
+  }
+
+  public updateDisplayScale(): void {
+    this.calculateDisplayScale()
+  }
+
   private draw(): void {
     this.background.clear()
 
     const waterLevel = this.tank.height * WATER_LEVEL
 
+    // Use shape-aware rendering if tank shape is available (Phase 4f - T042b)
+    if (this.tank.shape) {
+      this.drawShapeAwareTank(waterLevel)
+    } else {
+      // Fallback to legacy rectangular rendering
+      this.drawRectangularTank(waterLevel)
+    }
+  }
+
+  private drawShapeAwareTank(waterLevel: number): void {
+    if (this.tank.shape!.type === 'circular') {
+      this.drawCircularTank(waterLevel)
+    } else {
+      this.drawRectangularTank(waterLevel)
+    }
+  }
+
+  private drawCircularTank(waterLevel: number): void {
+    const radius = this.tank.shape!.radius || Math.min(this.tank.width, this.tank.height) / 2
+    const centerX = this.tank.width / 2
+    const centerY = this.tank.height / 2
+
+    // Draw water (circular filled portion)
+    // For circular tanks, we need to create a clipped water area
+    this.background.circle(centerX, centerY, radius - TANK_BORDER_WIDTH / 2)
+    this.background.fill(this.tank.backgroundColor)
+
+    // Draw tank border (circular outline)
+    this.background.circle(centerX, centerY, radius)
+    this.background.stroke({ width: TANK_BORDER_WIDTH, color: TANK_BORDER_COLOR })
+
+    // Draw water surface line (horizontal chord across the circle)
+    // Calculate water surface position using the actual waterLevel
+    const surfaceY = this.tank.height - waterLevel
+
+    // Only draw surface line if it intersects with the circle
+    if (surfaceY >= centerY - radius && surfaceY <= centerY + radius) {
+      const distanceFromCenter = Math.abs(centerY - surfaceY)
+      const chordHalfWidth = Math.sqrt(Math.pow(radius, 2) - Math.pow(distanceFromCenter, 2))
+      const chordStartX = centerX - chordHalfWidth
+      const chordEndX = centerX + chordHalfWidth
+
+      this.background
+        .moveTo(chordStartX, surfaceY)
+        .lineTo(chordEndX, surfaceY)
+        .stroke({ width: WATER_SURFACE_WIDTH, color: WATER_SURFACE_COLOR, alpha: WATER_SURFACE_ALPHA })
+    }
+  }
+
+  private drawRectangularTank(waterLevel: number): void {
     // Draw water (filled portion)
     this.background.rect(0, this.tank.height - waterLevel, this.tank.width, waterLevel)
     this.background.fill(this.tank.backgroundColor)

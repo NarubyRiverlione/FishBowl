@@ -154,11 +154,11 @@ Independent test criteria: Floor renders visible/invisible per tank type; fish s
 Independent test criteria: BOWL renders as circle, STANDARD as square, BIG as rectangle; rendering scales without affecting physics; proper glass effect.
 
 - [x] T042a [FR-018] Add tank dimension constants with shape info: `TANK_BOWL_SIZE: 300`, `TANK_STANDARD_SIZE: 500`, `TANK_BIG_WIDTH: 800`, `TANK_BIG_HEIGHT: 400` — file: `src/lib/constants.ts`
-- [ ] T042b [FR-018] Implement shape-aware tank rendering in TankContainer: use tank.shape.type to determine render method (drawCircle vs drawRect) — file: `src/game/views/TankContainer.ts`
-- [ ] T042c [P] [FR-018] Implement responsive scaling: scale tank display (300–600px per tank desktop, full-width mobile) without affecting collision bounds or physics — file: `src/game/views/TankContainer.ts`
-- [ ] T042d [FR-018] Add unit test for tank visuals: verify dimensions and shape types (circular, square, rectangle) render correctly — file: `tests/unit/TankVisuals.test.ts`
-- [ ] T042e [P] [NEW] Add integration test for shape-visual consistency: verify rendered shape matches collision boundaries — file: `tests/integration/ShapeVisualConsistency.test.ts`
-- [ ] T042f [P] [NEW] **E2E UPDATE**: Add e2e tests for procedural tank rendering across different tank types and responsive scaling — file: `tests/e2e/tank-visuals.spec.ts`
+- [x] T042b [FR-018] Implement shape-aware tank rendering in TankContainer: use tank.shape.type to determine render method (drawCircle vs drawRect) — file: `src/game/views/TankContainer.ts`
+- [x] T042c [P] [FR-018] Implement responsive scaling: scale tank display (300–600px per tank desktop, full-width mobile) without affecting collision bounds or physics — file: `src/game/views/TankContainer.ts`
+- [x] T042d [FR-018] Add unit test for tank visuals: verify dimensions and shape types (circular, square, rectangle) render correctly — file: `tests/unit/TankVisuals.test.ts`
+- [x] T042e [P] [NEW] Add integration test for shape-visual consistency: verify rendered shape matches collision boundaries — file: `tests/integration/ShapeVisualConsistency.test.ts`
+- [x] T042f [P] [NEW] **E2E UPDATE**: Add e2e tests for procedural tank rendering across different tank types and responsive scaling — file: `tests/e2e/tank-visuals.spec.ts`
 
 **Phase 4g: Multi-Tank Display (From Original FR-019)**
 
@@ -211,6 +211,14 @@ Final Phase: Polish & Cross-Cutting Concerns
 - [x] T033 [infra] Run lint and tests and fix issues: `pnpm lint` and `pnpm test` — commands: `pnpm lint`, `pnpm test`
 - [x] T034 [infra] Add performance profiling notes and harness placeholder (`tests/perf/README.md`, `tests/perf/harness.ts`) — files: `tests/perf/README.md`, `tests/perf/harness.ts`
 
+**QA & Code Quality Validation**
+
+- [ ] T068 [QA] Code complexity validation: scan all TypeScript files to identify any exceeding 120 lines of code (excluding empty lines and comments); ensure proper separation of concerns by breaking down large files into focused modules — command: custom script to analyze line counts and suggest refactoring
+
+**Bug Fixes**
+
+- [ ] T069 [BUG] Fix BOWL tank visual rendering: tank currently renders as rectangle instead of circular shape despite tank shape system implementation; investigate TankContainer shape-aware rendering logic and ensure circular tanks properly use drawCircle method — file: `src/game/views/TankContainer.ts`
+
 Dependencies (user-story completion order)
 
 - US1 → US2 → US3 → US4 → US5
@@ -237,8 +245,8 @@ Validation checklist
 Output summary (updated November 22, 2025)
 
 - Path to generated tasks file: `specs/001-core-mechanics/tasks.md`
-- Total task count: 67 (T001–T067, including recent hotfixes)
-- **Project Status**: ✅ **MILESTONE 2 COMPLETE** - Production Ready
+- Total task count: 69 (T001–T069, including recent hotfixes, QA, and bug fixes)
+- **Project Status**: ✅ **MILESTONE 2 COMPLETE** - Production Ready (pending QA validation)
 
 **Phase Completion Status**:
 
@@ -246,6 +254,8 @@ Output summary (updated November 22, 2025)
 - Phase 2 (Foundational): 7 tasks (T005–T010, T036) — ✅ **COMPLETE**
 - Phase 3 (User Stories 1–5): 38 tasks (T011–T035, T039, T041–T046) — ✅ **COMPLETE**
 - Recent Hotfixes: 8 tasks (T060–T067) — ✅ **COMPLETE**
+- QA & Validation: 1 task (T068) — 📋 **READY**
+- Bug Fixes: 1 task (T069) — 🐛 **OPEN**
 - Phase 4 (Tank Design & Rendering): 23 tasks (T037a–T052) — 📋 **READY** (well-defined, not started)
 - Phase 5 (Enhanced UX & Polish): 7 tasks (T053–T059) — 📋 **PLANNED**
 

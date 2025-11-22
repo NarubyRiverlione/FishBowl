@@ -15,8 +15,7 @@ import {
   TANK_CAPACITY_BOWL,
   TANK_UPGRADED_WIDTH,
   TANK_UPGRADED_HEIGHT,
-  TANK_DEFAULT_WIDTH,
-  TANK_DEFAULT_HEIGHT,
+  TANK_BOWL_SIZE,
   WATER_QUALITY_INITIAL,
   POLLUTION_INITIAL,
   TEMPERATURE_DEFAULT,
@@ -54,7 +53,7 @@ export interface GameState {
 // allow unused get/api params required by zustand StateCreator signature
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const createGameSlice: StateCreator<GameState & TankState, [], [], GameState> = (set, get, _api) => ({
-  credits: GAME_DEV_MODE_CREDITS,
+  credits: GAME_INITIAL_CREDITS,
   currentTick: 0,
   totalTime: 0,
   isPaused: false,
@@ -113,9 +112,11 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
           temperature: TEMPERATURE_DEFAULT,
           fish: [],
           createdAt: Date.now(),
-          width: TANK_DEFAULT_WIDTH,
-          height: TANK_DEFAULT_HEIGHT,
+          width: TANK_BOWL_SIZE, // Use circular bowl size for consistent dimensions
+          height: TANK_BOWL_SIZE, // Use circular bowl size for consistent dimensions
           backgroundColor: 0x87ceeb,
+          // Assign circular bowl shape if tank shapes are enabled (Phase 4)
+          shape: USE_TANK_SHAPES ? createTankShape('BOWL') : undefined,
         }
         maybeSetTank(bowlTank)
       }
