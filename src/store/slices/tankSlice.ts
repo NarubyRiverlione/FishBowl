@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand'
-import { ITank, FishSpecies, UUID } from '../../models/types'
+import { ITankData, FishSpecies, UUID } from '../../models/types'
 import { GameState } from './gameSlice'
 import { EconomyService } from '../../services/EconomyService'
 import { FishService } from '../../services/FishService'
@@ -20,25 +20,23 @@ import {
   POLLUTION_INITIAL,
   TEMPERATURE_DEFAULT,
   PERCENTAGE_MAX,
-  USE_TANK_SHAPES,
 } from '../../lib/constants'
-import { createTankShape } from '../../services/physics/TankShapeFactory'
 
 export interface TankState {
   /** Array of tanks (multi-tank support) */
-  tanks: ITank[]
+  tanks: ITankData[]
   /** Convenience: currently selected tank for backwards compatibility */
-  tank: ITank | null
+  tank: ITankData | null
   /** Selected tank id */
   selectedTankId?: string | null
   /** Replace the whole tanks array */
-  setTanks: (tanks: ITank[]) => void
+  setTanks: (tanks: ITankData[]) => void
   /** Add or upsert a tank and make it selected */
-  addOrSelectTank: (tank: ITank) => void
+  addOrSelectTank: (tank: ITankData) => void
   /** Select a tank by id */
   selectTank: (id: string) => void
   /** Set the selected tank (backwards-compatible API) */
-  setTank: (tank: ITank) => void
+  setTank: (tank: ITankData) => void
 
   // New actions
   feedTank: (tankId: UUID) => void
@@ -53,7 +51,7 @@ export interface TankState {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const createTankSlice: StateCreator<TankState & GameState, [], [], TankState> = (set, get, _api) => {
   // create a default BOWL tank
-  const defaultTank: ITank = {
+  const defaultTank: ITankData = {
     id: 'default-bowl-tank',
     size: 'BOWL',
     capacity: TANK_CAPACITY_BOWL,
@@ -63,11 +61,13 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
     temperature: TEMPERATURE_DEFAULT,
     fish: [],
     createdAt: Date.now(),
-    width: TANK_BOWL_SIZE, // Use circular bowl size for consistent dimensions
-    height: TANK_BOWL_SIZE, // Use circular bowl size for consistent dimensions
+    geometry: {
+      width: TANK_BOWL_SIZE,
+      height: TANK_BOWL_SIZE,
+      centerX: TANK_BOWL_SIZE / 2,
+      centerY: TANK_BOWL_SIZE / 2,
+    },
     backgroundColor: 0x87ceeb, // Sky blue
-    // Assign shape if tank shapes are enabled (Phase 4c)
-    shape: USE_TANK_SHAPES ? createTankShape('BOWL') : undefined,
   }
 
   return {
@@ -75,12 +75,12 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
     tank: defaultTank,
     selectedTankId: defaultTank.id,
 
-    setTanks: (tanks: ITank[]) => {
+    setTanks: (tanks: ITankData[]) => {
       const first = tanks && tanks.length > 0 ? tanks[0] : null
       set({ tanks, tank: first, selectedTankId: first?.id ?? null })
     },
 
-    addOrSelectTank: (tank: ITank) => {
+    addOrSelectTank: (tank: ITankData) => {
       const current = get()
       const existing = current.tanks.find((t) => t.id === tank.id)
       if (existing) {
@@ -98,7 +98,7 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
       }
     },
 
-    setTank: (tank: ITank) => {
+    setTank: (tank: ITankData) => {
       const current = get()
       const exists = current.tanks.some((t) => t.id === tank.id)
       if (exists) {
@@ -220,11 +220,13 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
           ...tank,
           size: 'STANDARD',
           capacity: TANK_CAPACITY_STANDARD,
-          width: TANK_UPGRADED_WIDTH,
-          height: TANK_UPGRADED_HEIGHT,
-          // Update shape for new tank size if tank shapes are enabled (Phase 4c)
-          shape: USE_TANK_SHAPES ? createTankShape('STANDARD' as const) : tank.shape,
-        } as ITank // Cast to ensure type safety if needed, though should be inferred
+          geometry: {
+            width: TANK_UPGRADED_WIDTH,
+            height: TANK_UPGRADED_HEIGHT,
+            centerX: TANK_UPGRADED_WIDTH / 2,
+            centerY: TANK_UPGRADED_HEIGHT / 2,
+          },
+        } as ITankData // Cast to ensure type safety if needed, though should be inferred
 
         const newTanks = [...state.tanks]
         newTanks[tankIndex] = updatedTank

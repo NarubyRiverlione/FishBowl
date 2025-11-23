@@ -108,15 +108,21 @@ describe('TankContainer.getFishScreenPositions', () => {
       store.selectFish = spy
 
       // Try to locate the attached pointerdown handler in several possible locations
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const fallback = (tc as any).__events?.pointerdown?.[0]
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const listeners = typeof (tc as any).listeners === 'function' ? (tc as any).listeners('pointerdown') : null
+      type EventableContainer = {
+        __events?: Record<string, ((...args: unknown[]) => void)[]>
+        listeners?: (event: string) => ((...args: unknown[]) => void)[]
+      }
+
+      const fallback = (tc as EventableContainer).__events?.pointerdown?.[0]
+
+      const listeners =
+        typeof (tc as EventableContainer).listeners === 'function'
+          ? (tc as EventableContainer).listeners('pointerdown')
+          : null
       const handler = fallback || (listeners && listeners[0])
 
       if (handler) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        handler({ target: {} as any })
+        handler({ target: {} })
         expect(spy).toHaveBeenCalledWith(null)
       } else {
         // If test environment didn't expose handlers, mark as skipped but don't fail

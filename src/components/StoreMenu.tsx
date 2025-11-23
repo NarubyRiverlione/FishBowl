@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import useGameStore from '../store/useGameStore'
 import { emojiCursorDataUrl } from '../lib/cursor'
-import { FishSpecies, FISH_SPECIES_CONFIG } from '../models/types'
+import { FishSpecies } from '../models/types'
+import { FISH_SPECIES_CONFIG } from '../lib/constants'
 import { FILTER_COST, TANK_UPGRADE_COST, CLEAN_COST, FEED_BASE_COST, FEED_PER_FISH_COST } from '../lib/constants'
 
 const StoreMenu: React.FC = () => {

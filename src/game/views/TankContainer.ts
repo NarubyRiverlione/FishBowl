@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js'
-import { ITank, IFish } from '../../models/types'
+import { ITankLogic, IFish } from '../../models/types'
 import { FishSprite } from './FishSprite'
 import {
   WATER_LEVEL,
@@ -19,12 +19,12 @@ import {
 import useGameStore from '../../store/useGameStore'
 
 export class TankContainer extends Container {
-  private tank: ITank
+  private tank: ITankLogic
   private background: Graphics
   private fishSprites: Map<string, FishSprite> = new Map()
   private displayScale: number = 1
 
-  constructor(tank: ITank) {
+  constructor(tank: ITankLogic) {
     super()
     this.tank = tank
     this.background = new Graphics()
@@ -34,8 +34,14 @@ export class TankContainer extends Container {
     // Allow clicking on empty tank area to clear selection
     this.interactive = true
     // Attach pointer handler defensively (tests may not provide Pixi event methods)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const attach = (obj: any, ev: string, cb: (...args: any[]) => void) => {
+    type EventEmitterLike = {
+      on?: (event: string, callback: (...args: unknown[]) => void) => void
+      addEventListener?: (event: string, callback: (...args: unknown[]) => void) => void
+      addListener?: (event: string, callback: (...args: unknown[]) => void) => void
+      __events?: Record<string, ((...args: unknown[]) => void)[]>
+    }
+
+    const attach = (obj: EventEmitterLike, ev: string, cb: (...args: unknown[]) => void) => {
       if (typeof obj.on === 'function') return obj.on(ev, cb)
       if (typeof obj.addEventListener === 'function') return obj.addEventListener(ev, cb)
       if (typeof obj.addListener === 'function') return obj.addListener(ev, cb)
@@ -44,10 +50,10 @@ export class TankContainer extends Container {
       obj.__events[ev].push(cb)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    attach(this as any, 'pointerdown', (e: any) => {
+    attach(this as EventEmitterLike, 'pointerdown', (...args: unknown[]) => {
       // If the click target is not a FishSprite, clear selection
-      const target = e.target
+      const e = args[0] as { target?: unknown }
+      const target = e?.target
       if (!(target instanceof FishSprite)) {
         useGameStore.getState().selectFish(null)
       }
@@ -55,10 +61,10 @@ export class TankContainer extends Container {
   }
 
   addFish(fish: IFish): void {
-    // console.log('🏠 TankContainer.addFish called for:', fish.id, 'Tank size:', this.tank.width, 'x', this.tank.height)
+    // console.log('🏠 TankContainer.addFish called for:', fish.id, 'Tank size:', this.tank.geometry.width, 'x', this.tank.geometry.height)
     // Generate random initial position within tank bounds, below water line
-    const tankWidth = this.tank.width || TANK_DEFAULT_WIDTH
-    const tankHeight = this.tank.height || TANK_DEFAULT_HEIGHT
+    const tankWidth = this.tank.geometry.width || TANK_DEFAULT_WIDTH
+    const tankHeight = this.tank.geometry.height || TANK_DEFAULT_HEIGHT
     const waterLevel = tankHeight * WATER_LEVEL
     const waterTop = tankHeight - waterLevel
 
@@ -188,32 +194,31 @@ export class TankContainer extends Container {
   private calculateDisplayScale(): void {
     // Get viewport dimensions
     const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1024
-    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 768
 
     if (viewportWidth < MOBILE_BREAKPOINT) {
       // Mobile: full width with aspect ratio preservation
       const availableWidth = viewportWidth - 40 // Account for padding
       this.displayScale = Math.min(
-        availableWidth / this.tank.width,
-        TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.width, this.tank.height)
+        availableWidth / this.tank.geometry.width,
+        TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.geometry.width, this.tank.geometry.height)
       )
     } else if (viewportWidth < DESKTOP_BREAKPOINT) {
       // Tablet: constrained scaling
       const availableWidth = viewportWidth / 2 - 60 // Two tanks side by side
       this.displayScale = Math.min(
-        availableWidth / this.tank.width,
-        TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.width, this.tank.height)
+        availableWidth / this.tank.geometry.width,
+        TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.geometry.width, this.tank.geometry.height)
       )
     } else {
       // Desktop: optimized scaling (300-600px range)
       const targetSize = Math.min(Math.max(TANK_DISPLAY_MIN_SIZE, viewportWidth / 4), TANK_DISPLAY_MAX_SIZE)
-      this.displayScale = targetSize / Math.max(this.tank.width, this.tank.height)
+      this.displayScale = targetSize / Math.max(this.tank.geometry.width, this.tank.geometry.height)
     }
 
     // Ensure scale never goes below minimum or above maximum
     this.displayScale = Math.max(
-      TANK_DISPLAY_MIN_SIZE / Math.max(this.tank.width, this.tank.height),
-      Math.min(this.displayScale, TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.width, this.tank.height))
+      TANK_DISPLAY_MIN_SIZE / Math.max(this.tank.geometry.width, this.tank.geometry.height),
+      Math.min(this.displayScale, TANK_DISPLAY_MAX_SIZE / Math.max(this.tank.geometry.width, this.tank.geometry.height))
     )
 
     // Apply scale to this container (affects visual display only)
@@ -224,35 +229,43 @@ export class TankContainer extends Container {
   }
 
   public updateDisplayScale(): void {
+    const oldScale = this.displayScale
     this.calculateDisplayScale()
+
+    // If scale changed significantly, trigger canvas resize via parent engine
+    if (Math.abs(this.displayScale - oldScale) > 0.1) {
+      const newCanvasWidth = Math.round(this.tank.geometry.width * this.displayScale)
+      const newCanvasHeight = Math.round(this.tank.geometry.height * this.displayScale)
+
+      // Emit resize event that the rendering engine can listen to
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('tankCanvasResize', {
+            detail: { width: newCanvasWidth, height: newCanvasHeight },
+          })
+        )
+      }
+    }
   }
 
   private draw(): void {
     this.background.clear()
 
-    const waterLevel = this.tank.height * WATER_LEVEL
+    const waterLevel = this.tank.geometry.height * WATER_LEVEL
 
-    // Use shape-aware rendering if tank shape is available (Phase 4f - T042b)
-    if (this.tank.shape) {
-      this.drawShapeAwareTank(waterLevel)
-    } else {
-      // Fallback to legacy rectangular rendering
-      this.drawRectangularTank(waterLevel)
-    }
-  }
-
-  private drawShapeAwareTank(waterLevel: number): void {
-    if (this.tank.shape!.type === 'circular') {
+    // Use BOWL tank size to determine if circular rendering should be used
+    if (this.tank.size === 'BOWL') {
       this.drawCircularTank(waterLevel)
     } else {
+      // Fallback to rectangular rendering for STANDARD tanks
       this.drawRectangularTank(waterLevel)
     }
   }
 
   private drawCircularTank(waterLevel: number): void {
-    const radius = this.tank.shape!.radius || Math.min(this.tank.width, this.tank.height) / 2
-    const centerX = this.tank.width / 2
-    const centerY = this.tank.height / 2
+    const radius = Math.min(this.tank.geometry.width, this.tank.geometry.height) / 2
+    const centerX = this.tank.geometry.centerX
+    const centerY = this.tank.geometry.centerY
 
     // Draw water (circular filled portion)
     // For circular tanks, we need to create a clipped water area
@@ -265,7 +278,7 @@ export class TankContainer extends Container {
 
     // Draw water surface line (horizontal chord across the circle)
     // Calculate water surface position using the actual waterLevel
-    const surfaceY = this.tank.height - waterLevel
+    const surfaceY = this.tank.geometry.height - waterLevel
 
     // Only draw surface line if it intersects with the circle
     if (surfaceY >= centerY - radius && surfaceY <= centerY + radius) {
@@ -283,17 +296,17 @@ export class TankContainer extends Container {
 
   private drawRectangularTank(waterLevel: number): void {
     // Draw water (filled portion)
-    this.background.rect(0, this.tank.height - waterLevel, this.tank.width, waterLevel)
+    this.background.rect(0, this.tank.geometry.height - waterLevel, this.tank.geometry.width, waterLevel)
     this.background.fill(this.tank.backgroundColor)
 
     // Draw tank walls (bottom and sides only, no top)
-    this.background.rect(0, 0, this.tank.width, this.tank.height)
+    this.background.rect(0, 0, this.tank.geometry.width, this.tank.geometry.height)
     this.background.stroke({ width: TANK_BORDER_WIDTH, color: TANK_BORDER_COLOR })
 
     // Draw water surface line
     this.background
-      .moveTo(0, this.tank.height - waterLevel)
-      .lineTo(this.tank.width, this.tank.height - waterLevel)
+      .moveTo(0, this.tank.geometry.height - waterLevel)
+      .lineTo(this.tank.geometry.width, this.tank.geometry.height - waterLevel)
       .stroke({ width: WATER_SURFACE_WIDTH, color: WATER_SURFACE_COLOR, alpha: WATER_SURFACE_ALPHA })
   }
 }

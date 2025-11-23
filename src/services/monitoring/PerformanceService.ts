@@ -1,5 +1,4 @@
-import { Tank } from '../../models/Tank'
-
+import { ITankLogic } from '../../models/types'
 import { PERFORMANCE_LOG_INTERVAL_MS, MILLISECONDS_PER_SECOND, DEFAULT_FPS_FALLBACK } from '../../lib/constants'
 
 interface WindowWithDebug extends Window {
@@ -7,10 +6,10 @@ interface WindowWithDebug extends Window {
 }
 
 export class PerformanceService {
-  private tank: Tank
+  private tank: ITankLogic
   private lastLogTime: number = 0
 
-  constructor(tank: Tank) {
+  constructor(tank: ITankLogic) {
     this.tank = tank
   }
 

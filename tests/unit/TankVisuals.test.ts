@@ -13,23 +13,35 @@ import { TANK_BOWL_SIZE, TANK_STANDARD_SIZE, TANK_BIG_WIDTH, TANK_BIG_HEIGHT } f
 // Mock PIXI Graphics methods for testing
 vi.mock('pixi.js', async () => {
   const actual = await vi.importActual('pixi.js')
+
+  class MockGraphics {
+    clear = vi.fn().mockReturnThis()
+    rect = vi.fn().mockReturnThis()
+    circle = vi.fn().mockReturnThis()
+    fill = vi.fn().mockReturnThis()
+    stroke = vi.fn().mockReturnThis()
+    moveTo = vi.fn().mockReturnThis()
+    lineTo = vi.fn().mockReturnThis()
+  }
+
+  class MockContainer {
+    addChild = vi.fn()
+    removeChild = vi.fn()
+    scale = { set: vi.fn() }
+    interactive = false
+    __events: Record<string, ((...args: unknown[]) => void)[]> = {}
+
+    on(event: string, cb: (...args: unknown[]) => void) {
+      this.__events[event] = this.__events[event] || []
+      this.__events[event].push(cb)
+      return this
+    }
+  }
+
   return {
     ...actual,
-    Graphics: vi.fn().mockImplementation(() => ({
-      clear: vi.fn().mockReturnThis(),
-      rect: vi.fn().mockReturnThis(),
-      circle: vi.fn().mockReturnThis(),
-      fill: vi.fn().mockReturnThis(),
-      stroke: vi.fn().mockReturnThis(),
-      moveTo: vi.fn().mockReturnThis(),
-      lineTo: vi.fn().mockReturnThis(),
-    })),
-    Container: vi.fn().mockImplementation(() => ({
-      addChild: vi.fn(),
-      removeChild: vi.fn(),
-      scale: { set: vi.fn() },
-      interactive: false,
-    })),
+    Graphics: MockGraphics,
+    Container: MockContainer,
   }
 })
 

@@ -15,8 +15,8 @@ const useGameStore = create<StoreState>()(
 )
 
 // Expose store for E2E testing in development
-if (typeof window !== 'undefined' && import.meta.env.DEV) {
-  ;(window as any).__GAME_STORE_DEBUG__ = {
+if (typeof window !== 'undefined' && typeof import.meta !== 'undefined' && 'env' in import.meta) {
+  ;(window as Window & { __GAME_STORE_DEBUG__?: Record<string, unknown> }).__GAME_STORE_DEBUG__ = {
     get tank() {
       return useGameStore.getState().tank
     },

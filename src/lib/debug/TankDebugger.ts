@@ -1,6 +1,6 @@
 // Tank debugging utility for Phase 4 development (T040a)
 
-import { type ITank } from '../../models/types'
+import { type ITankData } from '../../models/types'
 
 export interface TankDebugInfo {
   tankId: string
@@ -29,9 +29,9 @@ export class TankDebugger {
   }
 
   /**
-   * Log tank state information
+   * Log tank state information - works with store data
    */
-  static logTankState(tank: ITank, prefix = ''): void {
+  static logTankState(tank: ITankData, prefix = ''): void {
     if (!this.enabled) return
 
     const debugInfo: TankDebugInfo = {
@@ -94,9 +94,9 @@ export class TankDebugger {
   }
 
   /**
-   * Validate tank consistency
+   * Validate tank consistency - works with store data
    */
-  static validateTank(tank: ITank): string[] {
+  static validateTank(tank: ITankData): string[] {
     const issues: string[] = []
 
     // Check fish count vs capacity

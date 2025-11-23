@@ -1,6 +1,6 @@
 // Tank state validator for detecting inconsistencies (T040c)
 
-import { type ITank } from '../../models/types'
+import { type ITankData, type IFish } from '../../models/types'
 import { TANK_CAPACITY_BOWL, TANK_CAPACITY_STANDARD, TANK_CAPACITY_BIG } from '../constants'
 
 export interface ValidationResult {
@@ -13,7 +13,7 @@ export class TankValidator {
   /**
    * Validate a single tank for consistency and logical errors
    */
-  static validateTank(tank: ITank): ValidationResult {
+  static validateTank(tank: ITankData): ValidationResult {
     const errors: string[] = []
     const warnings: string[] = []
 
@@ -52,13 +52,13 @@ export class TankValidator {
       }
 
       // Check for dead fish
-      const deadFish = tank.fish.filter((f) => !f.isAlive)
+      const deadFish = tank.fish.filter((f: IFish) => !f.isAlive)
       if (deadFish.length > 0) {
         warnings.push(`Tank contains ${deadFish.length} dead fish that should be cleaned up`)
       }
 
       // Validate individual fish
-      tank.fish.forEach((fish, index) => {
+      tank.fish.forEach((fish: IFish, index: number) => {
         if (!fish.id || typeof fish.id !== 'string') {
           errors.push(`Fish at index ${index} has invalid ID`)
         }
@@ -104,7 +104,7 @@ export class TankValidator {
   /**
    * Validate an array of tanks for duplicates and consistency
    */
-  static validateTankArray(tanks: ITank[]): ValidationResult {
+  static validateTankArray(tanks: ITankData[]): ValidationResult {
     const errors: string[] = []
     const warnings: string[] = []
 
@@ -157,7 +157,7 @@ export class TankValidator {
   /**
    * Run comprehensive validation and return a summary
    */
-  static validateGame(tanks: ITank[]): {
+  static validateGame(tanks: ITankData[]): {
     isValid: boolean
     summary: string
     totalErrors: number

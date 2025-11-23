@@ -1,17 +1,16 @@
-import { Tank } from '../../models/Tank'
 import { TankContainer } from '../views/TankContainer'
 import { FishRenderManager } from '../managers/FishRenderManager'
 import { SpawnService } from '../../services/simulation/SpawnService'
-import { IFish } from '../../models/types'
+import { IFish, ITankLogic } from '../../models/types'
 import { Fish } from '../../models/Fish'
 
 export class FishController {
-  private tank: Tank
+  private tank: ITankLogic
   private tankView: TankContainer
   private renderManager: FishRenderManager
   private spawnService: SpawnService
 
-  constructor(tank: Tank, tankView: TankContainer) {
+  constructor(tank: ITankLogic, tankView: TankContainer) {
     this.tank = tank
     this.tankView = tankView
     this.renderManager = new FishRenderManager(this.tankView)
@@ -57,8 +56,8 @@ export class FishController {
     fishToAdd.forEach((f) => {
       // Store doesn't track position, so we spawn at random position or center
       // Ideally we should persist position in store if we want persistence across reloads
-      const x = Math.random() * this.tank.width
-      const y = Math.random() * this.tank.height
+      const x = Math.random() * this.tank.geometry.width
+      const y = Math.random() * this.tank.geometry.height
 
       const fishModel = new Fish(f.id, x, y, f.color, f.size)
 

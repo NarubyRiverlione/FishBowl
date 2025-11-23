@@ -1,4 +1,4 @@
-import { ITank, TankSize, UUID } from './types'
+import { ITankLogic, ITankGeometry, TankSize, UUID, IFish } from './types'
 import { Fish } from './Fish'
 import {
   resolveBoundaryCollision,
@@ -6,8 +6,9 @@ import {
   detectFishCollision,
 } from '../services/physics/CollisionService'
 import { PERCENTAGE_MAX } from '../lib/constants'
+import { ISpawnBounds } from './types/tankShape'
 
-export class Tank implements ITank {
+export class Tank implements ITankLogic {
   id: UUID = crypto.randomUUID()
   size: TankSize = 'BOWL'
   capacity: number = 1
@@ -16,24 +17,44 @@ export class Tank implements ITank {
   hasFilter: boolean = false
   temperature: number = 24
   createdAt: number = Date.now()
-
-  width: number
-  height: number
   backgroundColor: number
-  fish: Fish[] = []
+  fish: Fish[] = [] // Implementation uses Fish[] but interface expects IFish[]
+  geometry: ITankGeometry
 
   // Metrics
   collisionChecks: number = 0
   collisionsResolved: number = 0
 
   constructor(width: number, height: number, backgroundColor: number) {
-    this.width = width
-    this.height = height
+    this.geometry = {
+      width,
+      height,
+      centerX: width / 2,
+      centerY: height / 2,
+    }
     this.backgroundColor = backgroundColor
   }
 
-  addFish(fish: Fish): void {
-    this.fish.push(fish)
+  addFish(fish: IFish): void {
+    // Accept IFish but internally we work with Fish instances
+    if (fish instanceof Fish) {
+      this.fish.push(fish)
+    } else {
+      // Convert IFish to Fish if needed
+      const fishInstance = new Fish(fish.id, fish.x, fish.y, fish.color, fish.size)
+      fishInstance.species = fish.species
+      fishInstance.age = fish.age
+      fishInstance.health = fish.health
+      fishInstance.hunger = fish.hunger
+      fishInstance.isAlive = fish.isAlive
+      fishInstance.genetics = fish.genetics
+      fishInstance.createdAt = fish.createdAt
+      fishInstance.lastFedAt = fish.lastFedAt
+      fishInstance.vx = fish.vx
+      fishInstance.vy = fish.vy
+      fishInstance.radius = fish.radius
+      this.fish.push(fishInstance)
+    }
   }
 
   removeFish(fishId: string): void {
@@ -66,6 +87,45 @@ export class Tank implements ITank {
           this.collisionsResolved++
         }
       }
+    }
+  }
+
+  // Collision detection methods required by ITankLogic
+  checkBoundary(fish: IFish): boolean {
+    return (
+      fish.x - fish.radius <= 0 ||
+      fish.x + fish.radius >= this.geometry.width ||
+      fish.y - fish.radius <= 0 ||
+      fish.y + fish.radius >= this.geometry.height
+    )
+  }
+
+  resolveBoundary(fish: IFish): void {
+    // Handle boundary collisions
+    if (fish.x - fish.radius <= 0) {
+      fish.x = fish.radius
+      fish.vx = -fish.vx
+    }
+    if (fish.x + fish.radius >= this.geometry.width) {
+      fish.x = this.geometry.width - fish.radius
+      fish.vx = -fish.vx
+    }
+    if (fish.y - fish.radius <= 0) {
+      fish.y = fish.radius
+      fish.vy = -fish.vy
+    }
+    if (fish.y + fish.radius >= this.geometry.height) {
+      fish.y = this.geometry.height - fish.radius
+      fish.vy = -fish.vy
+    }
+  }
+
+  getSpawnBounds(): ISpawnBounds {
+    return {
+      minX: 20,
+      maxX: this.geometry.width - 20,
+      minY: 20,
+      maxY: this.geometry.height - 20,
     }
   }
 }

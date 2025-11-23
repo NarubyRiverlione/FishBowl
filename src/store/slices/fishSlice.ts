@@ -11,11 +11,11 @@ export interface FishState {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const createFishSlice: StateCreator<FishState> = (set, _get, _api) => ({
   fish: {},
-  addFish: (fish) => set((s) => ({ fish: { ...s.fish, [fish.id]: fish } })),
-  removeFish: (id) =>
-    set((s) => {
-      const next = { ...s.fish }
-      delete next[id]
+  addFish: (newFish) => set((existingFish) => ({ fish: { ...existingFish.fish, [newFish.id]: newFish } })),
+  removeFish: (removeFishId) =>
+    set((existingFish) => {
+      const next = { ...existingFish.fish }
+      delete next[removeFishId]
       return { fish: next }
     }),
 })

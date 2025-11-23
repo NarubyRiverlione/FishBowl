@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { RenderingEngineManager } from '../../src/game/RenderingEngineManager'
-import { RenderingEngine } from '../../src/game/RenderingEngine'
+import { RenderingEngineManager } from '../../src/game/managers/RenderingEngineManager'
+import { RenderingEngine } from '../../src/game/engine/RenderingEngine'
 
 describe('RenderingEngineLifecycle Integration', () => {
   beforeEach(() => {

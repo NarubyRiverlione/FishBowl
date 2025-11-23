@@ -28,6 +28,7 @@ export class Fish implements IFish {
   isAlive: boolean = true
   genetics: Record<string, unknown> = {}
   createdAt: number = Date.now()
+  lastFedAt?: number // Optional timestamp of last feeding
   name?: string
 
   // Physics properties

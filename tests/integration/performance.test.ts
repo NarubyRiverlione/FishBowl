@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { RenderingEngine } from '../../src/game/RenderingEngine'
+import { RenderingEngine } from '../../src/game/engine/RenderingEngine'
 import { TEST_VALUES } from '../config/testConstants'
 
 // Mock PixiJS

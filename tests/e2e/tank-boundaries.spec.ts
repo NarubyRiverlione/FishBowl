@@ -410,7 +410,12 @@ test.describe('Tank Shape Integration (T039f)', () => {
       document.head.appendChild(script)
       return new Promise((resolve) => {
         setTimeout(() => {
-          resolve((window as any).__FEATURE_FLAGS__ || { USE_TANK_SHAPES: false, USE_SHAPE_COLLISION: false })
+          resolve(
+            (window as Window & { __FEATURE_FLAGS__?: Record<string, boolean> }).__FEATURE_FLAGS__ || {
+              USE_TANK_SHAPES: false,
+              USE_SHAPE_COLLISION: false,
+            }
+          )
         }, 100)
       })
     })
@@ -481,11 +486,12 @@ test.describe('Tank Shape Integration (T039f)', () => {
     // Simulate feature flag changes by modifying tanks to have undefined shapes
     await page.evaluate(() => {
       // Access the store and remove shapes from tanks
-      const gameStore = (window as any).__GAME_STORE__
+      const gameStore = (window as Window & { __GAME_STORE__?: { getState(): { tanks?: Array<{ shape?: unknown }> } } })
+        .__GAME_STORE__
       if (gameStore && gameStore.getState) {
         const state = gameStore.getState()
         if (state.tanks && Array.isArray(state.tanks)) {
-          state.tanks.forEach((tank: any) => {
+          state.tanks.forEach((tank: { shape?: unknown }) => {
             if (tank.shape) {
               tank.shape = undefined
             }
@@ -547,12 +553,12 @@ test.describe('Tank Shape Integration (T039f)', () => {
         // Basic rectangular bounds check (legacy)
         const outOfRect = fish.x < 0 || fish.x > canvas.width || fish.y < 0 || fish.y > canvas.height
 
-        // For circular, check if beyond maximum possible radius
-        const centerX = canvas.width / 2
-        const centerY = canvas.height / 2
-        const maxRadius = Math.min(canvas.width, canvas.height) / 2
-        const distanceFromCenter = Math.sqrt(Math.pow(fish.x - centerX, 2) + Math.pow(fish.y - centerY, 2))
-        const outOfCircle = distanceFromCenter > maxRadius
+        // For circular, check if beyond maximum possible radius (variables available for future use)
+        // const centerX = canvas.width / 2
+        // const centerY = canvas.height / 2
+        // const maxRadius = Math.min(canvas.width, canvas.height) / 2
+        // const distanceFromCenter = Math.sqrt(Math.pow(fish.x - centerX, 2) + Math.pow(fish.y - centerY, 2))
+        // const outOfCircle = distanceFromCenter > maxRadius // Currently unused
 
         return outOfRect // Use rectangular for now since that's what's active
       })

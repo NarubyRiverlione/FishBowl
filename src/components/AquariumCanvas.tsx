@@ -1,11 +1,7 @@
 import React, { useEffect, useRef } from 'react'
-import { RenderingEngine } from '../game/RenderingEngine'
-import { RenderingEngineManager } from '../game/RenderingEngineManager'
+import { RenderingEngine } from '../game/engine/RenderingEngine'
+import { RenderingEngineManager } from '../game/managers/RenderingEngineManager'
 import useGameStore from '../store/useGameStore'
-
-interface RenderingEngineWithUnsubscribe extends RenderingEngine {
-  __unsubscribeFromStore?: () => void
-}
 
 interface TestHelpers {
   getFishScreenPositions: () => Array<{ id: string; x: number; y: number }>
@@ -24,23 +20,34 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const engineRef = useRef<RenderingEngine | null>(null)
   const cleanupRef = useRef<(() => void) | null>(null)
-  const fish = useGameStore((state) => state.tanks[0]?.fish)
-  const developerMode = useGameStore((state) => state.developerMode)
-  const currentTank = useGameStore((state) => state.tank)
+
+  // Store subscriptions are now handled directly by RenderingEngine
 
   // Handle window resize and update tank display scaling
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current && engineRef.current) {
         // Update tank container display scale on resize (T042c)
-        if (engineRef.current.tankContainer && 'updateDisplayScale' in engineRef.current.tankContainer) {
-          ;(engineRef.current.tankContainer as any).updateDisplayScale()
+        if (engineRef.current.tankView && 'updateDisplayScale' in engineRef.current.tankView) {
+          engineRef.current.tankView.updateDisplayScale()
         }
       }
     }
 
+    const handleCanvasResize = (event: CustomEvent) => {
+      if (engineRef.current && 'resizeCanvas' in engineRef.current) {
+        const { width, height } = event.detail
+        engineRef.current.resizeCanvas(width, height)
+      }
+    }
+
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    window.addEventListener('tankCanvasResize', handleCanvasResize as EventListener)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('tankCanvasResize', handleCanvasResize as EventListener)
+    }
   }, [])
 
   useEffect(() => {
@@ -56,14 +63,7 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
       try {
         // Clean up any existing engine first via singleton manager
         if (engineRef.current) {
-          try {
-            const unsubscribe = (engineRef.current as RenderingEngineWithUnsubscribe).__unsubscribeFromStore
-            if (unsubscribe) {
-              unsubscribe()
-            }
-          } catch {
-            // ignore cleanup errors
-          }
+          // RenderingEngine now handles its own cleanup
           RenderingEngineManager.destroyInstance()
           engineRef.current = null
         }
@@ -78,23 +78,7 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
 
         await engine.init(containerRef.current!)
 
-        // Initial sync with store state
-        const currentFish = useGameStore.getState().tanks[0]?.fish || []
-        engine.syncFish(currentFish)
-
-        // Subscribe to store updates
-        // Subscribe to the currently selected tank's fish array. Using `s.tank?.fish`
-        // ensures updates are received when the selected tank changes (not only index 0).
-        const unsubscribe = useGameStore.subscribe((state) => {
-          try {
-            engine.syncFish(state.tank?.fish || [])
-          } catch {
-            // ignore for now
-          }
-        })
-
-        // Attach unsubscribe to engine for cleanup
-        ;(engine as RenderingEngineWithUnsubscribe).__unsubscribeFromStore = unsubscribe
+        // No need for manual sync - RenderingEngine now automatically syncs with store
 
         // Expose a minimal read-only test helper when enabled at build/runtime or via URL.
         // Allow both: env flag `VITE_TEST_HELPERS=true` or query param `?testHelpers=true`.
@@ -146,17 +130,7 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
     // Set up cleanup function
     const cleanup = () => {
       if (engineRef.current) {
-        // unsubscribe store subscription if present
-        if ((engineRef.current as RenderingEngineWithUnsubscribe).__unsubscribeFromStore) {
-          try {
-            const unsubscribeFn = (engineRef.current as RenderingEngineWithUnsubscribe).__unsubscribeFromStore
-            if (unsubscribeFn) {
-              unsubscribeFn()
-            }
-          } catch {
-            // ignore
-          }
-        }
+        // RenderingEngine now handles its own store subscription cleanup
         RenderingEngineManager.destroyInstance()
         engineRef.current = null
       }
@@ -167,15 +141,7 @@ const AquariumCanvas: React.FC<AquariumCanvasProps> = ({ width, height }) => {
     return cleanup
   }, [])
 
-  // Sync fish from store to engine (consolidate all fish sync logic)
-  useEffect(() => {
-    // Use currentTank fish if available (dev mode), otherwise use fish from tanks[0]
-    const fishToSync = currentTank?.fish || fish || []
-
-    if (engineRef.current && fishToSync.length >= 0) {
-      engineRef.current.syncFish(fishToSync)
-    }
-  }, [fish, currentTank, developerMode])
+  // No longer needed - RenderingEngine automatically syncs with store
 
   return (
     <div

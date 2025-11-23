@@ -1,4 +1,4 @@
-import { RenderingEngine } from './RenderingEngine'
+import { RenderingEngine } from '../engine/RenderingEngine'
 
 interface WindowWithDebug extends Window {
   __FISHBOWL_DEBUG_ENGINE__?: boolean

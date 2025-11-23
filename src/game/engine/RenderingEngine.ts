@@ -1,25 +1,80 @@
 import { Application } from 'pixi.js'
-import { Tank } from '../models/Tank'
-import { TankContainer } from './views/TankContainer'
-import { FishController } from './controllers/FishController'
-import { PerformanceMonitor } from './PerformanceMonitor'
-import { IFish } from '../models/types'
+import { Tank } from '../../models/Tank'
+import { TankContainer } from '../views/TankContainer'
+import { FishController } from '../controllers/FishController'
+import { PerformanceMonitor } from '../PerformanceMonitor'
+import { IFish, ITankData } from '../../models/types'
+import useGameStore from '../../store/useGameStore'
 
 export class RenderingEngine {
   private app: Application
-  public tank: Tank // Public for testing/inspection
-  private tankView: TankContainer
+  public tank: Tank // Public for testing/inspection - synced with store
+  public tankView: TankContainer // Public for resize handling
   private fishManager: FishController
   private performanceMonitor: PerformanceMonitor
   private isInitialized: boolean = false
   private isDestroyed: boolean = false
+  private storeUnsubscribe: (() => void) | null = null
 
   constructor(width: number, height: number, backgroundColor: number) {
     this.app = new Application()
-    this.tank = new Tank(width, height, backgroundColor)
+
+    // Get initial tank data from store
+    const initialState = useGameStore.getState()
+    const storeTank = initialState.tank
+
+    if (storeTank) {
+      // Create Tank model with store dimensions from geometry
+      this.tank = new Tank(storeTank.geometry.width, storeTank.geometry.height, storeTank.backgroundColor)
+      // Immediately sync with store state
+      this.syncTankProperties(storeTank)
+    } else {
+      // Fallback to constructor params if no store tank available
+      this.tank = new Tank(width, height, backgroundColor)
+    }
+
     this.tankView = new TankContainer(this.tank)
     this.fishManager = new FishController(this.tank, this.tankView)
     this.performanceMonitor = new PerformanceMonitor(this.tank)
+
+    // Subscribe to store for reactive updates
+    this.setupStoreSubscription()
+  }
+
+  private syncTankProperties(storeTank: ITankData): void {
+    // Sync all tank properties from store to Tank model
+    this.tank.waterQuality = storeTank.waterQuality
+    this.tank.pollution = storeTank.pollution
+    this.tank.temperature = storeTank.temperature
+    // Note: fish are synced separately via syncFish method
+  }
+
+  private setupStoreSubscription(): void {
+    // Subscribe to store changes and sync the local Tank instance
+    this.storeUnsubscribe = useGameStore.subscribe((state) => {
+      this.syncWithStore(state.tank)
+    })
+
+    // Initial sync with current store state
+    const currentStoreState = useGameStore.getState()
+    this.syncWithStore(currentStoreState.tank)
+  }
+
+  private syncWithStore(storeTank: ITankData | null): void {
+    if (!storeTank || this.isDestroyed) return
+
+    try {
+      // Sync tank properties from store
+      this.syncTankProperties(storeTank)
+
+      // Sync fish using existing method
+      this.syncFish(storeTank.fish)
+
+      // Notify view components of the changes
+      this.tankView.update()
+    } catch (error) {
+      console.warn('Error syncing RenderingEngine with store:', error)
+    }
   }
 
   async init(element: HTMLElement): Promise<void> {
@@ -29,8 +84,8 @@ export class RenderingEngine {
 
     try {
       await this.app.init({
-        width: this.tank.width,
-        height: this.tank.height,
+        width: this.tank.geometry.width,
+        height: this.tank.geometry.height,
         backgroundColor: 0x333333,
         antialias: true,
       })
@@ -71,6 +126,12 @@ export class RenderingEngine {
 
   spawnFish(amountNewFish: number): void {
     this.fishManager.spawn(amountNewFish)
+  }
+
+  resizeCanvas(newWidth: number, newHeight: number): void {
+    if (this.app && this.app.renderer) {
+      this.app.renderer.resize(newWidth, newHeight)
+    }
   }
 
   syncFish(fish: IFish[]): void {
@@ -162,6 +223,12 @@ export class RenderingEngine {
     this.isDestroyed = true
 
     try {
+      // Cleanup store subscription first
+      if (this.storeUnsubscribe) {
+        this.storeUnsubscribe()
+        this.storeUnsubscribe = null
+      }
+
       if (this.app) {
         // Store reference to app before potential destruction
         const app = this.app
@@ -171,21 +238,28 @@ export class RenderingEngine {
           app.ticker.stop()
         }
 
-        // Remove canvas from DOM if it exists and is valid
+        // Only try to cleanup canvas if it was actually created
         try {
           if (app.canvas && app.canvas.parentNode) {
             app.canvas.parentNode.removeChild(app.canvas)
           }
         } catch (canvasError) {
-          // Canvas may already be destroyed or invalid
+          // Canvas may not exist if app wasn't fully initialized
           console.warn('Canvas cleanup warning:', canvasError)
         }
 
-        // Destroy the application
-        app.destroy(true, { children: true })
+        // Only destroy if the app has been properly initialized
+        try {
+          if (app.renderer) {
+            app.destroy(true, { children: true })
+          }
+        } catch (destroyError) {
+          // App may not be fully initialized
+          console.warn('App destroy warning:', destroyError)
+        }
 
         // Clear our reference
-        this.app = null as any
+        this.app = null!
       }
     } catch (error) {
       console.warn('Error during RenderingEngine cleanup:', error)

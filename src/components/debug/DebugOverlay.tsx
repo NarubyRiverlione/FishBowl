@@ -47,6 +47,9 @@ export const DebugOverlay: React.FC = () => {
 
       const debuggerStats = TankDebugger.getStats()
 
+      const canvas = typeof document !== 'undefined' ? document.querySelector('canvas') : null
+      const canvasPresent = Boolean(canvas && canvas.offsetParent !== null)
+
       setStats({
         tankCount: 1, // Single tank mode for now
         fishCount: tank.fish.length,
@@ -55,7 +58,7 @@ export const DebugOverlay: React.FC = () => {
         pollution: tank.pollution,
         collisionChecks: debuggerStats['collisionChecks'] || 0,
         renderingEngineInstances: 1, // Single instance for now
-        canvasPresent: typeof document !== 'undefined' && Boolean(document.querySelector('canvas')),
+        canvasPresent,
         lastUpdate: new Date().toLocaleTimeString(),
       })
     }

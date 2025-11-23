@@ -1,52 +1,42 @@
+// Fish-related types for the FishBowl game
+export type UUID = string
+export type Timestamp = number
+
+export enum FishSpecies {
+  GUPPY = 'GUPPY',
+  GOLDFISH = 'GOLDFISH',
+  TETRA = 'TETRA',
+  BETTA = 'BETTA',
+}
+
 /**
- * Represents the visual properties of a fish for the prototype.
+ * Complete fish interface with all game properties
  */
 export interface IFish {
-  /** Unique identifier for the fish */
-  id: string
-
-  /** Current X position in the tank (pixels) */
-  x: number
-
-  /** Current Y position in the tank (pixels) */
-  y: number
-
-  /** Horizontal velocity (pixels/frame) */
-  vx: number
-
-  /** Vertical velocity (pixels/frame) */
-  vy: number
-
-  /** Visual scale factor (0.5 to 1.5) */
-  scale: number
-
-  /** Hex color string (e.g., "#FF5733") */
+  id: UUID
+  species: FishSpecies
+  name?: string
   color: string
-
-  /** Width of the fish sprite in pixels (before scale) */
-  width: number
-
-  /** Height of the fish sprite in pixels (before scale) */
-  height: number
-
-  /** Mass of the fish for physics calculations */
-  mass: number
-
-  /** Collision radius of the fish in pixels */
-  radius: number
-
-  /** Age of the fish in ticks for life stage calculation */
+  size: number // 0.5-2.0
   age: number
+  health: number // 0-100
+  hunger: number // 0-100
+  isAlive: boolean
+  genetics: Record<string, unknown>
+  createdAt: Timestamp
+  lastFedAt?: Timestamp
+  // Physics properties
+  x: number
+  y: number
+  vx: number
+  vy: number
+  radius: number
+  getEffectiveRadius?: () => number
+}
 
-  /**
-   * Updates the fish state based on the time delta.
-   * @param delta Time elapsed since last tick
-   */
-  update(delta: number): void
-
-  /**
-   * Gets the effective collision radius including life stage scaling.
-   * @returns Effective radius for collision detection
-   */
-  getEffectiveRadius(): number
+export interface IFishSpeciesConfig {
+  baseValue: number
+  sizeRange: [number, number]
+  health: number
+  hungerRate: number
 }

@@ -1,4 +1,6 @@
 // Game constants centralized for Core Game Mechanics (MVP)
+import { FishSpecies, IFishSpeciesConfig } from '../models/types/fish'
+
 export const TICK_RATE_SECONDS = 1
 
 // Feeding costs
@@ -18,6 +20,14 @@ export const CLEAN_POLLUTION_REDUCTION = 100
 // Filter and tank upgrade costs
 export const FILTER_COST = 50
 export const TANK_UPGRADE_COST = 75
+
+// Fish species configuration
+export const FISH_SPECIES_CONFIG: Record<FishSpecies, IFishSpeciesConfig> = {
+  [FishSpecies.GUPPY]: { baseValue: 50, sizeRange: [0.25, 0.5], health: 80, hungerRate: 1 }, // 0.5-1.0
+  [FishSpecies.GOLDFISH]: { baseValue: 100, sizeRange: [0.5, 1.0], health: 80, hungerRate: 2 }, // 1.0-2.0
+  [FishSpecies.TETRA]: { baseValue: 60, sizeRange: [0.2, 0.4], health: 75, hungerRate: 1 }, // 0.4-0.8
+  [FishSpecies.BETTA]: { baseValue: 150, sizeRange: [0.4, 0.75], health: 90, hungerRate: 1.5 }, // 0.8-1.5
+}
 export const TANK_UPGRADE_BIG_COST = 150
 
 // Tank capacities and multi-tank support
@@ -97,7 +107,7 @@ export const TEMPERATURE_DEFAULT = 24
 
 // Physics Constants
 export const COLLISION_RESTITUTION = 0.8 // Bounciness factor for collisions
-export const COLLISION_BOUNDARY_BUFFER = 2.0 // Safety buffer for boundary collision detection (pixels)
+export const COLLISION_BOUNDARY_BUFFER = 5.0 // Safety buffer for boundary collision detection (pixels)
 export const SPAWN_MARGIN_BUFFER = 50 // Safe margin for fish spawning
 export const FISH_SPAWN_POSITION_BUFFER = 5 // Extra buffer for safe fish positioning
 export const SPAWN_BUFFER = 50 // Buffer for fish spawning

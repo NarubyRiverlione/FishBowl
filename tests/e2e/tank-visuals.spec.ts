@@ -23,7 +23,8 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
 
       // Verify tank type through game store
       const tankInfo = await page.evaluate(() => {
-        const store = (window as any).__GAME_STORE_DEBUG__
+        const store = (window as Window & { __GAME_STORE_DEBUG__?: { tank: Record<string, unknown> } })
+          .__GAME_STORE_DEBUG__
         if (store) {
           const tank = store.tank
           return {
@@ -51,7 +52,8 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
 
       // Get tank info from game store
       const tankInfo = await page.evaluate(() => {
-        const store = (window as any).__GAME_STORE_DEBUG__
+        const store = (window as Window & { __GAME_STORE_DEBUG__?: { tank: Record<string, unknown> } })
+          .__GAME_STORE_DEBUG__
         if (store) {
           const tank = store.tank
           return {

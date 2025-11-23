@@ -40,8 +40,11 @@ test.describe('Tank Shape Detection', () => {
       window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
           // Try to find and expose the Zustand store
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const win = window as any
+
+          const win = window as Window & {
+            useGameStore?: { getState: () => unknown }
+            __EXPOSED_GAME_STORE__?: { getState: () => unknown }
+          }
           if (win.useGameStore?.getState) {
             win.__EXPOSED_GAME_STORE__ = win.useGameStore
             console.log('✅ Game store exposed for testing')
@@ -57,8 +60,8 @@ test.describe('Tank Shape Detection', () => {
 
     // Get tank configuration
     const normalModeTank = await page.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const store = (window as any).__EXPOSED_GAME_STORE__
+      const store = (window as Window & { __EXPOSED_GAME_STORE__?: { getState: () => { tank?: unknown } } })
+        .__EXPOSED_GAME_STORE__
       if (!store?.getState) return { error: 'Store not accessible' }
 
       const state = store.getState()
@@ -83,8 +86,8 @@ test.describe('Tank Shape Detection', () => {
     await page.waitForTimeout(2500)
 
     const devModeTank = await page.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const store = (window as any).__EXPOSED_GAME_STORE__
+      const store = (window as Window & { __EXPOSED_GAME_STORE__?: { getState: () => { tank?: unknown } } })
+        .__EXPOSED_GAME_STORE__
       if (!store?.getState) return { error: 'Store not accessible' }
 
       const state = store.getState()
@@ -166,8 +169,13 @@ test.describe('Tank Shape Detection', () => {
   test('should verify tank shape feature flags are enabled', async ({ page }) => {
     // Add script to check feature flags
     await page.addInitScript(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(window as any).__CHECK_FEATURE_FLAGS__ = () => {
+      ;(
+        window as Window & {
+          __CHECK_FEATURE_FLAGS__?: () =>
+            | { hasShapeBasedTanks: boolean; timestamp: number }
+            | { error: string; message: string }
+        }
+      ).__CHECK_FEATURE_FLAGS__ = () => {
         try {
           // Try to access constants module or check if features are working
           return {
@@ -185,8 +193,7 @@ test.describe('Tank Shape Detection', () => {
     await page.waitForTimeout(1500)
 
     const flagCheck = await page.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const checkFn = (window as any).__CHECK_FEATURE_FLAGS__
+      const checkFn = (window as Window & { __CHECK_FEATURE_FLAGS__?: () => unknown }).__CHECK_FEATURE_FLAGS__
       return checkFn ? checkFn() : { error: 'Check function not available' }
     })
 

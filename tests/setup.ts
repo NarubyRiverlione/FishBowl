@@ -21,13 +21,15 @@ try {
     Graphics: { prototype: unknown }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const makeEventable = (proto: any) => {
+  const makeEventable = (proto: {
+    __pixiEventPatched?: boolean
+    on?: unknown
+    __events?: Record<string, ((...args: unknown[]) => void)[]>
+  }) => {
     if (proto.__pixiEventPatched) return
     proto.__pixiEventPatched = true
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    proto.on = function (event: string, cb: (...args: any[]) => void) {
+    proto.on = function (event: string, cb: (...args: unknown[]) => void) {
       // store handlers on instance
       this.__events = this.__events || {}
       this.__events[event] = this.__events[event] || []
@@ -35,34 +37,29 @@ try {
       return this
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    proto.once = function (event: string, cb: (...args: any[]) => void) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const wrapper = (...args: any[]) => {
+    proto.once = function (event: string, cb: (...args: unknown[]) => void) {
+      const wrapper = (...args: unknown[]) => {
         cb(...args)
         if (this.__events?.[event]) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          this.__events[event] = this.__events[event].filter((fn: any) => fn !== wrapper)
+          this.__events[event] = this.__events[event].filter((fn: (...args: unknown[]) => void) => fn !== wrapper)
         }
       }
       this.on(event, wrapper)
       return this
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    proto.off = function (event: string, cb?: (...args: any[]) => void) {
+    proto.off = function (event: string, cb?: (...args: unknown[]) => void) {
       if (!this.__events?.[event]) return this
       if (!cb) {
         this.__events[event] = []
         return this
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this.__events[event] = this.__events[event].filter((fn: any) => fn !== cb)
+
+      this.__events[event] = this.__events[event].filter((fn: (...args: unknown[]) => void) => fn !== cb)
       return this
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    proto.emit = function (event: string, ...args: any[]) {
+    proto.emit = function (event: string, ...args: unknown[]) {
       const handlers = this.__events?.[event]
       if (!handlers || handlers.length === 0) return this
       // call handlers

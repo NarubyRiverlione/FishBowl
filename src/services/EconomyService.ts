@@ -1,4 +1,5 @@
-import { ITank, FishSpecies, FISH_SPECIES_CONFIG } from '../models/types'
+import { ITankData, FishSpecies } from '../models/types'
+import { FISH_SPECIES_CONFIG } from '../lib/constants'
 import { FEED_BASE_COST, FEED_PER_FISH_COST, CLEAN_COST, FILTER_COST, TANK_UPGRADE_COST } from '../lib/constants'
 
 export class EconomyService {
@@ -6,7 +7,7 @@ export class EconomyService {
     return FISH_SPECIES_CONFIG[species].baseValue
   }
 
-  static canBuyFish(credits: number, tank: ITank, species: FishSpecies): boolean {
+  static canBuyFish(credits: number, tank: ITankData, species: FishSpecies): boolean {
     const cost = this.getFishCost(species)
     const livingFishCount = tank.fish.filter((f) => f.isAlive).length
     const isFull = livingFishCount >= tank.capacity
@@ -33,7 +34,7 @@ export class EconomyService {
     return FILTER_COST
   }
 
-  static canBuyFilter(credits: number, tank: ITank): boolean {
+  static canBuyFilter(credits: number, tank: ITankData): boolean {
     return credits >= FILTER_COST && tank.size === 'STANDARD' && !tank.hasFilter
   }
 
@@ -41,7 +42,7 @@ export class EconomyService {
     return TANK_UPGRADE_COST
   }
 
-  static canUpgradeTank(credits: number, tank: ITank): boolean {
+  static canUpgradeTank(credits: number, tank: ITankData): boolean {
     return credits >= TANK_UPGRADE_COST && tank.size === 'BOWL'
   }
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { RenderingEngine } from '../../src/game/RenderingEngine'
+import { RenderingEngine } from '../../src/game/engine/RenderingEngine'
 
 describe('RenderingEngine helpers', () => {
   it('getFishScreenPositions falls back and waitForFishRendered polls until available', async () => {

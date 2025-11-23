@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand'
-import { ITank, IStoreItem, UUID } from '../../models/types'
+import { ITankData, IStoreItem, UUID } from '../../models/types'
 import { TankState } from './tankSlice'
 import { FishService } from '../../services/FishService'
 import { createDeveloperModeFish } from '../../lib/fishHelpers'
@@ -20,9 +20,7 @@ import {
   POLLUTION_INITIAL,
   TEMPERATURE_DEFAULT,
   PERCENTAGE_MAX,
-  USE_TANK_SHAPES,
 } from '../../lib/constants'
-import { createTankShape } from '../../services/physics/TankShapeFactory'
 
 export interface GameState {
   credits: number
@@ -73,10 +71,10 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
       set({ developerMode: true, credits: GAME_DEV_MODE_CREDITS, tutorialEnabled: false })
 
       // Set dev tank
-      const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
+      const maybeSetTank = (get() as unknown as { setTank?: (t: ITankData) => void }).setTank
       if (typeof maybeSetTank === 'function') {
         const devFish = createDeveloperModeFish()
-        const devTank: ITank = {
+        const devTank: ITankData = {
           id: 'dev-standard-tank',
           size: 'STANDARD',
           capacity: TANK_CAPACITY_STANDARD,
@@ -86,11 +84,13 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
           temperature: TEMPERATURE_DEFAULT,
           fish: devFish,
           createdAt: Date.now(),
-          width: TANK_UPGRADED_WIDTH,
-          height: TANK_UPGRADED_HEIGHT,
+          geometry: {
+            width: TANK_UPGRADED_WIDTH,
+            height: TANK_UPGRADED_HEIGHT,
+            centerX: TANK_UPGRADED_WIDTH / 2,
+            centerY: TANK_UPGRADED_HEIGHT / 2,
+          },
           backgroundColor: 0x87ceeb,
-          // Assign shape if tank shapes are enabled (Phase 4c)
-          shape: USE_TANK_SHAPES ? createTankShape('STANDARD') : undefined,
         }
         maybeSetTank(devTank)
       } else {
@@ -100,9 +100,9 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
       set({ developerMode: false, credits: GAME_INITIAL_CREDITS, tutorialEnabled: true })
 
       // Set default bowl tank
-      const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
+      const maybeSetTank = (get() as unknown as { setTank?: (t: ITankData) => void }).setTank
       if (typeof maybeSetTank === 'function') {
-        const bowlTank: ITank = {
+        const bowlTank: ITankData = {
           id: 'default-bowl-tank',
           size: 'BOWL',
           capacity: TANK_CAPACITY_BOWL,
@@ -112,11 +112,13 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
           temperature: TEMPERATURE_DEFAULT,
           fish: [],
           createdAt: Date.now(),
-          width: TANK_BOWL_SIZE, // Use circular bowl size for consistent dimensions
-          height: TANK_BOWL_SIZE, // Use circular bowl size for consistent dimensions
+          geometry: {
+            width: TANK_BOWL_SIZE,
+            height: TANK_BOWL_SIZE,
+            centerX: TANK_BOWL_SIZE / 2,
+            centerY: TANK_BOWL_SIZE / 2,
+          },
           backgroundColor: 0x87ceeb,
-          // Assign circular bowl shape if tank shapes are enabled (Phase 4)
-          shape: USE_TANK_SHAPES ? createTankShape('BOWL') : undefined,
         }
         maybeSetTank(bowlTank)
       }
@@ -134,10 +136,10 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
       set({ developerMode: true, credits: GAME_DEV_MODE_CREDITS, tutorialEnabled: false })
 
       // If tank slice is present, set a STANDARD tank for dev convenience
-      const maybeSetTank = (get() as unknown as { setTank?: (t: ITank) => void }).setTank
+      const maybeSetTank = (get() as unknown as { setTank?: (t: ITankData) => void }).setTank
       if (typeof maybeSetTank === 'function') {
         const devFish = createDeveloperModeFish()
-        const devTank: ITank = {
+        const devTank: ITankData = {
           id: 'dev-standard-tank',
           size: 'STANDARD',
           capacity: TANK_CAPACITY_STANDARD,
@@ -147,11 +149,13 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
           temperature: TEMPERATURE_DEFAULT,
           fish: devFish,
           createdAt: Date.now(),
-          width: TANK_UPGRADED_WIDTH,
-          height: TANK_UPGRADED_HEIGHT,
+          geometry: {
+            width: TANK_UPGRADED_WIDTH,
+            height: TANK_UPGRADED_HEIGHT,
+            centerX: TANK_UPGRADED_WIDTH / 2,
+            centerY: TANK_UPGRADED_HEIGHT / 2,
+          },
           backgroundColor: 0x87ceeb,
-          // Assign shape if tank shapes are enabled (Phase 4c)
-          shape: USE_TANK_SHAPES ? createTankShape('STANDARD') : undefined,
         }
         maybeSetTank(devTank)
       }

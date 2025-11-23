@@ -32,8 +32,14 @@ export class FishSprite extends Sprite {
     this.interactive = true
     ;(this as Sprite & { buttonMode?: boolean }).buttonMode = true
     // Attach pointer handler defensively (some test environments don't expose Pixi event methods)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const attach = (obj: any, ev: string, cb: (...args: any[]) => void) => {
+    type EventEmitterLike = {
+      on?: (event: string, callback: (...args: unknown[]) => void) => void
+      addEventListener?: (event: string, callback: (...args: unknown[]) => void) => void
+      addListener?: (event: string, callback: (...args: unknown[]) => void) => void
+      __events?: Record<string, ((...args: unknown[]) => void)[]>
+    }
+
+    const attach = (obj: EventEmitterLike, ev: string, cb: (...args: unknown[]) => void) => {
       if (typeof obj.on === 'function') return obj.on(ev, cb)
       if (typeof obj.addEventListener === 'function') return obj.addEventListener(ev, cb)
       if (typeof obj.addListener === 'function') return obj.addListener(ev, cb)
@@ -43,8 +49,7 @@ export class FishSprite extends Sprite {
       obj.__events[ev].push(cb)
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    attach(this as any, 'pointerdown', this.handlePointerDown.bind(this))
+    attach(this as EventEmitterLike, 'pointerdown', this.handlePointerDown.bind(this))
   }
 
   private handlePointerDown(): void {

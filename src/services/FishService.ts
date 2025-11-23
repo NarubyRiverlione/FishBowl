@@ -1,4 +1,5 @@
-import { IFish, FishSpecies, FISH_SPECIES_CONFIG } from '../models/types'
+import { IFish, FishSpecies } from '../models/types'
+import { FISH_SPECIES_CONFIG } from '../lib/constants'
 import { getSpeciesColor, randomSize } from '../lib/random'
 import {
   HEALTH_DECREMENT_ON_STARVATION,
@@ -33,14 +34,14 @@ export class FishService {
       vy: 0,
       radius: FISH_BASE_RADIUS, // Use constant for consistency
     }
-    console.log('🏭 FishService.createFish created:', {
-      id: fish.id,
-      species: fish.species,
-      color: fish.color,
-      size: fish.size,
-      health: fish.health,
-      isAlive: fish.isAlive,
-    })
+    // console.log('🏭 FishService.createFish created:', {
+    //   id: fish.id,
+    //   species: fish.species,
+    //   color: fish.color,
+    //   size: fish.size,
+    //   health: fish.health,
+    //   isAlive: fish.isAlive,
+    // })
     return fish
   }
 
