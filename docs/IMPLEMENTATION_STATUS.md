@@ -1,6 +1,10 @@
 # FishBowl - Implementation Status
 
-**Last Updated**: November 22, 2025
+**Last Updated**: November 23, 2025
+
+## ⚠️ Architecture Concerns
+
+**Important**: See [ARCHITECTURE_CONCERNS.md](../ARCHITECTURE_CONCERNS.md) for detailed analysis of rendering engine responsibility mixing. Current implementation works correctly but requires future architectural refactor for better separation of concerns.
 
 ## Overview
 
@@ -11,12 +15,14 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 ### 🎯 **Achievement**: Complete MVP Ready for Production
 
 **All core game mechanics implemented and tested**:
+
 - 127 tests passing (35 unit + 10 E2E)
 - 89% statement coverage with comprehensive collision physics testing
 - Zero TypeScript errors, clean linting, constants-based architecture
 - Stable 60 FPS performance with collision detection and physics simulation
 
 **Quality Assurance**:
+
 - ✅ Enhanced boundary collision system with 2px safety buffer
 - ✅ Constants-based testing architecture (E2E tests use same values as implementation)
 - ✅ Comprehensive E2E coverage for tank boundaries, fish interaction, core mechanics
@@ -86,7 +92,7 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 
 - ✅ Game loop (1 tick/second with pause/resume)
 - ✅ Fish lifecycle:
-  - Age tracking (increments per tick)  
+  - Age tracking (increments per tick)
   - Hunger system (species-specific rates)
   - Health system (affected by hunger and water quality)
   - Death when health reaches 0

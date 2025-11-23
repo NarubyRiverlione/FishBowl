@@ -13,6 +13,11 @@ A web-based fish breeding simulation game built with React, Pixi.js, and TypeScr
 
 **Current Status**: ✅ Core Mechanics Complete (Milestone 2 - MVP Ready)
 
+## ⚠️ Important Architecture Notes
+
+- **[ARCHITECTURE_CONCERNS.md](./ARCHITECTURE_CONCERNS.md)** - Documents rendering engine responsibility mixing that needs future refactor
+- Current implementation works correctly but has mixed concerns between rendering and game logic
+
 ## Recent Progress
 
 ### ✅ **Latest Achievements** (November 2025)
@@ -138,12 +143,12 @@ src/
 
 **Coverage**: 127 tests passing (35 unit + 10 E2E tests)
 
-| Metric     | Coverage | Status                    |
-| ---------- | -------- | ------------------------- |
-| Statements | 89.22%   | 🟢 Near 90% target       |
-| Functions  | 83.89%   | 🟡 Approaching target     |
-| Lines      | 92.20%   | ✅ Above 90% target       |
-| Branches   | 70.99%   | 🟡 Good coverage          |
+| Metric     | Coverage | Status                |
+| ---------- | -------- | --------------------- |
+| Statements | 89.22%   | 🟢 Near 90% target    |
+| Functions  | 83.89%   | 🟡 Approaching target |
+| Lines      | 92.20%   | ✅ Above 90% target   |
+| Branches   | 70.99%   | 🟡 Good coverage      |
 
 **Test Organization** (Updated November 2025):
 
@@ -214,11 +219,12 @@ Key principles:
 **Solution**: Implemented comprehensive collision physics improvements:
 
 - **Enhanced boundary detection** with 2px safety buffer (`COLLISION_BOUNDARY_BUFFER`)
-- **Collision velocity forcing** to ensure fish bounce away from walls  
+- **Collision velocity forcing** to ensure fish bounce away from walls
 - **Debug logging system** for collision tracking in test environment
 - **Constants-based architecture** - E2E tests use same values as implementation
 
 **Results**:
+
 - 100% boundary compliance in E2E tests (12 fish, 4000ms simulation)
 - Zero wall penetrations detected across all tank sizes
 - Proper water surface boundary enforcement (95% tank height)
@@ -227,15 +233,17 @@ Key principles:
 ### ✅ **Testing Architecture Improvements**
 
 **Constants Integration**: E2E tests now use imported constants instead of magic numbers:
+
 ```typescript
 // Before: magic numbers that could diverge from code
-const waterLevel = canvas.height * 0.85; // Hard-coded value
+const waterLevel = canvas.height * 0.85 // Hard-coded value
 
-// After: constants-based consistency  
-const waterLevel = canvas.height * WATER_LEVEL; // From src/lib/constants.ts
+// After: constants-based consistency
+const waterLevel = canvas.height * WATER_LEVEL // From src/lib/constants.ts
 ```
 
 **Test Script Enhancement**: Added separate HTML report generation:
+
 ```bash
 pnpm test:e2e      # Line reporter (CI-friendly)
 pnpm test:e2e:html # Full HTML report (debugging)
