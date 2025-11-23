@@ -125,8 +125,8 @@ export class Fish implements IFishLogic {
    */
   getEffectiveRadius(): number {
     const lifeStage = this.getLifeStage()
-    const lifeStageMult = this.getLifeStageSizeMultiplier(lifeStage)
-    return this.geometry.radius * lifeStageMult
+    const lifeStageMultiplier = this.getLifeStageSizeMultiplier(lifeStage)
+    return this.geometry.radius * lifeStageMultiplier
   }
 
   /**

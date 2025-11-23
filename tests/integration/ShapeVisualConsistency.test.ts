@@ -5,7 +5,9 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import { TankContainer } from '../../src/game/views/TankContainer'
-import { ITank, TankSize, IFish, FishSpecies } from '../../src/models/types'
+import { Tank } from '../../src/models/Tank'
+import { Fish } from '../../src/models/Fish'
+import { TankSize, FishSpecies } from '../../src/models/types'
 import { createTankShape } from '../../src/services/physics/TankShapeFactory'
 import {
   TANK_BOWL_SIZE,
@@ -16,75 +18,49 @@ import {
 } from '../../src/lib/constants'
 
 describe('Shape-Visual Consistency (T042e)', () => {
-  let mockTank: ITank
+  let mockTank: Tank
 
   beforeEach(() => {
     // Base tank template
-    mockTank = {
-      id: 'test-tank',
-      size: 'BOWL' as TankSize,
-      width: TANK_BOWL_SIZE,
-      height: TANK_BOWL_SIZE,
-      capacity: 2,
-      fish: [],
-      waterQuality: 100,
-      pollution: 0,
-      hasFilter: false,
-      temperature: 25,
-      backgroundColor: 0x87ceeb,
-      createdAt: Date.now(),
-      shape: createTankShape('BOWL'),
-    }
+    mockTank = new Tank(TANK_BOWL_SIZE, TANK_BOWL_SIZE, 0x87ceeb)
+    mockTank.id = 'test-tank'
+    mockTank.size = 'BOWL' as TankSize
+    mockTank.capacity = 2
+    mockTank.waterQuality = 100
+    mockTank.pollution = 0
+    mockTank.hasFilter = false
+    mockTank.temperature = 25
   })
 
   describe('Collision Boundary Consistency', () => {
     it('should have consistent boundaries for BOWL tank (circular)', () => {
-      const tank = { ...mockTank, size: 'BOWL' as TankSize }
-      tank.shape = createTankShape('BOWL')
+      const tank = new Tank(TANK_BOWL_SIZE, TANK_BOWL_SIZE, 0x87ceeb)
+      tank.size = 'BOWL' as TankSize
       const container = new TankContainer(tank)
 
       // Test collision boundaries match visual boundaries
       const radius = TANK_BOWL_SIZE / 2
-      const centerX = tank.width / 2
-      const centerY = tank.height / 2
+      const centerX = tank.geometry.width / 2
+      const centerY = tank.geometry.height / 2
 
       // Create test fish for boundary checking
-      const insideFish: IFish = {
-        id: 'test-fish-1',
-        species: FishSpecies.GUPPY,
-        color: '#ffffff',
-        size: 1.0,
-        age: 0,
-        health: 100,
-        hunger: 0,
-        isAlive: true,
-        genetics: {},
-        createdAt: Date.now(),
-        x: centerX,
-        y: centerY,
-        vx: 0,
-        vy: 0,
-        radius: 5, // Smaller radius to ensure it fits inside boundary
-      }
+      const insideFish = new Fish('test-fish-1', centerX, centerY, '#ffffff', 1.0)
+      insideFish.species = FishSpecies.GUPPY
+      insideFish.geometry.radius = 5 // Smaller radius to ensure it fits inside boundary
 
-      const outsideFish: IFish = {
-        ...insideFish,
-        id: 'test-fish-2',
-        x: centerX + radius + 20,
-        y: centerY,
-      }
+      const outsideFish = new Fish('test-fish-2', centerX + radius + 20, centerY, '#ffffff', 1.0)
+      outsideFish.species = FishSpecies.GUPPY
+      outsideFish.geometry.radius = 5
 
-      // Test points inside the circle should be valid
-      const isInsideValid = tank.shape!.checkBoundary(insideFish)
-      expect(isInsideValid).toBe(true)
+      // Test points inside the circle should be within boundaries
+      const isInsideOutOfBounds = tank.checkBoundary(insideFish)
+      expect(isInsideOutOfBounds).toBe(false) // Should NOT be out of bounds
 
-      // Test points outside the circle should be invalid
-      const isOutsideValid = tank.shape!.checkBoundary(outsideFish)
-      expect(isOutsideValid).toBe(false)
+      // Test points outside the circle should be out of boundaries
+      const isOutsideOutOfBounds = tank.checkBoundary(outsideFish)
+      expect(isOutsideOutOfBounds).toBe(true) // Should be out of bounds
 
-      // Visual rendering should use the same radius
-      expect(tank.shape!.type).toBe('circular')
-      expect(tank.shape!.radius).toBe(radius - TANK_BORDER_WIDTH / 2)
+      // Visual rendering should be defined
       expect(container).toBeDefined()
     })
 

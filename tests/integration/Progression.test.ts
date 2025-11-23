@@ -104,8 +104,8 @@ describe('Progression Mechanics', () => {
 
     expect(tank.size).toBe('STANDARD')
     expect(tank.capacity).toBe(TANK_CAPACITY_STANDARD)
-    expect(tank.width).toBe(800)
-    expect(tank.height).toBe(600)
+    expect(tank.geometry.width).toBe(800)
+    expect(tank.geometry.height).toBe(600)
     expect(newState.credits).toBe(initialCredits - TANK_UPGRADE_COST)
   })
 

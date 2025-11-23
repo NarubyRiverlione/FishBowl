@@ -4,12 +4,13 @@ import {
   resolveBoundaryCollision,
   resolveFishCollision,
 } from '../../src/services/physics/CollisionService'
-import { IFishLogic } from '../../src/models/types/fish'
+import { IFishLogic, FishSpecies } from '../../src/models/types/fish'
 import { ITankLogic } from '../../src/models/types/tank'
 
 const mockFish = (props: Partial<IFishLogic> = {}): IFishLogic => ({
   id: '1',
-  species: 'GUPPY' as const,
+  species: FishSpecies.GUPPY,
+  name: 'Test Fish',
   color: '#000000',
   size: 1,
   age: 0,
@@ -18,11 +19,22 @@ const mockFish = (props: Partial<IFishLogic> = {}): IFishLogic => ({
   isAlive: true,
   genetics: {},
   createdAt: Date.now(),
+  lastFedAt: Date.now(),
+  geometry: {
+    position: { x: 0, y: 0 },
+    velocity: { vx: 0, vy: 0 },
+    radius: 5
+  },
+  // Backward compatibility properties
   x: 0,
   y: 0,
   vx: 0,
   vy: 0,
   radius: 5,
+  // Mock methods required by IFishLogic
+  update: () => {},
+  getEffectiveRadius: () => 5,
+  swim: () => {},
   ...props,
 })
 
@@ -116,8 +128,8 @@ describe('Collision Utilities', () => {
 
   describe('resolveFishCollision', () => {
     it('should not change velocities (fish collision disabled)', () => {
-      const f1 = mockFish({ x: 0, vx: 10, mass: 1 })
-      const f2 = mockFish({ x: 20, vx: -10, mass: 1 })
+      const f1 = mockFish({ x: 0, vx: 10 })
+      const f2 = mockFish({ x: 20, vx: -10 })
 
       const originalF1vx = f1.vx
       const originalF2vx = f2.vx

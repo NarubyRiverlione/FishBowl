@@ -21,9 +21,8 @@ import {
   HUNGER_REDUCTION_ON_FEED,
   POLLUTION_PER_FEEDING,
   TANK_UPGRADE_COST,
+  FISH_SPECIES_CONFIG,
 } from '../../src/lib/constants'
-
-import { FISH_SPECIES_CONFIG } from '../../src/models/types'
 
 /**
  * Test scenarios for different game modes

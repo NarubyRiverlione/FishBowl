@@ -3,7 +3,7 @@ import { create, StateCreator } from 'zustand'
 import { createGameSlice, GameState } from '../../src/store/slices/gameSlice'
 import { createTankSlice, TankState } from '../../src/store/slices/tankSlice'
 import { MATURE_AGE_SECONDS, MATURITY_BONUS } from '../../src/lib/constants'
-import { IFish, ITank, FishSpecies } from '../../src/models/types'
+import { IFishData, ITankData, FishSpecies } from '../../src/models/types'
 
 describe('Game slice - tick and mode behaviors', () => {
   it('awards maturity bonus once when fish is mature in BOWL tank', () => {
@@ -20,7 +20,7 @@ describe('Game slice - tick and mode behaviors', () => {
       ),
     }))
 
-    const fish: IFish = {
+    const fish: IFishData = {
       id: 'f1',
       species: FishSpecies.GUPPY,
       color: '#fff',
@@ -31,10 +31,15 @@ describe('Game slice - tick and mode behaviors', () => {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      geometry: {
+        position: { x: 100, y: 100 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 10,
+      },
     }
 
     const tank = { ...useTestStore.getState().tank!, fish: [fish] }
-    useTestStore.getState().setTank(tank as ITank)
+    useTestStore.getState().setTank(tank as ITankData)
 
     const beforeCredits = useTestStore.getState().credits
     useTestStore.getState().tick()
@@ -61,7 +66,7 @@ describe('Game slice - tick and mode behaviors', () => {
       ),
     }))
 
-    const fish: IFish = {
+    const fish: IFishData = {
       id: 'f2',
       species: FishSpecies.GUPPY,
       color: '#fff',
@@ -72,10 +77,15 @@ describe('Game slice - tick and mode behaviors', () => {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      geometry: {
+        position: { x: 100, y: 100 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 10,
+      },
     }
 
     const initialTank = { ...useTestStore.getState().tank!, fish: [fish], pollution: 0, waterQuality: 100 }
-    useTestStore.getState().setTank(initialTank as ITank)
+    useTestStore.getState().setTank(initialTank as ITankData)
 
     useTestStore.getState().tick()
     const t = useTestStore.getState().tank!

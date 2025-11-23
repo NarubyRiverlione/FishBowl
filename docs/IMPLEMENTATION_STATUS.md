@@ -310,6 +310,131 @@ src/
 
 ---
 
+## Code Quality & Complexity Analysis
+
+**Last Audited**: November 23, 2025
+
+### 📊 Overall Statistics
+
+- **Total Files**: 45 TypeScript/TSX files in `src/`
+- **Average LOC**: 73 lines per file
+- **Code Quality Distribution**:
+  - ✅ Clean (< 100 lines): 32 files (71%)
+  - ⚠️ Warning (100-150 lines): 7 files (16%)
+  - 🔴 Needs Refactor (> 150 lines): 6 files (13%)
+
+### ✅ Clean Files (32 files - under 100 lines)
+
+Excellent separation of concerns! Key highlights:
+
+- **Components**: `HUD.tsx` (51), `AquariumCanvas.tsx` (113)
+- **Services**: All physics services well-sized (15-63 lines)
+  - `CollisionService.ts` (15), `PhysicsService.ts` (22), `TankShapeFactory.ts` (23)
+  - `EconomyService.ts` (38), `FishService.ts` (63)
+- **Controllers**: `FishController.ts` (53)
+- **Types**: All type definition files clean (4-44 lines)
+- **Utilities**: `FishConversion.ts` (39), `random.ts` (25), `cursor.ts` (11)
+- **Shapes**: `CircularTankShape.ts` (70), `RectangularTankShape.ts` (63)
+
+### ⚠️ Warning Files (7 files - approaching complexity limits)
+
+These files are between 100-150 lines and should be monitored:
+
+| File | LOC | Notes |
+|------|-----|-------|
+| `models/Fish.ts` | 135 | Core fish model with geometry composition |
+| `lib/validation/TankValidator.ts` | 129 | Tank validation logic |
+| `components/FishInfoPanel.tsx` | 120 | Fish info UI component |
+| `lib/constants.ts` | 117 | Game constants and configuration |
+| `components/AquariumCanvas.tsx` | 113 | Canvas initialization and lifecycle |
+| `game/views/FishSprite.ts` | 111 | Fish sprite rendering and animations |
+| `models/Tank.ts` | 108 | Core tank model with collision handling |
+
+**Recommendation**: Monitor these files during future development. Consider extracting logic if they grow beyond 150 lines.
+
+### 🔴 Files Needing Refactor (6 files - over 150 lines)
+
+**Priority 1 - Immediate Refactoring Recommended:**
+
+1. **`store/slices/tankSlice.ts`** (248 lines) ⚠️ **HIGHEST PRIORITY**
+   - **Current**: All tank state management in one file
+   - **Contains**: Tank creation, upgrades, feeding, cleaning, filter management, fish operations
+   - **Recommendation**: Split into:
+     - `tankSlice.ts` - Core tank state and creation
+     - `tankUpgradeSlice.ts` - Upgrade and capacity management
+     - `tankMaintenanceSlice.ts` - Feeding, cleaning, filter operations
+   - **Benefit**: Better maintainability, easier testing, clearer separation of concerns
+
+2. **`game/views/TankContainer.ts`** (229 lines)
+   - **Current**: Handles rendering, fish sprites, scaling, drawing, and event handling
+   - **Contains**: Display scaling, fish sprite management, tank drawing (circular/rectangular), water rendering
+   - **Recommendation**: Extract into:
+     - `TankContainer.ts` - Main container and fish sprite orchestration
+     - `TankRenderer.ts` - Drawing logic (drawCircularTank, drawRectangularTank)
+     - `TankScaler.ts` - Display scaling calculations
+   - **Benefit**: Single responsibility per class, easier to test rendering logic
+
+**Priority 2 - Medium Priority:**
+
+3. **`components/StoreMenu.tsx`** (228 lines)
+   - **Current**: Large UI component with all store functionality
+   - **Recommendation**: Split into smaller components:
+     - `StoreMenu.tsx` - Main layout and state
+     - `FishStoreSection.tsx` - Fish purchasing UI
+     - `TankUpgradeSection.tsx` - Tank upgrade options
+     - `MaintenanceSection.tsx` - Cleaning and filter UI
+   - **Benefit**: Reusable components, better code organization
+
+4. **`store/slices/gameSlice.ts`** (206 lines)
+   - **Current**: Game loop, tick management, progression, developer mode
+   - **Recommendation**: Extract progression logic to `ProgressionService.ts`
+   - **Benefit**: Cleaner state management, testable business logic
+
+**Priority 3 - Low Priority:**
+
+5. **`game/engine/RenderingEngine.ts`** (194 lines)
+   - **Current**: Rendering engine with store synchronization
+   - **Recommendation**: Extract `RenderingEngineSync.ts` for store sync logic
+   - **Benefit**: Separation of rendering from state management
+
+6. **`components/debug/DebugOverlay.tsx`** (186 lines)
+   - **Current**: Single debug component with multiple panels
+   - **Recommendation**: Split into:
+     - `DebugOverlay.tsx` - Main container
+     - `PerformancePanel.tsx`, `FishPanel.tsx`, `TankPanel.tsx` - Specialized panels
+   - **Benefit**: Modular debug UI, easier to extend
+
+### 🎯 Code Quality Score: **B+ (85/100)**
+
+**Strengths** ✅:
+- Excellent separation in services layer (all under 70 lines)
+- Clean type definitions and interfaces
+- Good use of small utility functions
+- 71% of files maintain low complexity (< 100 lines)
+- Well-structured physics and collision systems
+
+**Areas for Improvement** ⚠️:
+- Store slices too large (tankSlice.ts at 248 lines)
+- Some view components need decomposition
+- Consider extracting more business logic to services
+- Monitor warning files to prevent growth beyond 150 lines
+
+### 📋 Recommended Action Plan
+
+**Phase 1** (Immediate):
+1. Refactor `tankSlice.ts` into three separate slices
+2. Extract rendering logic from `TankContainer.ts`
+
+**Phase 2** (Next sprint):
+3. Break down `StoreMenu.tsx` into section components
+4. Create `ProgressionService.ts` and refactor `gameSlice.ts`
+
+**Phase 3** (Future):
+5. Refactor `RenderingEngine.ts` sync logic
+6. Modularize `DebugOverlay.tsx`
+
+---
+
 ## Next Steps
 
 ### Immediate (Complete Milestone 2)

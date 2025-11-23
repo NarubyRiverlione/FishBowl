@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(loc-audit)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

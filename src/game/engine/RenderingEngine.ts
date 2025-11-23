@@ -43,11 +43,27 @@ export class RenderingEngine {
 
   private syncTankProperties(storeTank: ITankData): void {
     // Sync all tank properties from store to Tank model
-    // TODO verify if we need to sync more properties (geometry , shape, ...)
+
+    // Core tank properties
+    this.tank.id = storeTank.id
+    this.tank.size = storeTank.size // Critical for shape rendering (BOWL vs STANDARD)
+    this.tank.capacity = storeTank.capacity // Critical for fish population limits
+    this.tank.createdAt = storeTank.createdAt
+
+    // Geometry (critical for positioning and sizing)
+    this.tank.geometry = { ...storeTank.geometry }
+
+    // Water and environment
     this.tank.waterQuality = storeTank.waterQuality
     this.tank.pollution = storeTank.pollution
+    this.tank.hasFilter = storeTank.hasFilter // Critical for water quality calculations
     this.tank.temperature = storeTank.temperature
+
+    // Visual properties
+    this.tank.backgroundColor = storeTank.backgroundColor
+
     // Note: fish are synced separately via syncFish method
+    // Note: metrics (collisionChecks, collisionsResolved) are Tank instance-specific
   }
 
   private setupStoreSubscription(): void {
@@ -211,6 +227,10 @@ export class RenderingEngine {
   }
 
   update(delta: number): void {
+    // TODO: ARCHITECTURE CONCERN - Mixed responsibilities
+    // See ARCHITECTURE_CONCERNS.md for detailed analysis
+    // This method handles both game logic (tank.update) and rendering (tankView.update)
+    // Future refactor should move game logic to store/game loop and keep only rendering here
     this.tank.update(delta)
     this.tankView.update()
     this.performanceMonitor.update()

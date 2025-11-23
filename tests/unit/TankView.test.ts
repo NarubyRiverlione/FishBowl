@@ -6,6 +6,7 @@ import { Tank } from '../../src/models/Tank'
 vi.mock('pixi.js', () => {
   class GraphicsMock {
     rect = vi.fn().mockReturnThis()
+    circle = vi.fn().mockReturnThis()
     fill = vi.fn().mockReturnThis()
     stroke = vi.fn().mockReturnThis()
     clear = vi.fn().mockReturnThis()

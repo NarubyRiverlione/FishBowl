@@ -3,7 +3,7 @@ import { create, StateCreator } from 'zustand'
 import { createGameSlice, GameState } from '../../src/store/slices/gameSlice'
 import { createTankSlice, TankState } from '../../src/store/slices/tankSlice'
 import { FEED_BASE_COST, FEED_PER_FISH_COST, CLEAN_COST, FILTER_COST, TANK_UPGRADE_COST } from '../../src/lib/constants'
-import { IFish, ITank, FishSpecies } from '../../src/models/types'
+import { IFishData, ITankData, FishSpecies } from '../../src/models/types'
 
 describe('Tank slice actions', () => {
   it('feedTank deducts cost and increases pollution', () => {
@@ -19,7 +19,7 @@ describe('Tank slice actions', () => {
         api as Parameters<StateCreator<GameState & TankState>>[2]
       ),
     }))
-    const fish: IFish = {
+    const fish: IFishData = {
       id: 'f1',
       species: FishSpecies.GUPPY,
       color: '#000',
@@ -30,9 +30,14 @@ describe('Tank slice actions', () => {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      geometry: {
+        position: { x: 100, y: 100 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 10,
+      },
     }
     const tank = { ...useTestStore.getState().tank!, fish: [fish], pollution: 0, waterQuality: 100 }
-    useTestStore.getState().setTank(tank as ITank)
+    useTestStore.getState().setTank(tank as ITankData)
 
     const cost = FEED_BASE_COST + 1 * FEED_PER_FISH_COST
     const beforeCredits = useTestStore.getState().credits
@@ -56,7 +61,7 @@ describe('Tank slice actions', () => {
       ),
     }))
     const tank = { ...useTestStore.getState().tank!, pollution: 50, waterQuality: 50 }
-    useTestStore.getState().setTank(tank as ITank)
+    useTestStore.getState().setTank(tank as ITankData)
 
     const beforeCredits = useTestStore.getState().credits
     useTestStore.getState().cleanTank(tank.id)
@@ -81,7 +86,7 @@ describe('Tank slice actions', () => {
     }))
     // create a STANDARD tank
     const standardTank = { ...useTestStore.getState().tank!, size: 'STANDARD', hasFilter: false }
-    useTestStore.getState().setTank(standardTank as ITank)
+    useTestStore.getState().setTank(standardTank as ITankData)
 
     const beforeCredits = useTestStore.getState().credits
     useTestStore.getState().buyFilter(standardTank.id)
@@ -109,7 +114,7 @@ describe('Tank slice actions', () => {
       ),
     }))
     const bowlTank = { ...useTestStore.getState().tank!, size: 'BOWL' }
-    useTestStore.getState().setTank(bowlTank as ITank)
+    useTestStore.getState().setTank(bowlTank as ITankData)
 
     const beforeCredits = useTestStore.getState().credits
     useTestStore.getState().upgradeTank(bowlTank.id)

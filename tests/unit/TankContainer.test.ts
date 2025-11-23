@@ -1,23 +1,19 @@
 import { describe, it, expect, vi } from 'vitest'
 import { TankContainer } from '../../src/game/views/TankContainer'
 import useGameStore from '../../src/store/useGameStore'
+import { Tank } from '../../src/models/Tank'
 
 describe('TankContainer.getFishScreenPositions', () => {
   it('returns empty array when no sprites', () => {
-    const tc = new TankContainer({
-      id: 't1',
-      size: 'BOWL',
-      capacity: 1,
-      waterQuality: 100,
-      pollution: 0,
-      hasFilter: false,
-      temperature: 24,
-      fish: [],
-      createdAt: Date.now(),
-      width: 100,
-      height: 100,
-      backgroundColor: 0x87ceeb,
-    })
+    const tank = new Tank(100, 100, 0x87ceeb)
+    tank.id = 't1'
+    tank.size = 'BOWL'
+    tank.capacity = 1
+    tank.waterQuality = 100
+    tank.pollution = 0
+    tank.hasFilter = false
+    tank.temperature = 24
+    const tc = new TankContainer(tank)
     // no sprites added
     const positions = tc.getFishScreenPositions()
     expect(Array.isArray(positions)).toBe(true)
@@ -25,20 +21,11 @@ describe('TankContainer.getFishScreenPositions', () => {
   })
 
   it('uses sprite.getGlobalPosition when available', () => {
-    const tc = new TankContainer({
-      id: 't1',
-      size: 'BOWL',
-      capacity: 1,
-      waterQuality: 100,
-      pollution: 0,
-      hasFilter: false,
-      temperature: 24,
-      fish: [],
-      createdAt: Date.now(),
-      width: 100,
-      height: 100,
-      backgroundColor: 0x87ceeb,
-    })
+    const tank = new Tank(100, 100, 0x87ceeb)
+    tank.id = 't1'
+    tank.size = 'BOWL'
+    tank.capacity = 1
+    const tc = new TankContainer(tank)
     const sprite: { id: string; getGlobalPosition: () => { x: number; y: number } } = {
       id: 'fish-x',
       getGlobalPosition: () => ({ x: 5, y: 6 }),
@@ -53,20 +40,11 @@ describe('TankContainer.getFishScreenPositions', () => {
   })
 
   it('falls back to position accumulation when no getGlobalPosition', () => {
-    const tc = new TankContainer({
-      id: 't1',
-      size: 'BOWL',
-      capacity: 1,
-      waterQuality: 100,
-      pollution: 0,
-      hasFilter: false,
-      temperature: 24,
-      fish: [],
-      createdAt: Date.now(),
-      width: 100,
-      height: 100,
-      backgroundColor: 0x87ceeb,
-    })
+    const tank = new Tank(100, 100, 0x87ceeb)
+    tank.id = 't1'
+    tank.size = 'BOWL'
+    tank.capacity = 1
+    const tc = new TankContainer(tank)
     const sprite: { id: string; x: number; y: number; parent: { x: number; y: number; parent: null } } = {
       id: 'fish-y',
       x: 7,
@@ -84,20 +62,11 @@ describe('TankContainer.getFishScreenPositions', () => {
   })
 
   it('clicking background clears selection via pointerdown', () => {
-    const tc = new TankContainer({
-      id: 't1',
-      size: 'BOWL',
-      capacity: 1,
-      waterQuality: 100,
-      pollution: 0,
-      hasFilter: false,
-      temperature: 24,
-      fish: [],
-      createdAt: Date.now(),
-      width: 100,
-      height: 100,
-      backgroundColor: 0x87ceeb,
-    })
+    const tank = new Tank(100, 100, 0x87ceeb)
+    tank.id = 't1'
+    tank.size = 'BOWL'
+    tank.capacity = 1
+    const tc = new TankContainer(tank)
 
     // Spy on store selectFish
     const storeModule = useGameStore
