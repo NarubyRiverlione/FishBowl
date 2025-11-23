@@ -19,7 +19,12 @@ export class TankContainer extends Container {
   private fishSprites: Map<string, FishSprite> = new Map()
   private displayScale: number = 1
   private bowlSprite: Sprite | null = null
+  // Force fresh texture load on each session - helps with development
   private static bowlTexturePromise: Promise<Texture> | null = null
+
+  static clearBowlCache(): void {
+    TankContainer.bowlTexturePromise = null
+  }
 
   constructor(tank: ITankLogic) {
     super()
@@ -249,13 +254,16 @@ export class TankContainer extends Container {
       const texture = await this.loadBowlTexture()
       this.bowlSprite = new Sprite(texture)
 
-      // Position bowl at center of tank
-      this.bowlSprite.x = this.tank.geometry.centerX
-      this.bowlSprite.y = this.tank.geometry.centerY
-      this.bowlSprite.anchor.set(0.5)
+      // Position bowl at top-left corner (0,0) of tank container
+      // With anchor (0.5, 0.5), the sprite will be centered relative to its center point at (0,0)
+      // which effectively puts its visual center at the container's top-left
+      // Then the scale applied to the tank container will scale this around origin
+      this.bowlSprite.anchor.set(0.5, 0.5)
+      this.bowlSprite.x = 0
+      this.bowlSprite.y = 0
 
-      // Scale to fit tank (SVG viewBox is 300x320)
-      const scale = Math.min(this.tank.geometry.width / 300, this.tank.geometry.height / 320)
+      // Scale to fit tank (SVG viewBox is 100x120)
+      const scale = Math.min(this.tank.geometry.width / 100, this.tank.geometry.height / 120)
       this.bowlSprite.scale.set(scale)
 
       this.addChild(this.bowlSprite)

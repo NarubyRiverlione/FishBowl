@@ -109,6 +109,8 @@ export class RenderingEngine {
         height: containerHeight,
         backgroundColor: 0x333333,
         antialias: true,
+        resolution: window.devicePixelRatio || 1,
+        autoDensity: true,
       })
 
       // Verify canvas creation
