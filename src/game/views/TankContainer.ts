@@ -2,11 +2,8 @@ import { Container, Sprite, Texture, Assets } from 'pixi.js'
 import { ITankLogic, IFishLogic } from '../../models/types'
 import { FishSprite } from './FishSprite'
 import fishbowlSvg from '../../assets/fishbowl.svg'
+import recttankSvg from '../../assets/recttank.svg'
 import {
-  WATER_LEVEL,
-  TANK_DEFAULT_WIDTH,
-  TANK_DEFAULT_HEIGHT,
-  FISH_SPAWN_POSITION_BUFFER,
   TANK_DISPLAY_MIN_SIZE,
   TANK_DISPLAY_MAX_SIZE,
   MOBILE_BREAKPOINT,
@@ -20,10 +17,10 @@ export class TankContainer extends Container {
   private displayScale: number = 1
   private bowlSprite: Sprite | null = null
   // Force fresh texture load on each session - helps with development
-  private static bowlTexturePromise: Promise<Texture> | null = null
+  private static textureCache: Map<string, Promise<Texture>> = new Map()
 
   static clearBowlCache(): void {
-    TankContainer.bowlTexturePromise = null
+    TankContainer.textureCache.clear()
   }
 
   constructor(tank: ITankLogic) {
@@ -63,36 +60,34 @@ export class TankContainer extends Container {
   addFish(fish: IFishLogic): void {
     // console.log('🏠 TankContainer.addFish called for:', fish.id, 'Tank size:', this.tank.geometry.width, 'x', this.tank.geometry.height)
     // Generate random initial position within tank bounds, below water line
-    const tankWidth = this.tank.geometry.width || TANK_DEFAULT_WIDTH
-    const tankHeight = this.tank.geometry.height || TANK_DEFAULT_HEIGHT
-    const waterLevel = tankHeight * WATER_LEVEL
-    const waterTop = tankHeight - waterLevel
+    // Use tank's spawn bounds to ensure fish are within physics boundaries
+    const bounds = this.tank.getSpawnBounds()
 
-    // Use effective radius that accounts for life stage scaling for safe positioning
-    const effectiveRadius = fish.getEffectiveRadius ? fish.getEffectiveRadius() : fish.radius
-    const safeMargin = effectiveRadius + FISH_SPAWN_POSITION_BUFFER // Extra buffer
+    // Ensure we respect the bounds returned by the tank
+    // getSpawnBounds returns the safe area for a standard fish.
+    // We add a small buffer for the specific fish radius if needed, 
+    // but getSpawnBounds already includes a safe margin.
+    // To be extra safe, we ensure the fish center is within the bounds.
 
-    const minX = safeMargin
-    const maxX = tankWidth - safeMargin
-    const minY = waterTop + safeMargin
-    const maxY = tankHeight - safeMargin
+    const minX = bounds.minX
+    const maxX = bounds.maxX
+    const minY = bounds.minY
+    const maxY = bounds.maxY
 
     const initialX = Math.random() * (maxX - minX) + minX
-    // Position fish in water area only (below water line)
     const initialY = Math.random() * (maxY - minY) + minY
-
-    // console.log('📍 Fish position calculated:', {
-    //   initialX: initialX.toFixed(1),
-    //   initialY: initialY.toFixed(1),
-    //   waterTop: waterTop.toFixed(1),
-    //   waterLevel: waterLevel.toFixed(1),
-    //   effectiveRadius: effectiveRadius.toFixed(1),
-    //   safeMargin: safeMargin.toFixed(1),
-    // })
 
     const sprite = new FishSprite(fish, initialX, initialY)
     this.fishSprites.set(fish.id, sprite)
-    this.addChild(sprite)
+
+    // Add fish sprite above the tank sprite (ensure fish are always on top)
+    // If bowlSprite exists, add fish after it in the display list
+    if (this.bowlSprite && this.bowlSprite.parent === this) {
+      const bowlIndex = this.getChildIndex(this.bowlSprite)
+      this.addChildAt(sprite, bowlIndex + 1)
+    } else {
+      this.addChild(sprite)
+    }
     // console.log(
     //   '🎭 Fish sprite created and added to container. Sprite visible?',
     //   sprite.visible,
@@ -104,7 +99,7 @@ export class TankContainer extends Container {
     try {
       // If test helpers are enabled, expose diagnostic info when sprites are added
 
-      ;(
+      ; (
         globalThis as typeof globalThis & {
           __TEST_HELPERS__?: {
             _lastAddedFishId?: string
@@ -120,23 +115,23 @@ export class TankContainer extends Container {
             }
           }
         ).__TEST_HELPERS__ || {}
-      ;(
-        globalThis as typeof globalThis & {
-          __TEST_HELPERS__?: {
-            _lastAddedFishId?: string
-            _addedSpritesCount?: number
+        ; (
+          globalThis as typeof globalThis & {
+            __TEST_HELPERS__?: {
+              _lastAddedFishId?: string
+              _addedSpritesCount?: number
+            }
           }
-        }
-      ).__TEST_HELPERS__!._lastAddedFishId = fish.id
-      // `fishSprites` is a Map, use `size` to report accurate count
-      ;(
-        globalThis as typeof globalThis & {
-          __TEST_HELPERS__?: {
-            _lastAddedFishId?: string
-            _addedSpritesCount?: number
+        ).__TEST_HELPERS__!._lastAddedFishId = fish.id
+        // `fishSprites` is a Map, use `size` to report accurate count
+        ; (
+          globalThis as typeof globalThis & {
+            __TEST_HELPERS__?: {
+              _lastAddedFishId?: string
+              _addedSpritesCount?: number
+            }
           }
-        }
-      ).__TEST_HELPERS__!._addedSpritesCount = this.fishSprites.size
+        ).__TEST_HELPERS__!._addedSpritesCount = this.fishSprites.size
       // Also write a debug console so browser logs capture sprite adds
 
       console.debug('TankContainer.addFish - added', fish.id, 'sprites=', this.fishSprites.size)
@@ -250,11 +245,14 @@ export class TankContainer extends Container {
 
   private async initializeBowl(): Promise<void> {
     try {
-      // Load and cache bowl texture
-      const texture = await this.loadBowlTexture()
+      // Load and cache tank texture based on size
+      const isBowl = this.tank.size === 'BOWL'
+      const textureSource = isBowl ? fishbowlSvg : recttankSvg
+      const texture = await this.loadTankTexture(textureSource)
+
       this.bowlSprite = new Sprite(texture)
 
-      // Position bowl at center of tank container
+      // Position bowl/tank at center of tank container
       this.bowlSprite.anchor.set(0.5, 0.5)
       this.bowlSprite.x = this.tank.geometry.width / 2
       this.bowlSprite.y = this.tank.geometry.height / 2
@@ -268,15 +266,15 @@ export class TankContainer extends Container {
 
       this.addChild(this.bowlSprite)
     } catch (error) {
-      console.error('Failed to load fishbowl SVG:', error)
+      console.error('Failed to load tank SVG:', error)
     }
   }
 
-  private async loadBowlTexture(): Promise<Texture> {
-    if (!TankContainer.bowlTexturePromise) {
-      TankContainer.bowlTexturePromise = Assets.load(fishbowlSvg)
+  private async loadTankTexture(source: string): Promise<Texture> {
+    if (!TankContainer.textureCache.has(source)) {
+      TankContainer.textureCache.set(source, Assets.load(source))
     }
-    return TankContainer.bowlTexturePromise
+    return TankContainer.textureCache.get(source)!
   }
 }
 

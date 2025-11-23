@@ -90,8 +90,8 @@ export const FISH_LIFE_STAGE_OLD_SATURATION = 0.6 // Color saturation multiplier
 // Tank Dimensions
 export const TANK_DEFAULT_WIDTH = 400
 export const TANK_DEFAULT_HEIGHT = 300
-export const TANK_UPGRADED_WIDTH = 800
-export const TANK_UPGRADED_HEIGHT = 600
+export const TANK_UPGRADED_WIDTH = 1800
+export const TANK_UPGRADED_HEIGHT = 1800
 
 // Game Values
 export const GAME_INITIAL_CREDITS = 100
@@ -180,9 +180,9 @@ export const ENABLE_MULTI_TANK_DISPLAY = true // 4️⃣  Multi-tank layout (alr
 
 // Tank Dimensions (T042a)
 export const TANK_BOWL_SIZE = 300 // Circular bowl diameter
-export const TANK_STANDARD_SIZE = 500 // Square standard tank size
-export const TANK_BIG_WIDTH = 800 // Rectangular big tank width
-export const TANK_BIG_HEIGHT = 400 // Rectangular big tank height
+export const TANK_STANDARD_SIZE = 1800 // Square standard tank size (50% bigger than 1200)
+export const TANK_BIG_WIDTH = 900 // Rectangular big tank width
+export const TANK_BIG_HEIGHT = 500 // Rectangular big tank height
 
 // Responsive Scaling (T042c)
 export const TANK_DISPLAY_MIN_SIZE = 300 // Minimum display size per tank

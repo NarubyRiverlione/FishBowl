@@ -54,10 +54,11 @@ export class FishController {
 
     // 4. Add new fish
     fishToAdd.forEach((f) => {
-      // Store doesn't track position, so we spawn at random position or center
+      // Store doesn't track position, so we spawn at random position within safe bounds
       // Ideally we should persist position in store if we want persistence across reloads
-      const x = Math.random() * this.tank.geometry.width
-      const y = Math.random() * this.tank.geometry.height
+      const bounds = this.tank.getSpawnBounds()
+      const x = Math.random() * (bounds.maxX - bounds.minX) + bounds.minX
+      const y = Math.random() * (bounds.maxY - bounds.minY) + bounds.minY
 
       const fishModel = new Fish(f.id, x, y, f.color, f.size)
 

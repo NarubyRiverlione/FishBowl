@@ -11,22 +11,20 @@ import { TANK_BOWL_SIZE, TANK_STANDARD_SIZE, TANK_BIG_WIDTH, TANK_BIG_HEIGHT } f
  * @returns ITankShape instance (circular for BOWL, rectangular for others)
  */
 export function createTankShape(size: TankSize): ITankShape {
-  const centerX = 250
-  const centerY = 250
 
   switch (size) {
     case 'BOWL':
       // BOWL is circular with radius = TANK_BOWL_SIZE / 2
-      return new CircularTankShape(centerX, centerY, TANK_BOWL_SIZE / 2)
+      return new CircularTankShape(TANK_BOWL_SIZE / 2, TANK_BOWL_SIZE / 2, TANK_BOWL_SIZE / 2)
 
     case 'STANDARD': {
       // STANDARD is square (rectangular with equal dimensions)
-      return new RectangularTankShape(centerX, centerY, TANK_STANDARD_SIZE, TANK_STANDARD_SIZE)
+      return new RectangularTankShape(TANK_STANDARD_SIZE / 2, TANK_STANDARD_SIZE / 2, TANK_STANDARD_SIZE, TANK_STANDARD_SIZE)
     }
 
     case 'BIG': {
       // BIG is rectangular with distinct width/height
-      return new RectangularTankShape(centerX, centerY, TANK_BIG_WIDTH, TANK_BIG_HEIGHT)
+      return new RectangularTankShape(TANK_BIG_WIDTH / 2, TANK_BIG_HEIGHT / 2, TANK_BIG_WIDTH, TANK_BIG_HEIGHT)
     }
 
     default: {

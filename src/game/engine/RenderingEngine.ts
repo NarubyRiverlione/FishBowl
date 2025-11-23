@@ -132,8 +132,11 @@ export class RenderingEngine {
       // Center tank view on canvas
       const canvasWidth = this.app.screen.width
       const canvasHeight = this.app.screen.height
-      const tankWidth = this.tank.geometry.width
-      const tankHeight = this.tank.geometry.height
+
+      // Account for the scale of the tank view when centering
+      const scale = this.tankView.scale.x
+      const tankWidth = this.tank.geometry.width * scale
+      const tankHeight = this.tank.geometry.height * scale
 
       this.tankView.x = (canvasWidth - tankWidth) / 2
       this.tankView.y = (canvasHeight - tankHeight) / 2

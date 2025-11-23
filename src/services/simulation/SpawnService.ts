@@ -2,8 +2,6 @@ import { Fish } from '../../models/Fish'
 import { getSpeciesColor, randomPosition, randomVelocity, randomSize } from '../../lib/random'
 import { FishSpecies, ITankLogic } from '../../models/types'
 import {
-  WATER_LEVEL,
-  SPAWN_BUFFER,
   DEFAULT_MAX_VELOCITY,
   FISH_SPAWN_SIZE_MIN,
   FISH_SPAWN_SIZE_MAX,
@@ -20,13 +18,12 @@ export class SpawnService {
   }
 
   spawn(amount: number): void {
-    const waterHeight = this.tank.geometry.height * WATER_LEVEL
-    const waterTop = this.tank.geometry.height - waterHeight
+    const bounds = this.tank.getSpawnBounds()
 
     for (let i = 0; i < amount; i++) {
       const id = Math.random().toString(36).substring(7)
-      const x = randomPosition(0, this.tank.geometry.width)
-      const y = randomPosition(waterTop + SPAWN_BUFFER, this.tank.geometry.height - SPAWN_BUFFER)
+      const x = randomPosition(bounds.minX, bounds.maxX)
+      const y = randomPosition(bounds.minY, bounds.maxY)
       const color = getSpeciesColor(FishSpecies.GUPPY) // Legacy spawn defaults to GUPPY
       const scale = randomSize(FISH_SPAWN_SIZE_MIN, FISH_SPAWN_SIZE_MAX)
 

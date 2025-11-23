@@ -98,12 +98,25 @@ export class Tank implements ITankLogic {
     return this.checkBoundaryRectangular(fish)
   }
 
+  private getRectangularMargins() {
+    // Margins based on recttank.svg (100x100 viewBox)
+    // Water x: 6-94 (6% margin)
+    // Water y: 20-94 (20% top margin, 6% bottom margin)
+    return {
+      marginX: this.geometry.width * 0.06,
+      waterTop: this.geometry.height * 0.20,
+      waterBottom: this.geometry.height * 0.94,
+    }
+  }
+
   private checkBoundaryRectangular(fish: IFishLogic): boolean {
+    const { marginX, waterTop, waterBottom } = this.getRectangularMargins()
+
     return (
-      fish.geometry.position.x - fish.geometry.radius <= 0 ||
-      fish.geometry.position.x + fish.geometry.radius >= this.geometry.width ||
-      fish.geometry.position.y - fish.geometry.radius <= 0 ||
-      fish.geometry.position.y + fish.geometry.radius >= this.geometry.height
+      fish.geometry.position.x - fish.geometry.radius <= marginX ||
+      fish.geometry.position.x + fish.geometry.radius >= this.geometry.width - marginX ||
+      fish.geometry.position.y - fish.geometry.radius <= waterTop ||
+      fish.geometry.position.y + fish.geometry.radius >= waterBottom
     )
   }
 
@@ -134,22 +147,24 @@ export class Tank implements ITankLogic {
   }
 
   private resolveBoundaryRectangular(fish: IFishLogic): void {
+    const { marginX, waterTop, waterBottom } = this.getRectangularMargins()
+
     // Handle boundary collisions
-    if (fish.geometry.position.x - fish.geometry.radius <= 0) {
-      fish.geometry.position.x = fish.geometry.radius
-      fish.geometry.velocity.vx = -fish.geometry.velocity.vx
+    if (fish.geometry.position.x - fish.geometry.radius <= marginX) {
+      fish.geometry.position.x = marginX + fish.geometry.radius
+      fish.geometry.velocity.vx = Math.abs(fish.geometry.velocity.vx) // Bounce right
     }
-    if (fish.geometry.position.x + fish.geometry.radius >= this.geometry.width) {
-      fish.geometry.position.x = this.geometry.width - fish.geometry.radius
-      fish.geometry.velocity.vx = -fish.geometry.velocity.vx
+    if (fish.geometry.position.x + fish.geometry.radius >= this.geometry.width - marginX) {
+      fish.geometry.position.x = this.geometry.width - marginX - fish.geometry.radius
+      fish.geometry.velocity.vx = -Math.abs(fish.geometry.velocity.vx) // Bounce left
     }
-    if (fish.geometry.position.y - fish.geometry.radius <= 0) {
-      fish.geometry.position.y = fish.geometry.radius
-      fish.geometry.velocity.vy = -fish.geometry.velocity.vy
+    if (fish.geometry.position.y - fish.geometry.radius <= waterTop) {
+      fish.geometry.position.y = waterTop + fish.geometry.radius
+      fish.geometry.velocity.vy = Math.abs(fish.geometry.velocity.vy) // Bounce down
     }
-    if (fish.geometry.position.y + fish.geometry.radius >= this.geometry.height) {
-      fish.geometry.position.y = this.geometry.height - fish.geometry.radius
-      fish.geometry.velocity.vy = -fish.geometry.velocity.vy
+    if (fish.geometry.position.y + fish.geometry.radius >= waterBottom) {
+      fish.geometry.position.y = waterBottom - fish.geometry.radius
+      fish.geometry.velocity.vy = -Math.abs(fish.geometry.velocity.vy) // Bounce up
     }
   }
 
@@ -207,11 +222,14 @@ export class Tank implements ITankLogic {
     }
 
     // Rectangular spawn bounds
+    const { marginX, waterTop, waterBottom } = this.getRectangularMargins()
+    const safeMargin = 20 // Additional safety margin for spawning
+
     return {
-      minX: 20,
-      maxX: this.geometry.width - 20,
-      minY: 20,
-      maxY: this.geometry.height - 20,
+      minX: marginX + safeMargin,
+      maxX: this.geometry.width - marginX - safeMargin,
+      minY: waterTop + safeMargin,
+      maxY: waterBottom - safeMargin,
     }
   }
 }
