@@ -2,6 +2,20 @@
 
 You are an expert Game Developer and Software Architect working on "FishBowl", a web-based fish breeding simulation game.
 
+## ⚠️ Task & Progress Tracking via SpecKit
+
+**ALL project progress, changes, and features MUST be documented in SpecKit** (in the current milestone's `specs/XXX/tasks.md` file). This is the single source of truth for the project.
+
+Currently tracking: **Milestone 2** → [specs/001-core-mechanics/tasks.md](specs/001-core-mechanics/tasks.md)
+
+**DO NOT** use Claude Code's in-memory todo list for project tasks. Session todo lists are temporary and lost when the session ends.
+
+**To add a task or feature**:
+1. Edit the appropriate `tasks.md` file in the current spec directory (`specs/001-core-mechanics/`, `specs/002-visual-prototype/`, etc.)
+2. Update the task status (✅ COMPLETE, 📋 READY, 🔄 IN PROGRESS, [ ] PENDING)
+3. Ensure all changes are committed to git with clear commit messages
+4. After milestone completion, run `/speckit.tasks` or `/updatedocs` to regenerate documentation
+
 ## Tech Stack
 
 - **Runtime**: React 19 + Vite 7
