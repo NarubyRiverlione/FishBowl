@@ -3,6 +3,7 @@ import { ITankData, IStoreItem, UUID } from '../../models/types'
 import { TankState } from './tankSlice'
 import { FishService } from '../../services/FishService'
 import { createDeveloperModeFish } from '../../lib/fishHelpers'
+import { fishDataToLogic, fishLogicToData } from '../../lib/FishConversion'
 import {
   TICK_RATE_SECONDS,
   POLLUTION_PER_FISH_PER_TICK,
@@ -194,7 +195,9 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
           newCredits += MATURITY_BONUS
         }
 
-        return FishService.tickFish(fish, newWaterQuality)
+        const fishLogic = fishDataToLogic(fish)
+        const updatedFishLogic = FishService.tickFish(fishLogic, newWaterQuality)
+        return fishLogicToData(updatedFishLogic)
       })
 
       return {

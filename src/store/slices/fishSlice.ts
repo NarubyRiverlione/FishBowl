@@ -1,9 +1,9 @@
 import { StateCreator } from 'zustand'
-import { IFish } from '../../models/types/fish'
+import { IFishData } from '../../models/types/fish'
 
 export interface FishState {
-  fish: Record<string, IFish>
-  addFish: (fish: IFish) => void
+  fish: Record<string, IFishData>
+  addFish: (fish: IFishData) => void
   removeFish: (id: string) => void
 }
 

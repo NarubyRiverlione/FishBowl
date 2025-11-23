@@ -1,5 +1,5 @@
 // Tank-related types for the FishBowl game
-import { IFish } from './fish'
+import { IFishData, IFishLogic } from './fish'
 
 export type UUID = string
 export type Timestamp = number
@@ -37,8 +37,8 @@ export interface ITankData {
   // Visual properties
   backgroundColor: number
 
-  // Fish population
-  fish: IFish[]
+  // Fish population (data only)
+  fish: IFishData[]
 }
 
 /**
@@ -52,12 +52,12 @@ export interface ITankLogic extends ITankData {
   collisionsResolved: number
 
   // Behavioral methods
-  addFish(fish: IFish): void
+  addFish(fish: IFishLogic): void
   removeFish(fishId: string): void
   update(delta: number): void
 
   // Collision detection methods
-  checkBoundary(fish: IFish): boolean
-  resolveBoundary(fish: IFish): void
+  checkBoundary(fish: IFishLogic): boolean
+  resolveBoundary(fish: IFishLogic): void
   getSpawnBounds(): import('./tankShape').ISpawnBounds
 }

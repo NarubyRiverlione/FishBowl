@@ -1,4 +1,4 @@
-import { IFish } from '../../../models/types/index'
+import { IFishLogic } from '../../../models/types/index'
 import { ITankShape, ISpawnBounds } from '../../../models/types/tankShape'
 import { COLLISION_BOUNDARY_BUFFER, WATER_SURFACE_RATIO } from '../../../lib/constants'
 
@@ -16,7 +16,7 @@ export class RectangularTankShape implements ITankShape {
     this.height = height
   }
 
-  checkBoundary(fish: IFish): boolean {
+  checkBoundary(fish: IFishLogic): boolean {
     const left = this.centerX - this.width / 2
     const right = this.centerX + this.width / 2
     const top = this.centerY - this.height / 2
@@ -30,7 +30,7 @@ export class RectangularTankShape implements ITankShape {
     )
   }
 
-  resolveBoundary(fish: IFish): void {
+  resolveBoundary(fish: IFishLogic): void {
     const left = this.centerX - this.width / 2
     const right = this.centerX + this.width / 2
     const top = this.centerY - this.height / 2

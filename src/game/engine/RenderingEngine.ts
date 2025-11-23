@@ -3,7 +3,7 @@ import { Tank } from '../../models/Tank'
 import { TankContainer } from '../views/TankContainer'
 import { FishController } from '../controllers/FishController'
 import { PerformanceMonitor } from '../PerformanceMonitor'
-import { IFish, ITankData } from '../../models/types'
+import { IFishData, ITankData } from '../../models/types'
 import useGameStore from '../../store/useGameStore'
 
 export class RenderingEngine {
@@ -43,6 +43,7 @@ export class RenderingEngine {
 
   private syncTankProperties(storeTank: ITankData): void {
     // Sync all tank properties from store to Tank model
+    // TODO verify if we need to sync more properties (geometry , shape, ...)
     this.tank.waterQuality = storeTank.waterQuality
     this.tank.pollution = storeTank.pollution
     this.tank.temperature = storeTank.temperature
@@ -134,7 +135,7 @@ export class RenderingEngine {
     }
   }
 
-  syncFish(fish: IFish[]): void {
+  syncFish(fish: IFishData[]): void {
     // console.log('🎯 RenderingEngine.syncFish called with:', fish.length, 'fish')
     // console.log(
     //   '🔍 Fish details:',

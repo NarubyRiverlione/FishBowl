@@ -10,9 +10,19 @@ export enum FishSpecies {
 }
 
 /**
- * Complete fish interface with all game properties
+ * Fish geometry - single source of truth for position and physics properties
  */
-export interface IFish {
+export interface IFishGeometry {
+  position: { x: number; y: number }
+  velocity: { vx: number; vy: number }
+  radius: number
+}
+
+/**
+ * Enhanced fish data interface for store (data only, no methods)
+ * Uses geometry composition pattern
+ */
+export interface IFishData {
   id: UUID
   species: FishSpecies
   name?: string
@@ -25,13 +35,27 @@ export interface IFish {
   genetics: Record<string, unknown>
   createdAt: Timestamp
   lastFedAt?: Timestamp
-  // Physics properties
+
+  // Geometry (single source of truth for position/physics)
+  geometry: IFishGeometry
+}
+
+/**
+ * Enhanced fish behavioral interface for future use
+ * Uses geometry composition pattern - to be implemented gradually
+ */
+export interface IFishLogic extends IFishData {
+  // Backward compatibility properties (getters/setters access geometry)
   x: number
   y: number
   vx: number
   vy: number
   radius: number
-  getEffectiveRadius?: () => number
+
+  // Behavioral methods
+  update(delta: number): void
+  getEffectiveRadius(): number
+  swim(): void
 }
 
 export interface IFishSpeciesConfig {

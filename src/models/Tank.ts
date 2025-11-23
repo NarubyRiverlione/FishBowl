@@ -1,4 +1,4 @@
-import { ITankLogic, ITankGeometry, TankSize, UUID, IFish } from './types'
+import { ITankLogic, ITankGeometry, TankSize, UUID, IFishLogic } from './types'
 import { Fish } from './Fish'
 import {
   resolveBoundaryCollision,
@@ -35,13 +35,13 @@ export class Tank implements ITankLogic {
     this.backgroundColor = backgroundColor
   }
 
-  addFish(fish: IFish): void {
-    // Accept IFish but internally we work with Fish instances
+  addFish(fish: IFishLogic): void {
+    // Accept IFishLogic but internally we work with Fish instances
     if (fish instanceof Fish) {
       this.fish.push(fish)
     } else {
-      // Convert IFish to Fish if needed
-      const fishInstance = new Fish(fish.id, fish.x, fish.y, fish.color, fish.size)
+      // Convert IFishLogic to Fish if needed
+      const fishInstance = new Fish(fish.id, fish.geometry.position.x, fish.geometry.position.y, fish.color, fish.size)
       fishInstance.species = fish.species
       fishInstance.age = fish.age
       fishInstance.health = fish.health
@@ -50,9 +50,9 @@ export class Tank implements ITankLogic {
       fishInstance.genetics = fish.genetics
       fishInstance.createdAt = fish.createdAt
       fishInstance.lastFedAt = fish.lastFedAt
-      fishInstance.vx = fish.vx
-      fishInstance.vy = fish.vy
-      fishInstance.radius = fish.radius
+      fishInstance.geometry.velocity.vx = fish.geometry.velocity.vx
+      fishInstance.geometry.velocity.vy = fish.geometry.velocity.vy
+      fishInstance.geometry.radius = fish.geometry.radius
       this.fish.push(fishInstance)
     }
   }
@@ -91,32 +91,32 @@ export class Tank implements ITankLogic {
   }
 
   // Collision detection methods required by ITankLogic
-  checkBoundary(fish: IFish): boolean {
+  checkBoundary(fish: IFishLogic): boolean {
     return (
-      fish.x - fish.radius <= 0 ||
-      fish.x + fish.radius >= this.geometry.width ||
-      fish.y - fish.radius <= 0 ||
-      fish.y + fish.radius >= this.geometry.height
+      fish.geometry.position.x - fish.geometry.radius <= 0 ||
+      fish.geometry.position.x + fish.geometry.radius >= this.geometry.width ||
+      fish.geometry.position.y - fish.geometry.radius <= 0 ||
+      fish.geometry.position.y + fish.geometry.radius >= this.geometry.height
     )
   }
 
-  resolveBoundary(fish: IFish): void {
+  resolveBoundary(fish: IFishLogic): void {
     // Handle boundary collisions
-    if (fish.x - fish.radius <= 0) {
-      fish.x = fish.radius
-      fish.vx = -fish.vx
+    if (fish.geometry.position.x - fish.geometry.radius <= 0) {
+      fish.geometry.position.x = fish.geometry.radius
+      fish.geometry.velocity.vx = -fish.geometry.velocity.vx
     }
-    if (fish.x + fish.radius >= this.geometry.width) {
-      fish.x = this.geometry.width - fish.radius
-      fish.vx = -fish.vx
+    if (fish.geometry.position.x + fish.geometry.radius >= this.geometry.width) {
+      fish.geometry.position.x = this.geometry.width - fish.geometry.radius
+      fish.geometry.velocity.vx = -fish.geometry.velocity.vx
     }
-    if (fish.y - fish.radius <= 0) {
-      fish.y = fish.radius
-      fish.vy = -fish.vy
+    if (fish.geometry.position.y - fish.geometry.radius <= 0) {
+      fish.geometry.position.y = fish.geometry.radius
+      fish.geometry.velocity.vy = -fish.geometry.velocity.vy
     }
-    if (fish.y + fish.radius >= this.geometry.height) {
-      fish.y = this.geometry.height - fish.radius
-      fish.vy = -fish.vy
+    if (fish.geometry.position.y + fish.geometry.radius >= this.geometry.height) {
+      fish.geometry.position.y = this.geometry.height - fish.geometry.radius
+      fish.geometry.velocity.vy = -fish.geometry.velocity.vy
     }
   }
 

@@ -1,7 +1,7 @@
 import { TankContainer } from '../views/TankContainer'
 import { FishRenderManager } from '../managers/FishRenderManager'
 import { SpawnService } from '../../services/simulation/SpawnService'
-import { IFish, ITankLogic } from '../../models/types'
+import { IFishData, ITankLogic } from '../../models/types'
 import { Fish } from '../../models/Fish'
 
 export class FishController {
@@ -21,7 +21,7 @@ export class FishController {
     this.spawnService.spawn(amount)
   }
 
-  syncFish(storeFish: IFish[]): void {
+  syncFish(storeFish: IFishData[]): void {
     // console.log('🎣 FishController.syncFish called with:', storeFish.length, 'fish')
 
     // 1. Update existing fish with current store data (age, health, hunger)

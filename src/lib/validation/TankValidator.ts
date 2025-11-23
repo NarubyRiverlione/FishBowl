@@ -1,6 +1,6 @@
 // Tank state validator for detecting inconsistencies (T040c)
 
-import { type ITankData, type IFish } from '../../models/types'
+import { IFishData, type ITankData } from '../../models/types'
 import { TANK_CAPACITY_BOWL, TANK_CAPACITY_STANDARD, TANK_CAPACITY_BIG } from '../constants'
 
 export interface ValidationResult {
@@ -52,13 +52,13 @@ export class TankValidator {
       }
 
       // Check for dead fish
-      const deadFish = tank.fish.filter((f: IFish) => !f.isAlive)
+      const deadFish = tank.fish.filter((f: IFishData) => !f.isAlive)
       if (deadFish.length > 0) {
         warnings.push(`Tank contains ${deadFish.length} dead fish that should be cleaned up`)
       }
 
       // Validate individual fish
-      tank.fish.forEach((fish: IFish, index: number) => {
+      tank.fish.forEach((fish: IFishData, index: number) => {
         if (!fish.id || typeof fish.id !== 'string') {
           errors.push(`Fish at index ${index} has invalid ID`)
         }

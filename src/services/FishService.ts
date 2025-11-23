@@ -1,4 +1,4 @@
-import { IFish, FishSpecies } from '../models/types'
+import { IFishLogic, FishSpecies } from '../models/types'
 import { FISH_SPECIES_CONFIG } from '../lib/constants'
 import { getSpeciesColor, randomSize } from '../lib/random'
 import {
@@ -10,30 +10,22 @@ import {
   FISH_AGE_MAX_MULTIPLIER_DIVISOR,
   FISH_VALUE_MAX_MULTIPLIER,
   PERCENTAGE_MAX,
-  FISH_BASE_RADIUS,
 } from '../lib/constants'
 
+import { Fish } from '../models/Fish'
 export class FishService {
-  static createFish(species: FishSpecies): IFish {
+  static createFish(species: FishSpecies): IFishLogic {
     const config = FISH_SPECIES_CONFIG[species]
-    const fish = {
-      id: crypto.randomUUID(),
-      species,
-      color: getSpeciesColor(species),
-      size: randomSize(config.sizeRange[0], config.sizeRange[1]),
-      age: 0,
-      health: config.health,
-      hunger: 0,
-      isAlive: true,
-      genetics: {},
-      createdAt: Date.now(),
-      // Physics properties required by IFish interface
-      x: 0,
-      y: 0,
-      vx: 0,
-      vy: 0,
-      radius: FISH_BASE_RADIUS, // Use constant for consistency
-    }
+    // Create a Fish instance which implements IFishLogic
+    const fish = new Fish(
+      crypto.randomUUID(),
+      0,
+      0,
+      getSpeciesColor(species),
+      randomSize(config.sizeRange[0], config.sizeRange[1])
+    )
+    fish.species = species
+    fish.health = config.health
     // console.log('🏭 FishService.createFish created:', {
     //   id: fish.id,
     //   species: fish.species,
@@ -45,7 +37,7 @@ export class FishService {
     return fish
   }
 
-  static tickFish(fish: IFish, waterQuality: number = PERCENTAGE_MAX): IFish {
+  static tickFish(fish: IFishLogic, waterQuality: number = PERCENTAGE_MAX): IFishLogic {
     if (!fish.isAlive) return fish
 
     const config = FISH_SPECIES_CONFIG[fish.species]
@@ -70,14 +62,14 @@ export class FishService {
     }
   }
 
-  static calculateFishValue(fish: IFish): number {
+  static calculateFishValue(fish: IFishLogic): number {
     const config = FISH_SPECIES_CONFIG[fish.species]
     const ageMultiplier = Math.min(1 + fish.age / FISH_AGE_MAX_MULTIPLIER_DIVISOR, FISH_VALUE_MAX_MULTIPLIER)
     const healthModifier = fish.health / PERCENTAGE_MAX
     return Math.floor(config.baseValue * ageMultiplier * healthModifier)
   }
 
-  static feedFish(fish: IFish): IFish {
+  static feedFish(fish: IFishLogic): IFishLogic {
     if (!fish.isAlive) return fish
     return {
       ...fish,

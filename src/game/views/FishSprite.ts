@@ -1,14 +1,14 @@
 import { Sprite, Texture, Assets } from 'pixi.js'
-import { IFish } from '../../models/types'
+import { IFishLogic } from '../../models/types'
 import fishSvg from '../../assets/fish.svg'
 import useGameStore from '../../store/useGameStore'
 import { getLifeStage, getLifeStageSizeMultiplier, getLifeStageColorSaturation } from '../../lib/fishHelpers'
 
 export class FishSprite extends Sprite {
-  private fish: IFish
+  private fish: IFishLogic
   private static texturePromise: Promise<Texture> | null = null
 
-  constructor(fish: IFish, initialX: number = 100, initialY: number = 100) {
+  constructor(fish: IFishLogic, initialX: number = 100, initialY: number = 100) {
     super(Texture.EMPTY)
     console.log('🐟 Creating FishSprite for:', fish.id, 'at', initialX.toFixed(1), initialY.toFixed(1))
     this.fish = fish

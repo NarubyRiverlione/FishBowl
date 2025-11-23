@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js'
-import { ITankLogic, IFish } from '../../models/types'
+import { ITankLogic, IFishLogic } from '../../models/types'
 import { FishSprite } from './FishSprite'
 import {
   WATER_LEVEL,
@@ -60,7 +60,7 @@ export class TankContainer extends Container {
     })
   }
 
-  addFish(fish: IFish): void {
+  addFish(fish: IFishLogic): void {
     // console.log('🏠 TankContainer.addFish called for:', fish.id, 'Tank size:', this.tank.geometry.width, 'x', this.tank.geometry.height)
     // Generate random initial position within tank bounds, below water line
     const tankWidth = this.tank.geometry.width || TANK_DEFAULT_WIDTH

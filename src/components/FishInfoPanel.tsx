@@ -1,10 +1,11 @@
 import React from 'react'
 import useGameStore, { selectSelectedFish } from '../store/useGameStore'
-import { IFish } from '../models/types'
+import { IFishData } from '../models/types'
 import { FishService } from '../services/FishService'
+import { fishDataToLogic } from '../lib/FishConversion'
 
 const FishInfoPanel: React.FC = () => {
-  const selectedFish = useGameStore(selectSelectedFish) as IFish | null
+  const selectedFish = useGameStore(selectSelectedFish) as IFishData | null
   const sellFish = useGameStore((s) => s.sellFish)
   const tank = useGameStore((s) => s.tank)
   const setSelected = useGameStore((s) => s.selectFish)
@@ -100,7 +101,8 @@ const FishInfoPanel: React.FC = () => {
         </div>
 
         <div style={{ marginTop: 2, fontSize: 13 }}>
-          Estimated value: {Math.round(selectedFish ? FishService.calculateFishValue(selectedFish) : 0)} 💰
+          Estimated value:{' '}
+          {Math.round(selectedFish ? FishService.calculateFishValue(fishDataToLogic(selectedFish)) : 0)} 💰
         </div>
       </div>
 

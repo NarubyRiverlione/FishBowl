@@ -1,4 +1,4 @@
-import { IFish, FishSpecies } from './types'
+import { IFishLogic, IFishGeometry, FishSpecies } from './types'
 import { updateVelocity, calculateAcceleration } from '../services/physics/PhysicsService'
 import {
   FISH_BASE_SIZE,
@@ -17,9 +17,8 @@ import {
   PERCENTAGE_MAX,
 } from '../lib/constants'
 
-export class Fish implements IFish {
+export class Fish implements IFishLogic {
   id: string
-  // New IFish properties
   species: FishSpecies = FishSpecies.GUPPY
   size: number = 1.0
   age: number = 0
@@ -28,34 +27,68 @@ export class Fish implements IFish {
   isAlive: boolean = true
   genetics: Record<string, unknown> = {}
   createdAt: number = Date.now()
-  lastFedAt?: number // Optional timestamp of last feeding
+  lastFedAt?: number
   name?: string
+  color: string = '#FFFFFF'
 
-  // Physics properties
-  x: number
-  y: number
-  vx: number = 0
-  vy: number = 0
+  // Geometry composition - single source of truth for position/physics
+  geometry: IFishGeometry
+
+  // Legacy properties for backward compatibility (getters/setters)
+  get x(): number {
+    return this.geometry.position.x
+  }
+  set x(value: number) {
+    this.geometry.position.x = value
+  }
+  get y(): number {
+    return this.geometry.position.y
+  }
+  set y(value: number) {
+    this.geometry.position.y = value
+  }
+  get vx(): number {
+    return this.geometry.velocity.vx
+  }
+  set vx(value: number) {
+    this.geometry.velocity.vx = value
+  }
+  get vy(): number {
+    return this.geometry.velocity.vy
+  }
+  set vy(value: number) {
+    this.geometry.velocity.vy = value
+  }
+  get radius(): number {
+    return this.geometry.radius
+  }
+  set radius(value: number) {
+    this.geometry.radius = value
+  }
+
+  // Additional Fish-specific properties
   ax: number = 0
   ay: number = 0
   scale: number = 1
-  color: string = '#FFFFFF'
   width: number = FISH_BASE_SIZE
   height: number = FISH_BASE_SIZE
   mass: number = FISH_BASE_MASS
-  radius: number = FISH_BASE_RADIUS
   friction: number = FISH_FRICTION
 
   constructor(id: string, x: number, y: number, color: string = '#FFFFFF', scale: number = 1) {
     this.id = id
-    this.x = x
-    this.y = y
     this.color = color
     this.scale = scale
     this.size = scale // Sync size with scale
 
+    // Initialize geometry composition
+    this.geometry = {
+      position: { x, y },
+      velocity: { vx: 0, vy: 0 },
+      radius: FISH_BASE_RADIUS * scale,
+    }
+
     // Adjust physical properties based on scale
-    this.radius = FISH_BASE_RADIUS * scale
     this.mass = FISH_BASE_MASS * scale
     this.width = FISH_BASE_SIZE * scale
     this.height = FISH_BASE_SIZE * scale
@@ -76,7 +109,9 @@ export class Fish implements IFish {
     }
 
     // If moving too slow, give a boost
-    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy)
+    const speed = Math.sqrt(
+      this.geometry.velocity.vx * this.geometry.velocity.vx + this.geometry.velocity.vy * this.geometry.velocity.vy
+    )
     if (speed < SWIM_MIN_SPEED) {
       const angle = Math.random() * Math.PI * 2
       const force = SWIM_BOOST_FORCE * this.mass
@@ -91,7 +126,7 @@ export class Fish implements IFish {
   getEffectiveRadius(): number {
     const lifeStage = this.getLifeStage()
     const lifeStageMult = this.getLifeStageSizeMultiplier(lifeStage)
-    return this.radius * lifeStageMult
+    return this.geometry.radius * lifeStageMult
   }
 
   /**
@@ -126,13 +161,13 @@ export class Fish implements IFish {
     // Apply swim forces
     this.swim()
 
-    // Update velocity
-    this.vx = updateVelocity(this.vx, this.ax, this.friction)
-    this.vy = updateVelocity(this.vy, this.ay, this.friction)
+    // Update velocity using geometry
+    this.geometry.velocity.vx = updateVelocity(this.geometry.velocity.vx, this.ax, this.friction)
+    this.geometry.velocity.vy = updateVelocity(this.geometry.velocity.vy, this.ay, this.friction)
 
-    // Update position
-    this.x += this.vx * delta
-    this.y += this.vy * delta
+    // Update position using geometry
+    this.geometry.position.x += this.geometry.velocity.vx * delta
+    this.geometry.position.y += this.geometry.velocity.vy * delta
 
     // Reset acceleration
     this.ax = 0

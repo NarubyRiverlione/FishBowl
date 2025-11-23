@@ -1,6 +1,6 @@
 // Tank shape abstraction for handling both circular and rectangular collision detection
 
-import { IFish } from './fish'
+import { IFishLogic } from './fish'
 import { ITankGeometry } from './tank'
 
 export interface ISpawnBounds {
@@ -19,7 +19,7 @@ export interface ITankShape {
   type: 'circular' | 'rectangular'
 
   // Boundary checking methods that accept geometry
-  checkBoundary(fish: IFish, geometry: ITankGeometry): boolean
-  resolveBoundary(fish: IFish, geometry: ITankGeometry): void
+  checkBoundary(fish: IFishLogic, geometry: ITankGeometry): boolean
+  resolveBoundary(fish: IFishLogic, geometry: ITankGeometry): void
   getSpawnBounds(geometry: ITankGeometry): ISpawnBounds
 }

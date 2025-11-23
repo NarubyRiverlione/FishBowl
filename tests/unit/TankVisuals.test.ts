@@ -4,10 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { Graphics } from 'pixi.js'
 import { TankContainer } from '../../src/game/views/TankContainer'
-import { ITank, TankSize } from '../../src/models/types'
-import { createTankShape } from '../../src/services/physics/TankShapeFactory'
+import { ITankLogic, TankSize } from '../../src/models/types'
 import { TANK_BOWL_SIZE, TANK_STANDARD_SIZE, TANK_BIG_WIDTH, TANK_BIG_HEIGHT } from '../../src/lib/constants'
 
 // Mock PIXI Graphics methods for testing
@@ -45,6 +43,18 @@ vi.mock('pixi.js', async () => {
   }
 })
 
+// Type for accessing internal TankContainer methods
+interface TankContainerWithBackground {
+  background: {
+    circle: () => void
+    rect: () => void
+    stroke: () => void
+    fill: () => void
+    moveTo: () => void
+    lineTo: () => void
+  }
+}
+
 // Mock window for responsive scaling tests
 const mockWindow = (width: number, height: number) => {
   Object.defineProperty(globalThis, 'window', {
@@ -59,7 +69,7 @@ const mockWindow = (width: number, height: number) => {
 }
 
 describe('Tank Visual Rendering (T042d)', () => {
-  let mockTank: ITank
+  let mockTank: ITankLogic
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -71,8 +81,6 @@ describe('Tank Visual Rendering (T042d)', () => {
     mockTank = {
       id: 'test-tank',
       size: 'BOWL' as TankSize,
-      width: TANK_BOWL_SIZE,
-      height: TANK_BOWL_SIZE,
       capacity: 2,
       fish: [],
       waterQuality: 100,
@@ -81,103 +89,160 @@ describe('Tank Visual Rendering (T042d)', () => {
       temperature: 25,
       backgroundColor: 0x87ceeb,
       createdAt: Date.now(),
-      shape: createTankShape('BOWL'),
+      geometry: {
+        width: TANK_BOWL_SIZE,
+        height: TANK_BOWL_SIZE,
+        centerX: TANK_BOWL_SIZE / 2,
+        centerY: TANK_BOWL_SIZE / 2,
+      },
+      // Performance metrics
+      collisionChecks: 0,
+      collisionsResolved: 0,
+      // Mock methods
+      addFish: vi.fn(),
+      removeFish: vi.fn(),
+      update: vi.fn(),
+      checkBoundary: vi.fn(() => false),
+      resolveBoundary: vi.fn(),
+      getSpawnBounds: vi.fn(() => ({ minX: 20, maxX: 80, minY: 20, maxY: 80 })),
     }
   })
 
   describe('Tank Dimensions', () => {
     it('should use correct dimensions for BOWL tank', () => {
-      const tank = { ...mockTank, size: 'BOWL' as TankSize }
-      tank.width = TANK_BOWL_SIZE
-      tank.height = TANK_BOWL_SIZE
-      tank.shape = createTankShape('BOWL')
+      const tank = {
+        ...mockTank,
+        size: 'BOWL' as TankSize,
+        geometry: {
+          width: TANK_BOWL_SIZE,
+          height: TANK_BOWL_SIZE,
+          centerX: TANK_BOWL_SIZE / 2,
+          centerY: TANK_BOWL_SIZE / 2,
+        },
+      }
 
       const container = new TankContainer(tank)
 
-      expect(tank.width).toBe(TANK_BOWL_SIZE)
-      expect(tank.height).toBe(TANK_BOWL_SIZE)
-      expect(tank.shape?.type).toBe('circular')
+      expect(tank.geometry.width).toBe(TANK_BOWL_SIZE)
+      expect(tank.geometry.height).toBe(TANK_BOWL_SIZE)
+      expect(tank.size).toBe('BOWL')
       expect(container).toBeDefined()
     })
 
     it('should use correct dimensions for STANDARD tank', () => {
-      const tank = { ...mockTank, size: 'STANDARD' as TankSize }
-      tank.width = TANK_STANDARD_SIZE
-      tank.height = TANK_STANDARD_SIZE
-      tank.shape = createTankShape('STANDARD')
+      const tank = {
+        ...mockTank,
+        size: 'STANDARD' as TankSize,
+        geometry: {
+          width: TANK_STANDARD_SIZE,
+          height: TANK_STANDARD_SIZE,
+          centerX: TANK_STANDARD_SIZE / 2,
+          centerY: TANK_STANDARD_SIZE / 2,
+        },
+      }
 
       const container = new TankContainer(tank)
 
-      expect(tank.width).toBe(TANK_STANDARD_SIZE)
-      expect(tank.height).toBe(TANK_STANDARD_SIZE)
-      expect(tank.shape?.type).toBe('rectangular')
+      expect(tank.geometry.width).toBe(TANK_STANDARD_SIZE)
+      expect(tank.geometry.height).toBe(TANK_STANDARD_SIZE)
+      expect(tank.size).toBe('STANDARD')
       expect(container).toBeDefined()
     })
 
     it('should use correct dimensions for BIG tank', () => {
-      const tank = { ...mockTank, size: 'BIG' as TankSize }
-      tank.width = TANK_BIG_WIDTH
-      tank.height = TANK_BIG_HEIGHT
-      tank.shape = createTankShape('BIG')
+      const tank = {
+        ...mockTank,
+        size: 'BIG' as TankSize,
+        geometry: {
+          width: TANK_BIG_WIDTH,
+          height: TANK_BIG_HEIGHT,
+          centerX: TANK_BIG_WIDTH / 2,
+          centerY: TANK_BIG_HEIGHT / 2,
+        },
+      }
 
       const container = new TankContainer(tank)
 
-      expect(tank.width).toBe(TANK_BIG_WIDTH)
-      expect(tank.height).toBe(TANK_BIG_HEIGHT)
-      expect(tank.shape?.type).toBe('rectangular')
+      expect(tank.geometry.width).toBe(TANK_BIG_WIDTH)
+      expect(tank.geometry.height).toBe(TANK_BIG_HEIGHT)
+      expect(tank.size).toBe('BIG')
       expect(container).toBeDefined()
     })
   })
 
   describe('Shape Type Rendering', () => {
+    beforeEach(() => {
+      // Reset all mocked Graphics method calls before each test
+      vi.clearAllMocks()
+    })
+
     it('should render circular tank shape for BOWL', () => {
       const tank = { ...mockTank, size: 'BOWL' as TankSize }
-      tank.shape = createTankShape('BOWL')
 
-      const mockGraphics = new Graphics()
       const container = new TankContainer(tank)
 
-      // Verify circular rendering methods were called
-      expect(mockGraphics.circle).toHaveBeenCalled()
+      // Get the background Graphics instance from TankContainer
+      const backgroundGraphics = (container as TankContainerWithBackground).background
+
+      // Verify circular rendering methods were called on the background
+      expect(backgroundGraphics.circle).toHaveBeenCalled()
       expect(container).toBeDefined()
     })
 
     it('should render rectangular tank shape for STANDARD', () => {
-      const tank = { ...mockTank, size: 'STANDARD' as TankSize }
-      tank.width = TANK_STANDARD_SIZE
-      tank.height = TANK_STANDARD_SIZE
-      tank.shape = createTankShape('STANDARD')
+      const tank = {
+        ...mockTank,
+        size: 'STANDARD' as TankSize,
+        geometry: {
+          width: TANK_STANDARD_SIZE,
+          height: TANK_STANDARD_SIZE,
+          centerX: TANK_STANDARD_SIZE / 2,
+          centerY: TANK_STANDARD_SIZE / 2,
+        },
+      }
 
-      const mockGraphics = new Graphics()
       const container = new TankContainer(tank)
 
-      // Verify rectangular rendering methods were called
-      expect(mockGraphics.rect).toHaveBeenCalled()
+      // Get the background Graphics instance from TankContainer
+      const backgroundGraphics = (container as TankContainerWithBackground).background
+
+      // Verify rectangular rendering methods were called on the background
+      expect(backgroundGraphics.rect).toHaveBeenCalled()
       expect(container).toBeDefined()
     })
 
     it('should render rectangular tank shape for BIG', () => {
-      const tank = { ...mockTank, size: 'BIG' as TankSize }
-      tank.width = TANK_BIG_WIDTH
-      tank.height = TANK_BIG_HEIGHT
-      tank.shape = createTankShape('BIG')
+      const tank = {
+        ...mockTank,
+        size: 'BIG' as TankSize,
+        geometry: {
+          width: TANK_BIG_WIDTH,
+          height: TANK_BIG_HEIGHT,
+          centerX: TANK_BIG_WIDTH / 2,
+          centerY: TANK_BIG_HEIGHT / 2,
+        },
+      }
 
-      const mockGraphics = new Graphics()
       const container = new TankContainer(tank)
 
-      // Verify rectangular rendering methods were called
-      expect(mockGraphics.rect).toHaveBeenCalled()
+      // Get the background Graphics instance from TankContainer
+      const backgroundGraphics = (container as TankContainerWithBackground).background
+
+      // Verify rectangular rendering methods were called on the background
+      expect(backgroundGraphics.rect).toHaveBeenCalled()
       expect(container).toBeDefined()
     })
 
     it('should fallback to rectangular rendering when no shape is available', () => {
-      const tank = { ...mockTank, shape: undefined }
+      const tank = { ...mockTank, size: 'STANDARD' as TankSize, shape: undefined }
 
-      const mockGraphics = new Graphics()
       const container = new TankContainer(tank)
 
-      // Verify rectangular fallback was used
-      expect(mockGraphics.rect).toHaveBeenCalled()
+      // Get the background Graphics instance from TankContainer
+      const backgroundGraphics = (container as TankContainerWithBackground).background
+
+      // Verify rectangular fallback was used on the background
+      expect(backgroundGraphics.rect).toHaveBeenCalled()
       expect(container).toBeDefined()
     })
   })
@@ -245,31 +310,42 @@ describe('Tank Visual Rendering (T042d)', () => {
   })
 
   describe('Visual Element Rendering', () => {
+    beforeEach(() => {
+      // Reset all mocked Graphics method calls before each test
+      vi.clearAllMocks()
+    })
+
     it('should draw tank border', () => {
       const tank = { ...mockTank }
-      const mockGraphics = new Graphics()
       const container = new TankContainer(tank)
 
-      expect(mockGraphics.stroke).toHaveBeenCalled()
+      // Get the background Graphics instance from TankContainer
+      const backgroundGraphics = (container as TankContainerWithBackground).background
+
+      expect(backgroundGraphics.stroke).toHaveBeenCalled()
       expect(container).toBeDefined()
     })
 
     it('should draw water background', () => {
       const tank = { ...mockTank }
-      const mockGraphics = new Graphics()
       const container = new TankContainer(tank)
 
-      expect(mockGraphics.fill).toHaveBeenCalled()
+      // Get the background Graphics instance from TankContainer
+      const backgroundGraphics = (container as TankContainerWithBackground).background
+
+      expect(backgroundGraphics.fill).toHaveBeenCalled()
       expect(container).toBeDefined()
     })
 
     it('should draw water surface line', () => {
       const tank = { ...mockTank }
-      const mockGraphics = new Graphics()
       const container = new TankContainer(tank)
 
-      expect(mockGraphics.moveTo).toHaveBeenCalled()
-      expect(mockGraphics.lineTo).toHaveBeenCalled()
+      // Get the background Graphics instance from TankContainer
+      const backgroundGraphics = (container as TankContainerWithBackground).background
+
+      expect(backgroundGraphics.moveTo).toHaveBeenCalled()
+      expect(backgroundGraphics.lineTo).toHaveBeenCalled()
       expect(container).toBeDefined()
     })
   })

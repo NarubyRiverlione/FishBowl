@@ -3,6 +3,7 @@ import { ITankData, FishSpecies, UUID } from '../../models/types'
 import { GameState } from './gameSlice'
 import { EconomyService } from '../../services/EconomyService'
 import { FishService } from '../../services/FishService'
+import { fishDataToLogic, fishLogicToData } from '../../lib/FishConversion'
 import {
   POLLUTION_PER_FEEDING,
   FEED_BASE_COST,
@@ -129,7 +130,9 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
         if (state.credits < cost) return state
 
         const updatedFish = tank.fish.map((fish) => {
-          return FishService.feedFish(fish)
+          const fishLogic = fishDataToLogic(fish)
+          const fedFish = FishService.feedFish(fishLogic)
+          return fishLogicToData(fedFish)
         })
 
         const updatedTank = {
@@ -272,7 +275,8 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
         const fish = tank.fish[fishIndex]
         if (!fish) return state
 
-        const value = FishService.calculateFishValue(fish)
+        const fishLogic = fishDataToLogic(fish)
+        const value = FishService.calculateFishValue(fishLogic)
 
         const newFishList = [...tank.fish]
         newFishList.splice(fishIndex, 1)

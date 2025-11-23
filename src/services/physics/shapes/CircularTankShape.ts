@@ -1,4 +1,4 @@
-import { IFish } from '../../../models/types/index'
+import { IFishLogic } from '../../../models/types/index'
 import { ITankShape, ISpawnBounds } from '../../../models/types/tankShape'
 import { COLLISION_BOUNDARY_BUFFER, WATER_SURFACE_RATIO } from '../../../lib/constants'
 
@@ -18,7 +18,7 @@ export class CircularTankShape implements ITankShape {
     this.height = radius * 2
   }
 
-  checkBoundary(fish: IFish): boolean {
+  checkBoundary(fish: IFishLogic): boolean {
     // Calculate water surface (95% of tank height from center)
     const waterSurfaceY = this.centerY + this.radius * WATER_SURFACE_RATIO
 
@@ -37,7 +37,7 @@ export class CircularTankShape implements ITankShape {
     return distance + fish.radius <= this.radius - COLLISION_BOUNDARY_BUFFER
   }
 
-  resolveBoundary(fish: IFish): void {
+  resolveBoundary(fish: IFishLogic): void {
     // Water surface collision (top)
     const waterSurfaceY = this.centerY + this.radius * WATER_SURFACE_RATIO
     if (fish.y - fish.radius < this.centerY - this.radius + COLLISION_BOUNDARY_BUFFER) {
