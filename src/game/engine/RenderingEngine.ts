@@ -130,8 +130,8 @@ export class RenderingEngine {
       }
 
       // Center tank view on canvas
-      const canvasWidth = this.app.canvas.width
-      const canvasHeight = this.app.canvas.height
+      const canvasWidth = this.app.screen.width
+      const canvasHeight = this.app.screen.height
       const tankWidth = this.tank.geometry.width
       const tankHeight = this.tank.geometry.height
 
