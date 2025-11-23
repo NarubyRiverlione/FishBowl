@@ -185,3 +185,118 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 - **Time Scale**: 1 Tick = 1 Second (real-time).
 - **Persistence**: State is lost on refresh (for MVP/Prototype phase).
 - **Responsive Scaling**: Tank display sizes scale based on viewport (300–600px per tank on desktop, full-width on mobile) without affecting physics simulation or collision bounds.
+
+## Implementation Status Notes
+
+### FR-014: Fish Death — Current Partial Implementation
+
+**Current State**: INCOMPLETE
+
+Fish lifecycle currently implements health tracking and the `isAlive` flag, but does **NOT** automatically remove dead fish from the tank.
+
+**What's Implemented**:
+- ✅ Health degradation when starving (hunger ≥ 80) or water quality < 50
+- ✅ Health clamped to 0 when damage accumulated
+- ✅ `isAlive` boolean flag automatically set to `false` when health reaches 0
+- ✅ Dead fish no longer consume resources (don't participate in feeding costs, pollution penalties, etc.)
+- ✅ Integration test verifies starvation prevents death via feeding
+
+**What's Missing**:
+- ❌ Automatic removal of dead fish from `tank.fish` array during game tick
+- ❌ Dead fish corpses persist indefinitely in the tank unless manually sold
+- ❌ No visual feedback when fish dies (no death animation or corpse marker)
+- ❌ Integration test doesn't verify automatic corpse removal
+
+**Impact**:
+- Dead fish remain in game state and count toward tank array size
+- May affect UI displays that show fish count
+- Manual sell action is required to remove dead fish (workaround exists)
+
+**Related Tasks**: T018a, T018b, T018c (in progress — marked as BUGFIX)
+
+See `tasks.md` for implementation roadmap.
+
+## Collision Detection Design: Composite Shapes for Complex Bowls
+
+### Problem Statement
+
+With the bowl redesign adding a flat floor, the bowl is no longer purely circular. It now consists of:
+- **Curved sidewalls** (circular collision boundary)
+- **Flat floor** (horizontal line collision boundary)
+- **Water surface** (horizontal line at 95% height)
+
+Each surface requires different collision handling:
+- **Sidewalls**: Circular collision math, 0.8 restitution (bounce)
+- **Floor**: Horizontal line collision, 0.2 restitution (gentle settle)
+- **Water surface**: Horizontal line boundary, acts as barrier/ceiling
+
+### Design Solution: Multi-Surface Collision System
+
+#### Architecture Overview
+
+```
+ISurfaceCollider (interface)
+├── CircularWallCollider (curved wall)
+├── FloorCollider (flat bottom)
+└── WaterSurfaceCollider (water level boundary)
+
+ITankShape (updated)
+└── surfaces: ISurfaceCollider[]
+    ├── checkBoundary(fish, surface): boolean
+    ├── resolveBoundary(fish, surface): Fish
+    └── getRestitution(surface): number
+
+BowlTankShape (new)
+├── sidewall: CircularWallCollider
+├── floor: FloorCollider
+└── waterSurface: WaterSurfaceCollider
+
+CollisionService (updated)
+├── For each fish:
+│   └── For each surface:
+│       ├── Check collision (checkBoundary)
+│       ├── Resolve collision (resolveBoundary)
+│       └── Apply restitution (per-surface)
+```
+
+#### Surface Collider Interface
+
+```typescript
+interface ISurfaceCollider {
+  type: 'wall' | 'floor' | 'water-surface'
+  restitution: number
+  checkBoundary(fish: Fish, tankShape: ITankShape): boolean
+  resolveBoundary(fish: Fish, tankShape: ITankShape): Fish
+  getBoundaryPoints(): { min: number; max: number } // For each axis
+}
+```
+
+#### Key Design Principles
+
+1. **Separation of Concerns**: Each surface handles its own collision logic
+2. **Restitution Per-Surface**: 0.8 for walls, 0.2 for floor, 0 for water ceiling
+3. **No Double-Collisions**: Track which surfaces were hit in a single tick to avoid double-resolution
+4. **Backward Compatibility**: Pure circles (old `CircularTankShape`) work with single-surface system
+5. **Order Independence**: Surface collision order shouldn't matter (surfaces don't intersect)
+
+#### Implementation Strategy
+
+1. **Phase 4e-Advanced Tasks** (T041e–T041k):
+   - T041e: Define `ISurfaceCollider` interface
+   - T041f: Implement `BowlTankShape` with 3 surfaces
+   - T041g: Refactor `CircularTankShape` to use new interface
+   - T041h: Update `CollisionService` for multi-surface detection
+   - T041i–k: Comprehensive testing (unit, integration, E2E)
+
+2. **Testing Strategy**:
+   - **Unit tests**: Each surface collider independently
+   - **Integration tests**: Bowl with all surfaces interacting
+   - **E2E tests**: Visual validation of bounce/settle behavior
+
+### Related Specifications
+
+- **Restitution values**: `WALL_RESTITUTION = 0.8`, `FLOOR_RESTITUTION = 0.2` (constants in `src/lib/constants.ts`)
+- **Water surface**: Always at `WATER_LEVEL = 0.95 * tankHeight` (prevents fish escape)
+- **Floor dimensions**: Invisible (1px) for BOWL, visible (30–40px) for STANDARD/BIG
+- **Collision safety buffer**: 2px boundary buffer to prevent escape
+

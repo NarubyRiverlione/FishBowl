@@ -19,7 +19,10 @@
     "test:coverage": "vitest --coverage",
     "coverage:badges": "node scripts/update-coverage-badges.js",
     "coverage:badges:dry": "node scripts/update-coverage-badges.js --dry-run",
-    "test:coverage:update": "pnpm test:coverage && pnpm coverage:badges"
+    "test:coverage:update": "pnpm test:coverage && pnpm coverage:badges",
+    "report:tasks": "python3 scripts/task-completion-report.py",
+    "report:tasks:001": "python3 scripts/task-completion-report.py specs/001-core-mechanics/tasks.md",
+    "report:tasks:002": "python3 scripts/task-completion-report.py specs/002-visual-prototype/tasks.md"
   },
   "dependencies": {
     "pixi.js": "^8.14.2",

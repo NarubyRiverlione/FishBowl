@@ -263,6 +263,16 @@ FishBowl is a web-based fish breeding simulation game. This document tracks the 
 
 ## Technical Debt & Future Optimizations
 
+### Bugs & Known Issues
+
+- [ ] **FR-014 INCOMPLETE**: Fish death handling — Fish are marked `isAlive: false` when health reaches 0, but are **NOT** automatically removed from tank.fish array. Dead fish persist indefinitely unless manually sold. Related tasks: T018a, T018b, T018c (BUGFIX)
+
+- [ ] **BOWL COLLISION DETECTION INCOMPLETE**: Bowl shape redesign (flat floor + curved walls) requires composite shape collision system. Current `CircularTankShape` handles only curved walls. Need multi-surface collision detection:
+  - [ ] Separate surface colliders (wall, floor, water surface)
+  - [ ] Per-surface restitution values (0.8 walls, 0.2 floor, 0 water ceiling)
+  - [ ] `ISurfaceCollider` interface and `BowlTankShape` implementation
+  - Related tasks: T041e, T041f, T041g, T041h, T041i, T041j, T041k (Phase 4e-Advanced)
+
 ### Performance
 
 - [ ] Implement spatial hashing for collision detection (needed for >100 fish)

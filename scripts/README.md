@@ -1,207 +1,142 @@
-# Coverage Badge Automation Guide
+# FishBowl Scripts
 
-This directory contains scripts and tools for automatically updating coverage badges in the project README.
+Utility scripts for FishBowl project management and development.
 
-## 📊 Overview
+## Task Completion Report
 
-The coverage badge automation system provides multiple approaches to keep your README badges current:
+Generate a detailed task completion report from milestone specification files.
 
-1. **Manual Updates** - Run scripts when needed
-2. **Git Hooks** - Automatic updates on commit
-3. **CI/CD Integration** - Updates during builds
-4. **Dynamic Badges** - Real-time badges from coverage data
-
-## 🛠️ Available Scripts
-
-### Core Script: `update-coverage-badges.js`
-
-The main script that reads coverage data and updates README badges.
+### Quick Start
 
 ```bash
-# Update badges immediately
-pnpm coverage:badges
+# Using npm/pnpm (recommended)
+pnpm report:tasks:001          # Core Mechanics (Milestone 2)
+pnpm report:tasks:002          # Visual Prototype (Milestone 1)
+pnpm report:tasks              # Default (001-core-mechanics)
 
-# Preview changes without applying them
-pnpm coverage:badges:dry
+# Using shell script
+./scripts/task-completion-report.sh
+./scripts/task-completion-report.sh 001-core-mechanics
+./scripts/task-completion-report.sh 002-visual-prototype
 
-# Run coverage and update badges in one command
-pnpm test:coverage:update
+# Using Python directly
+python3 scripts/task-completion-report.py specs/001-core-mechanics/tasks.md
+python3 scripts/task-completion-report.py specs/002-visual-prototype/tasks.md
 ```
 
-## 🔄 Automation Options
+### Features
 
-### Option 1: Git Hooks (Recommended)
+- ✅ Overall completion percentage across all phases
+- 📊 Per-phase breakdown with visual progress bars
+- 🎯 Status indicators (Complete, Near Complete, In Progress, Pending)
+- 📋 Support for any milestone spec
+- 🎨 Color-coded emoji status (✅ 🟢 🔄 🟡 📋)
 
-Automatically update badges before each commit:
+### Output Example
 
+```
+OVERALL: 113/136 tasks completed (83.1%)
+
+Phase 1: Setup
+  4/4 tasks  [████████████████████████████████████████]  ✅ COMPLETE (100%)
+
+Phase 3: User Stories
+  25/28 tasks  [███████████████████████████░░░░░░]  🟢 NEAR COMPLETE (89%)
+
+Phase 4e-Advanced
+  0/7 tasks  [░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░]  📋 PENDING (0%)
+```
+
+### Status Legend
+
+| Emoji | Status | Percentage | Meaning |
+|-------|--------|-----------|---------|
+| ✅ | COMPLETE | 100% | All tasks done |
+| 🟢 | NEAR COMPLETE | 75-99% | Almost done |
+| 🔄 | IN PROGRESS | 50-74% | On track |
+| 🟡 | IN PROGRESS | 1-49% | Getting started |
+| 📋 | PENDING | 0% | Not started |
+
+### Usage Examples
+
+#### Generate report for current milestone
 ```bash
-# Install the pre-commit hook
-cp scripts/pre-commit-coverage .git/hooks/pre-commit
-chmod +x .git/hooks/pre-commit
+pnpm report:tasks:001
 ```
 
-**How it works:**
-
-- Runs before every `git commit`
-- Checks if coverage data exists
-- Updates badges if needed
-- Stages the updated README.md
-
-### Option 2: Manual Workflow
-
-Update badges as part of your development workflow:
-
+#### Generate report for specific spec by name
 ```bash
-# During development
-pnpm test:coverage:update
-
-# Before committing
-pnpm coverage:badges:dry  # Preview changes
-pnpm coverage:badges      # Apply changes
-git add README.md
-git commit -m "Update coverage badges"
+./scripts/task-completion-report.sh 002-visual-prototype
 ```
 
-### Option 3: CI/CD Integration
-
-For GitHub Actions, add to your workflow:
-
-```yaml
-# .github/workflows/test.yml
-- name: Update Coverage Badges
-  run: |
-    pnpm test:coverage
-    pnpm coverage:badges
-
-- name: Commit Badge Updates
-  uses: stefanzweifel/git-auto-commit-action@v4
-  with:
-    commit_message: 'docs: update coverage badges'
-    file_pattern: README.md
-```
-
-### Option 4: Dynamic Badges (Alternative)
-
-For real-time badges without manual updates, consider services like:
-
-- **Codecov**: `![Coverage](https://codecov.io/gh/user/repo/branch/main/graph/badge.svg)`
-- **Coveralls**: `![Coverage](https://coveralls.io/repos/github/user/repo/badge.svg)`
-
-## 🎨 Badge Customization
-
-The script automatically assigns colors based on coverage percentages:
-
-- **90%+**: Bright Green
-- **80-89%**: Green
-- **70-79%**: Yellow
-- **60-69%**: Orange
-- **<60%**: Red
-
-Modify `getCoverageColor()` in `update-coverage-badges.js` to customize thresholds.
-
-## 🔧 Configuration
-
-### Badge URL Template
-
-Badges use shields.io format:
-
-```
-https://img.shields.io/badge/{label}-{value}-{color}
-```
-
-### Coverage Calculation
-
-The script calculates coverage from Vitest's `coverage-final.json`:
-
-- **Statements**: Executed vs total statements
-- **Branches**: Covered vs total branches
-- **Functions**: Called vs total functions
-- **Lines**: Covered vs total lines
-
-## 🚀 Quick Start
-
-1. **Install the automation:**
-
-   ```bash
-   # Set up git hook
-   cp scripts/pre-commit-coverage .git/hooks/pre-commit
-   chmod +x .git/hooks/pre-commit
-   ```
-
-2. **Test the system:**
-
-   ```bash
-   # Generate coverage and update badges
-   pnpm test:coverage:update
-
-   # Verify badges were updated
-   git diff README.md
-   ```
-
-3. **Normal workflow:**
-
-   ```bash
-   # Your regular development...
-   pnpm test
-
-   # Commit (badges update automatically via hook)
-   git commit -m "Add new feature"
-   ```
-
-## 📋 Troubleshooting
-
-### Common Issues
-
-**"Coverage file not found"**
-
+#### Generate report for specific spec by file path
 ```bash
-# Generate coverage first
-pnpm test:coverage
+./scripts/task-completion-report.sh specs/001-core-mechanics/tasks.md
+python3 scripts/task-completion-report.py specs/001-core-mechanics/tasks.md
 ```
 
-**"Could not find badge pattern"**
+### Script Details
 
-- Check README.md format matches expected patterns
-- Ensure badges use shields.io format
-- Run with `--dry-run` to debug
+#### `task-completion-report.py`
+Python script that parses tasks.md and generates detailed reports.
 
-**Git hook not working**
+**Requirements**: Python 3.6+
 
-```bash
-# Verify hook is executable
-ls -la .git/hooks/pre-commit
-chmod +x .git/hooks/pre-commit
+**Features**:
+- Parses task completion status (✅ for done, [ ] for pending)
+- Detects all standard Phase 1-5 and Phase 4a-h subphases
+- Generates visual progress bars
+- Supports flexible spec file paths
+
+**Command-line arguments**:
+```
+task-completion-report.py [spec_path]
+  spec_path: Path to tasks.md file (default: specs/001-core-mechanics/tasks.md)
 ```
 
-### Debugging
+#### `task-completion-report.sh`
+Bash wrapper script for easy execution.
 
-```bash
-# Test script without applying changes
-pnpm coverage:badges:dry
+**Requirements**: bash, python3
 
-# Check current coverage stats
-node scripts/update-coverage-badges.js --dry-run
+**Supports**:
+- Running without arguments (uses default)
+- Spec name shortcuts (e.g., "001-core-mechanics")
+- Direct file paths
+- Error handling and usage help
 
-# Verify coverage data format
-cat coverage/coverage-final.json | jq keys
+### Extending the Script
+
+To add support for a new phase, edit `task-completion-report.py` and add the phase name to the `phases` dictionary:
+
+```python
+phases = {
+    "Phase X: New Phase": {"completed": 0, "total": 0},
+    # ... other phases
+}
 ```
 
-## 🎯 Best Practices
+The detection logic will automatically catch phase headers matching these names.
 
-1. **Regular Updates**: Use git hooks for automatic updates
-2. **Verify Changes**: Always review badge updates before pushing
-3. **Coverage Goals**: Maintain >80% coverage for green badges
-4. **Documentation**: Update this guide when modifying scripts
+### Troubleshooting
 
-## 📝 Integration with Development Workflow
+**"File not found" error**:
+- Ensure you're running the script from the project root directory
+- Verify the spec file exists at the specified path
 
-```bash
-# Recommended development cycle
-pnpm test                    # Run tests during development
-pnpm lint                    # Check code quality
-pnpm test:coverage:update    # Final coverage check
-git add -A                   # Stage all changes
-git commit -m "..."          # Commit (badges auto-update via hook)
-```
+**Python version issues**:
+- Ensure Python 3.6+ is installed
+- Check with: `python3 --version`
 
-This creates a seamless workflow where coverage badges stay current without manual intervention.
+**Permission denied**:
+- Make scripts executable: `chmod +x scripts/*.sh scripts/*.py`
+
+### Development Notes
+
+The script is designed to be:
+- **Portable**: Works from any project directory
+- **Flexible**: Supports multiple input formats
+- **Extensible**: Easy to add new phases or customize output
+- **Maintainable**: Clear code structure with docstrings
+
+To modify report output format, edit the `print_report()` function in `task-completion-report.py`.

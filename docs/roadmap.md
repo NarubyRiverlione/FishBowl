@@ -56,9 +56,11 @@ Links:
 
 ---
 
-## Milestone 3 — Breeding & Mid-game
+## Milestone 3 — Breeding & Mid-game + Multi-Tank Display
 
-Goal: Introduce reproduction, genetics, and mid-game upgrades.
+Goal: Introduce reproduction, genetics, mid-game upgrades, and responsive multi-tank layout.
+
+**Breeding & Genetics** (not yet specced):
 
 - Breeding mechanics and mate selection
 - Simple genetics and trait inheritance (dominant/recessive)
@@ -66,9 +68,19 @@ Goal: Introduce reproduction, genetics, and mid-game upgrades.
 - Schooling/social behavior for selected species
 - Automatic player actions (time warp toggle)
 
+**Multi-Tank Display** (from Phase 4g):
+
+- Responsive multi-tank layout: desktop grid view (all tanks visible), tablet split layout, mobile tab navigation
+- Tab buttons with visual indicators (● for BOWL, ◯ for STANDARD, ▭ for BIG)
+- Active tank highlighting and keyboard shortcuts (1/2/3 keys, arrow keys)
+- Responsive CSS with viewport breakpoints (desktop ≥1024px, tablet 768–1024px, mobile <768px)
+- Integration and E2E tests for layout responsiveness across device sizes
+
 Links:
 
-- PRD mapping: `docs/feature_check.md` (Breeding items)
+- Breeding spec: not yet created (planned for `specs/003-breeding-midgame/`)
+- Multi-Tank Display tasks: moved from `specs/001-core-mechanics/tasks.md` Phase 4g (T043a–T043e)
+- PRD mapping: `docs/feature_check.md` (Breeding + Multi-Tank items)
 
 ---
 

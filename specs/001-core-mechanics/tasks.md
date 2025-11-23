@@ -40,6 +40,9 @@ Independent test criteria: hunger increases per tick; `feedTank` reduces hunger 
 - ✅ T016 [US2] Implement `feedTank()` action: cost calc, deduct credits, reduce all living fish hunger by 30, set `lastFedAt`, and record `feedingsThisTick` for pollution — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
 - ✅ T017 [US2] Add unit test `tests/unit/Feeding.test.ts` for feed cost, hunger reduction and `lastFedAt` update — file: `tests/unit/Feeding.test.ts`
 - ✅ T018 [US2] Add integration test `tests/integration/FeedAndSurvive.test.ts` to accelerate ticks and verify feeding prevents death — file: `tests/integration/FeedAndSurvive.test.ts`
+- [ ] T018a [US2] [BUGFIX] Implement automatic fish removal when health reaches 0: add `cleanupDeadFish()` action to remove fish with `isAlive: false` from tank.fish array during game tick; fish are marked dead but not visually removed — files: `src/store/slices/tankSlice.ts`, `src/store/slices/gameSlice.ts`
+- [ ] T018b [US2] [BUGFIX] Add unit test `tests/unit/FishDeath.test.ts` to verify: health = 0 → `isAlive: false`, dead fish are removed from tank after next tick, dead fish don't contribute to game metrics (pollution, capacity, feeding cost) — file: `tests/unit/FishDeath.test.ts`
+- [ ] T018c [US2] [BUGFIX] Update integration test `tests/integration/FeedAndSurvive.test.ts` to verify dead fish removal: starvation → death → automatic removal from tank.fish array — file: `tests/integration/FeedAndSurvive.test.ts`
 
 **User Story 3 - Water Quality & Maintenance (P1)**
 
@@ -147,6 +150,20 @@ Independent test criteria: Floor renders visible/invisible per tank type; fish s
 - ✅ T041c [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
 - [ ] T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
 
+**Phase 4e-Advanced: Composite Shape Collision Detection (Required for Complex Bowls)**
+
+**Multi-Surface Collision System for Bowl-Shaped Tanks**
+
+Independent test criteria: Bowl tank collision detection handles curved walls, flat floor, and water surface as separate boundaries; fish bounce correctly off each surface type; restitution values applied per-surface (0.8 walls, 0.2 floor); circular/rectangular shapes coexist.
+
+- [ ] T041e [P] [NEW] Design composite shape system: create `ISurfaceCollider` interface for individual collision surfaces (wall, floor, water), implement in `src/models/types/tankShape.ts`; update `ITankShape` to support multiple surfaces — files: `src/models/types/tankShape.ts`
+- [ ] T041f [P] [NEW] Implement `BowlTankShape` class: represents bowl as composite of curved sidewall (circular), flat floor (horizontal line), water surface (horizontal line); each surface has its own collision boundaries and restitution values — file: `src/services/physics/shapes/BowlTankShape.ts`
+- [ ] T041g [P] [NEW] Update `CircularTankShape` to support multi-surface collision: refactor to use surface colliders for curved wall only (no floor), maintain backward compatibility — file: `src/services/physics/shapes/CircularTankShape.ts`
+- [ ] T041h [P] [NEW] Update `CollisionService` to handle multi-surface collision detection: iterate through all surfaces, resolve collisions per-surface with correct restitution, prevent double-collisions on same fish per tick — file: `src/services/physics/CollisionService.ts`
+- [ ] T041i [P] [NEW] Add comprehensive unit tests for composite shapes: verify each surface collision independently, verify restitution values applied correctly, verify water surface boundary — file: `tests/unit/CompositeShapeCollision.test.ts`
+- [ ] T041j [P] [NEW] Add integration test for bowl collision: verify fish bounce off curved walls (0.8 restitution), settle on floor (0.2 restitution), respect water surface boundary — file: `tests/integration/BowlCollisionPhysics.test.ts`
+- [ ] T041k [P] [NEW] **E2E UPDATE**: Extend tank-boundaries e2e tests to validate bowl-specific collision scenarios (curved wall bounce, floor settling, water surface) — file: `tests/e2e/tank-boundaries.spec.ts`
+
 **Phase 4f: Procedural Tank Rendering (From Original FR-018)**
 
 **Visual Tank Implementation**
@@ -159,18 +176,8 @@ Independent test criteria: BOWL renders as circle, STANDARD as square, BIG as re
 - ✅ T042d [FR-018] Add unit test for tank visuals: verify dimensions and shape types (circular, square, rectangle) render correctly — file: `tests/unit/TankVisuals.test.ts`
 - ✅ T042e [P] [NEW] Add integration test for shape-visual consistency: verify rendered shape matches collision boundaries — file: `tests/integration/ShapeVisualConsistency.test.ts`
 - ✅ T042f [P] [NEW] **E2E UPDATE**: Add e2e tests for procedural tank rendering across different tank types and responsive scaling — file: `tests/e2e/tank-visuals.spec.ts`
-
-**Phase 4g: Multi-Tank Display (From Original FR-019)**
-
-**Responsive Multi-Tank Layout**
-
-Independent test criteria: Desktop shows all tanks in grid; tablets/mobile show one tank with tabs; keyboard shortcuts work; no duplicate rendering.
-
-- [ ] T043a [P] [FR-019] Implement multi-tank display layout: add `activeTabIndex` to game state, create responsive grid layout for desktop (all 2–3 tanks visible), tab navigation for mobile/tablet (one tank at a time) — files: `src/store/useGameStore.ts`, `src/components/AquariumCanvas.tsx`, `src/models/types/index.ts`
-- [ ] T043b [FR-019] Add tab buttons with visual indicators: ● for BOWL, ◯ for STANDARD, ▭ for BIG; highlight active tank; wire keyboard shortcuts (1/2/3 keys, arrow keys) — file: `src/components/AquariumCanvas.tsx`
-- [ ] T043c [P] [FR-019] Add responsive layout CSS/styles: use viewport queries to switch between grid (desktop ≥1024px), split layout (tablet 768–1024px), tabs (mobile <768px) — files: `src/index.css`, `src/components/AquariumCanvas.tsx`
-- [ ] T043d [FR-019] Add integration test: verify desktop grid, tablet split, and mobile tab layouts; keyboard shortcut switching — file: `tests/integration/MultiTankLayout.test.ts`
-- [ ] T043e [P] [NEW] **E2E UPDATE**: Add comprehensive e2e tests for multi-tank responsive layouts and tank switching across device sizes — file: `tests/e2e/multi-tank.spec.ts`
+- [ ] T042g [QA] [VERIFICATION] Verify BIG tank rendering consistency: confirm BIG tank renders as rectangle (800×400px) with same visual style as STANDARD (glass effect, rim, procedural texture), same water level (95%), same floor type (visible pebble texture); compare side-by-side in browser dev mode (`?dev=true`) — file: visual verification + screenshot comparison (documentation only)
+- [ ] T042h [QA] [VERIFICATION] Add unit test for BIG tank visual consistency: verify BIG tank dimensions (800×400), confirm same rendering properties as STANDARD (wall color, floor texture type, water level %, rim style) — file: `tests/unit/TankVisuals.test.ts`
 
 **Phase 4h: Legacy Tasks (Updated)**
 
@@ -215,9 +222,6 @@ Final Phase: Polish & Cross-Cutting Concerns
 
 - [ ] T068 [QA] Code complexity validation: scan all TypeScript files to identify any exceeding 120 lines of code (excluding empty lines and comments); ensure proper separation of concerns by breaking down large files into focused modules — command: custom script to analyze line counts and suggest refactoring
 
-**Bug Fixes**
-
-- [ ] T069 [BUG] Fix BOWL tank visual rendering: tank currently renders as rectangle instead of circular shape despite tank shape system implementation; investigate TankContainer shape-aware rendering logic and ensure circular tanks properly use drawCircle method — file: `src/game/views/TankContainer.ts`
 
 Dependencies (user-story completion order)
 
