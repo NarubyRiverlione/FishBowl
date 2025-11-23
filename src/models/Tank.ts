@@ -92,6 +92,13 @@ export class Tank implements ITankLogic {
 
   // Collision detection methods required by ITankLogic
   checkBoundary(fish: IFishLogic): boolean {
+    if (this.size === 'BOWL') {
+      return this.checkBoundaryCircular(fish)
+    }
+    return this.checkBoundaryRectangular(fish)
+  }
+
+  private checkBoundaryRectangular(fish: IFishLogic): boolean {
     return (
       fish.geometry.position.x - fish.geometry.radius <= 0 ||
       fish.geometry.position.x + fish.geometry.radius >= this.geometry.width ||
@@ -100,7 +107,33 @@ export class Tank implements ITankLogic {
     )
   }
 
+  private checkBoundaryCircular(fish: IFishLogic): boolean {
+    const centerX = this.geometry.centerX
+    const centerY = this.geometry.centerY
+    const radius = Math.min(this.geometry.width, this.geometry.height) / 2
+    const waterLevel = this.geometry.height * 0.95 // WATER_LEVEL constant
+
+    // Check if above water surface
+    if (fish.geometry.position.y - fish.geometry.radius < waterLevel - this.geometry.height) {
+      return true
+    }
+
+    // Check if outside circular boundary
+    const distanceFromCenter = Math.sqrt(
+      Math.pow(fish.geometry.position.x - centerX, 2) + Math.pow(fish.geometry.position.y - centerY, 2)
+    )
+    return distanceFromCenter + fish.geometry.radius > radius
+  }
+
   resolveBoundary(fish: IFishLogic): void {
+    if (this.size === 'BOWL') {
+      this.resolveBoundaryCircular(fish)
+    } else {
+      this.resolveBoundaryRectangular(fish)
+    }
+  }
+
+  private resolveBoundaryRectangular(fish: IFishLogic): void {
     // Handle boundary collisions
     if (fish.geometry.position.x - fish.geometry.radius <= 0) {
       fish.geometry.position.x = fish.geometry.radius
@@ -120,7 +153,60 @@ export class Tank implements ITankLogic {
     }
   }
 
+  private resolveBoundaryCircular(fish: IFishLogic): void {
+    const centerX = this.geometry.centerX
+    const centerY = this.geometry.centerY
+    const radius = Math.min(this.geometry.width, this.geometry.height) / 2
+    const waterLevel = this.geometry.height * 0.95 // WATER_LEVEL constant
+    const waterTop = this.geometry.height - waterLevel
+
+    // Check if above water surface (hard ceiling)
+    if (fish.geometry.position.y - fish.geometry.radius < waterTop) {
+      fish.geometry.position.y = waterTop + fish.geometry.radius
+      fish.geometry.velocity.vy = Math.abs(fish.geometry.velocity.vy) // Force downward
+    }
+
+    // Check circular boundary collision
+    const distanceFromCenter = Math.sqrt(
+      Math.pow(fish.geometry.position.x - centerX, 2) + Math.pow(fish.geometry.position.y - centerY, 2)
+    )
+
+    if (distanceFromCenter + fish.geometry.radius > radius) {
+      // Push fish back inside the circle
+      const angle = Math.atan2(fish.geometry.position.y - centerY, fish.geometry.position.x - centerX)
+      fish.geometry.position.x = centerX + Math.cos(angle) * (radius - fish.geometry.radius)
+      fish.geometry.position.y = centerY + Math.sin(angle) * (radius - fish.geometry.radius)
+
+      // Reflect velocity off the circular boundary
+      const vx = fish.geometry.velocity.vx
+      const vy = fish.geometry.velocity.vy
+      const cos = Math.cos(angle)
+      const sin = Math.sin(angle)
+
+      // Reflect: v_new = v - 2(v·n)n, where n is the normal
+      const dotProduct = vx * cos + vy * sin
+      fish.geometry.velocity.vx = vx - 2 * dotProduct * cos
+      fish.geometry.velocity.vy = vy - 2 * dotProduct * sin
+    }
+  }
+
   getSpawnBounds(): ISpawnBounds {
+    if (this.size === 'BOWL') {
+      // For circular tanks, spawn within the circle and below water line
+      const radius = Math.min(this.geometry.width, this.geometry.height) / 2
+      const safeMargin = 30 // Keep fish away from edges
+      const waterLevel = this.geometry.height * 0.95
+      const waterTop = this.geometry.height - waterLevel
+
+      return {
+        minX: this.geometry.centerX - (radius - safeMargin),
+        maxX: this.geometry.centerX + (radius - safeMargin),
+        minY: Math.max(waterTop + safeMargin, 20),
+        maxY: this.geometry.height - safeMargin,
+      }
+    }
+
+    // Rectangular spawn bounds
     return {
       minX: 20,
       maxX: this.geometry.width - 20,

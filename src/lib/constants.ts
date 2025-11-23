@@ -94,7 +94,7 @@ export const TANK_UPGRADED_WIDTH = 800
 export const TANK_UPGRADED_HEIGHT = 600
 
 // Game Values
-export const GAME_INITIAL_CREDITS = 50
+export const GAME_INITIAL_CREDITS = 100
 export const GAME_DEV_MODE_CREDITS = 1000
 export const GAME_INITIAL_TICK = 0
 export const GAME_INITIAL_TIME = 0

@@ -1,16 +1,12 @@
-import { Container, Graphics } from 'pixi.js'
+import { Container, Sprite, Texture, Assets } from 'pixi.js'
 import { ITankLogic, IFishLogic } from '../../models/types'
 import { FishSprite } from './FishSprite'
+import fishbowlSvg from '../../assets/fishbowl.svg'
 import {
   WATER_LEVEL,
   TANK_DEFAULT_WIDTH,
   TANK_DEFAULT_HEIGHT,
   FISH_SPAWN_POSITION_BUFFER,
-  TANK_BORDER_WIDTH,
-  TANK_BORDER_COLOR,
-  WATER_SURFACE_WIDTH,
-  WATER_SURFACE_COLOR,
-  WATER_SURFACE_ALPHA,
   TANK_DISPLAY_MIN_SIZE,
   TANK_DISPLAY_MAX_SIZE,
   MOBILE_BREAKPOINT,
@@ -20,17 +16,16 @@ import useGameStore from '../../store/useGameStore'
 
 export class TankContainer extends Container {
   private tank: ITankLogic
-  private background: Graphics
   private fishSprites: Map<string, FishSprite> = new Map()
   private displayScale: number = 1
+  private bowlSprite: Sprite | null = null
+  private static bowlTexturePromise: Promise<Texture> | null = null
 
   constructor(tank: ITankLogic) {
     super()
     this.tank = tank
-    this.background = new Graphics()
-    this.addChild(this.background)
     this.calculateDisplayScale()
-    this.draw()
+    this.initializeBowl()
     // Allow clicking on empty tank area to clear selection
     this.interactive = true
     // Attach pointer handler defensively (tests may not provide Pixi event methods)
@@ -248,66 +243,32 @@ export class TankContainer extends Container {
     }
   }
 
-  private draw(): void {
-    this.background.clear()
+  private async initializeBowl(): Promise<void> {
+    try {
+      // Load and cache bowl texture
+      const texture = await this.loadBowlTexture()
+      this.bowlSprite = new Sprite(texture)
 
-    const waterLevel = this.tank.geometry.height * WATER_LEVEL
+      // Position bowl at center of tank
+      this.bowlSprite.x = this.tank.geometry.centerX
+      this.bowlSprite.y = this.tank.geometry.centerY
+      this.bowlSprite.anchor.set(0.5)
 
-    // Use BOWL tank size to determine if circular rendering should be used
-    if (this.tank.size === 'BOWL') {
-      this.drawCircularTank(waterLevel)
-    } else {
-      // Fallback to rectangular rendering for STANDARD tanks
-      this.drawRectangularTank(waterLevel)
+      // Scale to fit tank (SVG viewBox is 300x320)
+      const scale = Math.min(this.tank.geometry.width / 300, this.tank.geometry.height / 320)
+      this.bowlSprite.scale.set(scale)
+
+      this.addChild(this.bowlSprite)
+    } catch (error) {
+      console.error('Failed to load fishbowl SVG:', error)
     }
   }
 
-  private drawCircularTank(waterLevel: number): void {
-    const radius = Math.min(this.tank.geometry.width, this.tank.geometry.height) / 2
-    const centerX = this.tank.geometry.centerX
-    const centerY = this.tank.geometry.centerY
-
-    // Draw water (circular filled portion)
-    // For circular tanks, we need to create a clipped water area
-    this.background.circle(centerX, centerY, radius - TANK_BORDER_WIDTH / 2)
-    this.background.fill(this.tank.backgroundColor)
-
-    // Draw tank border (circular outline)
-    this.background.circle(centerX, centerY, radius)
-    this.background.stroke({ width: TANK_BORDER_WIDTH, color: TANK_BORDER_COLOR })
-
-    // Draw water surface line (horizontal chord across the circle)
-    // Calculate water surface position using the actual waterLevel
-    const surfaceY = this.tank.geometry.height - waterLevel
-
-    // Only draw surface line if it intersects with the circle
-    if (surfaceY >= centerY - radius && surfaceY <= centerY + radius) {
-      const distanceFromCenter = Math.abs(centerY - surfaceY)
-      const chordHalfWidth = Math.sqrt(Math.pow(radius, 2) - Math.pow(distanceFromCenter, 2))
-      const chordStartX = centerX - chordHalfWidth
-      const chordEndX = centerX + chordHalfWidth
-
-      this.background
-        .moveTo(chordStartX, surfaceY)
-        .lineTo(chordEndX, surfaceY)
-        .stroke({ width: WATER_SURFACE_WIDTH, color: WATER_SURFACE_COLOR, alpha: WATER_SURFACE_ALPHA })
+  private async loadBowlTexture(): Promise<Texture> {
+    if (!TankContainer.bowlTexturePromise) {
+      TankContainer.bowlTexturePromise = Assets.load(fishbowlSvg)
     }
-  }
-
-  private drawRectangularTank(waterLevel: number): void {
-    // Draw water (filled portion)
-    this.background.rect(0, this.tank.geometry.height - waterLevel, this.tank.geometry.width, waterLevel)
-    this.background.fill(this.tank.backgroundColor)
-
-    // Draw tank walls (bottom and sides only, no top)
-    this.background.rect(0, 0, this.tank.geometry.width, this.tank.geometry.height)
-    this.background.stroke({ width: TANK_BORDER_WIDTH, color: TANK_BORDER_COLOR })
-
-    // Draw water surface line
-    this.background
-      .moveTo(0, this.tank.geometry.height - waterLevel)
-      .lineTo(this.tank.geometry.width, this.tank.geometry.height - waterLevel)
-      .stroke({ width: WATER_SURFACE_WIDTH, color: WATER_SURFACE_COLOR, alpha: WATER_SURFACE_ALPHA })
+    return TankContainer.bowlTexturePromise
   }
 }
 

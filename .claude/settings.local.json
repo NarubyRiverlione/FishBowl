@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Skill(loc-audit)"
+      "Skill(loc-audit)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm test:e2e:*)",
+      "Bash(npx playwright:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

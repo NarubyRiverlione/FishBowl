@@ -11,7 +11,11 @@
 
 A web-based fish breeding simulation game built with React, Pixi.js, and TypeScript.
 
-**Current Status**: ✅ Core Mechanics Complete (Milestone 2 - MVP Ready)
+**Current Status**: ✅ Core Mechanics MVP Complete (Phases 1-3) | 🔄 Tank Rendering in Testing (Phase 4a-4f) | 📋 UI Polish Planned (Phase 4g-5)
+
+> **📌 Note on Milestone Numbering**: Milestone numbering reflects execution order (POC first), not spec creation order:
+> - **Milestone 1** = Spec 002 (Visual Prototype - built as POC)
+> - **Milestone 2** = Spec 001 (Core Mechanics - initial spec, built after POC validation)
 
 ## ⚠️ Important Architecture Notes
 

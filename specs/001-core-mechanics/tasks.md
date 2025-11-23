@@ -6,20 +6,20 @@ Feature: Core Game Mechanics (MVP)
 
 Phase 1: Setup
 
-- [x] T001 Create repository prerequisites check (run locally): command: `/.specify/scripts/bash/check-prerequisites.sh --json`
-- [x] T002 [P] Create type definitions file: `src/models/types/index.ts`
-- [x] T003 [P] Add game constants file: `src/lib/constants.ts`
-- [x] T004 [P] Ensure dev tooling: verify `package.json` scripts and `vitest` config — files: `package.json`, `vitest.config.ts`
+- ✅ T001 Create repository prerequisites check (run locally): command: `/.specify/scripts/bash/check-prerequisites.sh --json`
+- ✅ T002 [P] Create type definitions file: `src/models/types/index.ts`
+- ✅ T003 [P] Add game constants file: `src/lib/constants.ts`
+- ✅ T004 [P] Ensure dev tooling: verify `package.json` scripts and `vitest` config — files: `package.json`, `vitest.config.ts`
 
 Phase 2: Foundational (blocking prerequisites)
 
-- [x] T005 [P] Implement core interfaces and species config (`IFish`, `ITank`, `IGameState`, `FISH_SPECIES_CONFIG`) — file: `src/models/types/index.ts`
-- [x] T006 [P] Implement `src/services/FishService.ts` (createFish, tickFish, calculateFishValue) — file: `src/services/FishService.ts`
-- [x] T007 [P] Implement `src/services/EconomyService.ts` (buy/sell/clean/filter/upgrade helper signatures) — file: `src/services/EconomyService.ts`
-- [x] T008 Implement `GameLoopService` abstraction (start/pause/resume/stop) — file: `src/services/GameLoopService.ts`
-- [x] T009 [P] Add Zustand store skeleton with initial state and action signatures (`useGameStore.ts`) — file: `src/store/useGameStore.ts`
-- [x] T010 [P] Add unit test skeletons for services and models (`tests/unit/*`) — files: `tests/unit/FishService.test.ts`, `tests/unit/EconomyService.test.ts`, `tests/unit/GameLoopService.test.ts`
-- [x] T036 Implement multi-tank support: change game state to `tanks: ITank[]`, add per-tank actions (create/select/upgrade), and update tests/UI to support up to 2–3 tanks — files: `src/store/useGameStore.ts`, `src/models/types/index.ts`, `tests/integration/MultiTank.test.ts` **(COMPLETE — `tankSlice` refactor applied; `tests/integration/MultiTank.test.ts` added; domain types added; remaining docs/update tasks optional)**
+- ✅ T005 [P] Implement core interfaces and species config (`IFish`, `ITank`, `IGameState`, `FISH_SPECIES_CONFIG`) — file: `src/models/types/index.ts`
+- ✅ T006 [P] Implement `src/services/FishService.ts` (createFish, tickFish, calculateFishValue) — file: `src/services/FishService.ts`
+- ✅ T007 [P] Implement `src/services/EconomyService.ts` (buy/sell/clean/filter/upgrade helper signatures) — file: `src/services/EconomyService.ts`
+- ✅ T008 Implement `GameLoopService` abstraction (start/pause/resume/stop) — file: `src/services/GameLoopService.ts`
+- ✅ T009 [P] Add Zustand store skeleton with initial state and action signatures (`useGameStore.ts`) — file: `src/store/useGameStore.ts`
+- ✅ T010 [P] Add unit test skeletons for services and models (`tests/unit/*`) — files: `tests/unit/FishService.test.ts`, `tests/unit/EconomyService.test.ts`, `tests/unit/GameLoopService.test.ts`
+- ✅ T036 Implement multi-tank support: change game state to `tanks: ITank[]`, add per-tank actions (create/select/upgrade), and update tests/UI to support up to 2–3 tanks — files: `src/store/useGameStore.ts`, `src/models/types/index.ts`, `tests/integration/MultiTank.test.ts` **(COMPLETE — `tankSlice` refactor applied; `tests/integration/MultiTank.test.ts` added; domain types added; remaining docs/update tasks optional)**
 
 Phase 3: User Story Phases (priority order)
 
@@ -27,52 +27,52 @@ Phase 3: User Story Phases (priority order)
 
 Independent test criteria: start game → default BOWL + 50 credits → buy fish reduces credits → fish exists in tank → tick increases age.
 
-- [x] T011 [US1] Initialize game state with BOWL tank and 50 credits — file: `src/store/useGameStore.ts`
-- [x] T012 [US1] Implement `buyFish(storeItemId)` action (validations: credits, capacity) that spawns fish via `FishService.createFish` — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [x] T013 [US1] Wire `tick()` action to increment `currentTick` and call `FishService.tickFish` for living fish — files: `src/store/useGameStore.ts`, `src/services/FishService.ts`
-- [x] T014 [US1] Add integration test `tests/integration/BuyAndTick.test.ts` verifying buy → credits change → tick increments age — file: `tests/integration/BuyAndTick.test.ts`
+- ✅ T011 [US1] Initialize game state with BOWL tank and 50 credits — file: `src/store/useGameStore.ts`
+- ✅ T012 [US1] Implement `buyFish(storeItemId)` action (validations: credits, capacity) that spawns fish via `FishService.createFish` — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- ✅ T013 [US1] Wire `tick()` action to increment `currentTick` and call `FishService.tickFish` for living fish — files: `src/store/useGameStore.ts`, `src/services/FishService.ts`
+- ✅ T014 [US1] Add integration test `tests/integration/BuyAndTick.test.ts` verifying buy → credits change → tick increments age — file: `tests/integration/BuyAndTick.test.ts`
 
 **User Story 2 - Feeding & Survival (P1)**
 
 Independent test criteria: hunger increases per tick; `feedTank` reduces hunger by 30 for all living fish, deducts cost `2 + livingFishCount`, and increases pollution.
 
-- [x] T015 [US2] Implement per-tick hunger increase (species-specific) and starvation health decay when `hunger >= 80` — file: `src/services/FishService.ts`
-- [x] T016 [US2] Implement `feedTank()` action: cost calc, deduct credits, reduce all living fish hunger by 30, set `lastFedAt`, and record `feedingsThisTick` for pollution — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [x] T017 [US2] Add unit test `tests/unit/Feeding.test.ts` for feed cost, hunger reduction and `lastFedAt` update — file: `tests/unit/Feeding.test.ts`
-- [x] T018 [US2] Add integration test `tests/integration/FeedAndSurvive.test.ts` to accelerate ticks and verify feeding prevents death — file: `tests/integration/FeedAndSurvive.test.ts`
+- ✅ T015 [US2] Implement per-tick hunger increase (species-specific) and starvation health decay when `hunger >= 80` — file: `src/services/FishService.ts`
+- ✅ T016 [US2] Implement `feedTank()` action: cost calc, deduct credits, reduce all living fish hunger by 30, set `lastFedAt`, and record `feedingsThisTick` for pollution — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- ✅ T017 [US2] Add unit test `tests/unit/Feeding.test.ts` for feed cost, hunger reduction and `lastFedAt` update — file: `tests/unit/Feeding.test.ts`
+- ✅ T018 [US2] Add integration test `tests/integration/FeedAndSurvive.test.ts` to accelerate ticks and verify feeding prevents death — file: `tests/integration/FeedAndSurvive.test.ts`
 
 **User Story 3 - Water Quality & Maintenance (P1)**
 
 Independent test criteria: pollution formula applied per tick and on feeds; `waterQuality = 100 - pollution`; `cleanTank` and `buyFilter` reduce pollution and affect health decay.
 
-- [x] T019 [US3] Implement pollution accumulation per tick: `pollution += (livingFishCount * 0.1) + (feedingsThisTick * 2)` and clamp — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [x] T020 [US3] Update `waterQuality` calculation (`100 - pollution`, clamp 0-100) and apply health penalty when `waterQuality < 50` — file: `src/store/useGameStore.ts`
-- [x] T021 [US3] Implement `cleanTank()` action (cost 10, `pollution = max(0, pollution - 30)`) — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [x] T022 [US3] Implement `buyFilter()` action (precondition: `size === 'STANDARD'`, cost 50) and per-tick pollution reduction when installed — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [x] T023 [US3] Add unit test `tests/unit/Pollution.test.ts` for pollution accumulation, clean, and filter behavior — file: `tests/unit/Pollution.test.ts`
+- ✅ T019 [US3] Implement pollution accumulation per tick: `pollution += (livingFishCount * 0.1) + (feedingsThisTick * 2)` and clamp — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- ✅ T020 [US3] Update `waterQuality` calculation (`100 - pollution`, clamp 0-100) and apply health penalty when `waterQuality < 50` — file: `src/store/useGameStore.ts`
+- ✅ T021 [US3] Implement `cleanTank()` action (cost 10, `pollution = max(0, pollution - 30)`) — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- ✅ T022 [US3] Implement `buyFilter()` action (precondition: `size === 'STANDARD'`, cost 50) and per-tick pollution reduction when installed — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- ✅ T023 [US3] Add unit test `tests/unit/Pollution.test.ts` for pollution accumulation, clean, and filter behavior — file: `tests/unit/Pollution.test.ts`
 
 **User Story 4 - Tank Progression (P1)**
 
 Independent test criteria: starts with BOWL capacity 1 and 50 credits; when first fish reaches age >= 120s award 50 credits (maturity bonus); `upgradeTank()` costs 75 and sets capacity=10 and unlocks filter.
 
-- [x] T024 [US4] Implement maturity bonus awarding (one-time) when a living fish reaches age >= 120 for BOWL tanks — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [x] T025 [US4] Implement `upgradeTank()` action (cost 75) that changes tank `size` to `STANDARD`, sets `capacity = 10`, and makes filter purchasable — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [x] T026 [US4] Add integration test `tests/integration/Progression.test.ts` verifying maturity bonus and upgrade flow — file: `tests/integration/Progression.test.ts`
+- ✅ T024 [US4] Implement maturity bonus awarding (one-time) when a living fish reaches age >= 120 for BOWL tanks — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- ✅ T025 [US4] Implement `upgradeTank()` action (cost 75) that changes tank `size` to `STANDARD`, sets `capacity = 10`, and makes filter purchasable — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- ✅ T026 [US4] Add integration test `tests/integration/Progression.test.ts` verifying maturity bonus and upgrade flow — file: `tests/integration/Progression.test.ts`
 
 **User Story 5 - Economy & Progression (P2)**
 
 Independent test criteria: selling a fish calculates value using baseValue × ageMultiplier × healthModifier and updates credits; purchases rejected on insufficient funds.
 
-- [x] T027 [US5] Implement `sellFish(fishId)` action using `FishService.calculateFishValue` and update credits — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
-- [x] T028 [US5] Add unit test `tests/unit/SellFish.test.ts` verifying value formula and credit update — file: `tests/unit/SellFish.test.ts`
-- [x] T039 [US5] Create `FishInfoPanel` component: display selected fish stats (age, health, hunger, calculated value) and "Sell Fish" button that calls `sellFish(selectedFishId)` — file: `src/components/FishInfoPanel.tsx`
+- ✅ T027 [US5] Implement `sellFish(fishId)` action using `FishService.calculateFishValue` and update credits — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
+- ✅ T028 [US5] Add unit test `tests/unit/SellFish.test.ts` verifying value formula and credit update — file: `tests/unit/SellFish.test.ts`
+- ✅ T039 [US5] Create `FishInfoPanel` component: display selected fish stats (age, health, hunger, calculated value) and "Sell Fish" button that calls `sellFish(selectedFishId)` — file: `src/components/FishInfoPanel.tsx`
 
-- [x] T035 [FR-012] Implement Developer Mode initialization (parse `?dev=true` & `?tutorial=false`), set starting state (100 credits, STANDARD tank), and add unit/integration tests — files: `src/store/useGameStore.ts`, `tests/unit/DeveloperMode.test.ts`
-- [x] T041 [FR-015] Add life stage helper function: create `getLifeStage(age: number)` utility that returns 'young' | 'mature' | 'old' based on age thresholds (0-119, 120-299, 300+) — file: `src/lib/fishHelpers.ts`
-- [x] T042 [FR-015] Implement life stage visual rendering in `FishSprite`: apply size multiplier (1.0x young, 1.3x mature/old) and color desaturation (0.8x for old fish only) based on fish age — file: `src/game/views/FishSprite.ts`
-- [x] T043 [FR-015] Add unit test `tests/unit/LifeStage.test.ts` verifying age thresholds and visual parameters (size, saturation) for each life stage — file: `tests/unit/LifeStage.test.ts`
-- [x] T045 [FR-016] Create `FishInfoPanel` component showing selected fish stats and actions (Sell/Inspect) — file: `src/components/FishInfoPanel.tsx`
-- [x] T046 [FR-016] Add integration test `tests/integration/FishInspect.test.ts` verifying click → select → panel open → sell flow — file: `tests/integration/FishInspect.test.ts`
+- ✅ T035 [FR-012] Implement Developer Mode initialization (parse `?dev=true` & `?tutorial=false`), set starting state (100 credits, STANDARD tank), and add unit/integration tests — files: `src/store/useGameStore.ts`, `tests/unit/DeveloperMode.test.ts`
+- ✅ T041 [FR-015] Add life stage helper function: create `getLifeStage(age: number)` utility that returns 'young' | 'mature' | 'old' based on age thresholds (0-119, 120-299, 300+) — file: `src/lib/fishHelpers.ts`
+- ✅ T042 [FR-015] Implement life stage visual rendering in `FishSprite`: apply size multiplier (1.0x young, 1.3x mature/old) and color desaturation (0.8x for old fish only) based on fish age — file: `src/game/views/FishSprite.ts`
+- ✅ T043 [FR-015] Add unit test `tests/unit/LifeStage.test.ts` verifying age thresholds and visual parameters (size, saturation) for each life stage — file: `tests/unit/LifeStage.test.ts`
+- ✅ T045 [FR-016] Create `FishInfoPanel` component showing selected fish stats and actions (Sell/Inspect) — file: `src/components/FishInfoPanel.tsx`
+- ✅ T046 [FR-016] Add integration test `tests/integration/FishInspect.test.ts` verifying click → select → panel open → sell flow — file: `tests/integration/FishInspect.test.ts`
 
 Phase 4: Tank Design & Rendering (P2–P3)
 
@@ -91,12 +91,12 @@ Phase 4 has been restructured into safer sub-phases after rollback due to:
 
 Independent test criteria: Tank shape system can handle both circular and rectangular boundaries independently; collision detection works for both shapes; tank creation uses shape factory pattern.
 
-- [x] T037a [P] [NEW] Create tank shape abstraction: implement `ITankShape` interface with `checkBoundary()`, `resolveBoundary()`, `getSpawnBounds()` methods — file: `src/models/types/tankShape.ts`
-- [x] T037b [P] [NEW] Implement `RectangularTankShape` class wrapping existing rectangular collision logic — file: `src/services/physics/shapes/RectangularTankShape.ts`
-- [x] T037c [P] [NEW] Implement `CircularTankShape` class with proper circular collision math — file: `src/services/physics/shapes/CircularTankShape.ts`
-- [x] T037d [P] [NEW] Add comprehensive unit tests for tank shapes: verify boundary detection, collision resolution, spawn bounds for both shapes — file: `tests/unit/TankShapes.test.ts`
-- [x] T037e [P] [NEW] Create tank shape factory: `createTankShape(size: TankSize): ITankShape` function — file: `src/services/physics/TankShapeFactory.ts`
-- [x] T037f [P] [NEW] **E2E UPDATE**: Update tank boundary e2e tests to validate both rectangular and circular collision detection work correctly — file: `tests/e2e/tank-boundaries.spec.ts`
+- ✅ T037a [P] [NEW] Create tank shape abstraction: implement `ITankShape` interface with `checkBoundary()`, `resolveBoundary()`, `getSpawnBounds()` methods — file: `src/models/types/tankShape.ts`
+- ✅ T037b [P] [NEW] Implement `RectangularTankShape` class wrapping existing rectangular collision logic — file: `src/services/physics/shapes/RectangularTankShape.ts`
+- ✅ T037c [P] [NEW] Implement `CircularTankShape` class with proper circular collision math — file: `src/services/physics/shapes/CircularTankShape.ts`
+- ✅ T037d [P] [NEW] Add comprehensive unit tests for tank shapes: verify boundary detection, collision resolution, spawn bounds for both shapes — file: `tests/unit/TankShapes.test.ts`
+- ✅ T037e [P] [NEW] Create tank shape factory: `createTankShape(size: TankSize): ITankShape` function — file: `src/services/physics/TankShapeFactory.ts`
+- ✅ T037f [P] [NEW] **E2E UPDATE**: Update tank boundary e2e tests to validate both rectangular and circular collision detection work correctly — file: `tests/e2e/tank-boundaries.spec.ts`
 
 **Phase 4b: Rendering Engine Safety (Critical for Stability)**
 
@@ -104,11 +104,11 @@ Independent test criteria: Tank shape system can handle both circular and rectan
 
 Independent test criteria: Only one rendering engine exists at a time; engine properly destroys previous instances; no duplicate tank rendering.
 
-- [x] T038a [P] [NEW] Implement rendering engine singleton pattern: prevent multiple instances, proper cleanup on destroy — file: `src/game/RenderingEngineManager.ts`
-- [x] T038b [P] [NEW] Add engine lifecycle debugging: log creation, destruction, tank assignment with unique IDs — file: `src/game/PerformanceMonitor.ts`
-- [x] T038c [P] [NEW] Fix AquariumCanvas effect race conditions: ensure single engine instance per tank, proper cleanup on unmount — file: `src/components/AquariumCanvas.tsx`
-- [x] T038d [P] [NEW] Add integration test for engine lifecycle: verify single instance, proper cleanup, no memory leaks — file: `tests/integration/RenderingEngineLifecycle.test.ts`
-- [x] T038e [P] [NEW] **E2E UPDATE**: Add e2e test for rendering engine singleton behavior and tank switching scenarios — file: `tests/e2e/engine-lifecycle.spec.ts`
+- ✅ T038a [P] [NEW] Implement rendering engine singleton pattern: prevent multiple instances, proper cleanup on destroy — file: `src/game/RenderingEngineManager.ts`
+- ✅ T038b [P] [NEW] Add engine lifecycle debugging: log creation, destruction, tank assignment with unique IDs — file: `src/game/PerformanceMonitor.ts`
+- ✅ T038c [P] [NEW] Fix AquariumCanvas effect race conditions: ensure single engine instance per tank, proper cleanup on unmount — file: `src/components/AquariumCanvas.tsx`
+- ✅ T038d [P] [NEW] Add integration test for engine lifecycle: verify single instance, proper cleanup, no memory leaks — file: `tests/integration/RenderingEngineLifecycle.test.ts`
+- ✅ T038e [P] [NEW] **E2E UPDATE**: Add e2e test for rendering engine singleton behavior and tank switching scenarios — file: `tests/e2e/engine-lifecycle.spec.ts`
 
 **Phase 4c: Safe Tank Shape Integration (Modified from Original)**
 
@@ -116,12 +116,12 @@ Independent test criteria: Only one rendering engine exists at a time; engine pr
 
 Independent test criteria: Existing rectangular tanks continue working; new circular tanks use circular collision; shape selection based on tank size.
 
-- [x] T039a [P] [MODIFIED] Update CollisionService to use tank shape abstraction: replace hardcoded rectangular logic with `tank.shape.resolveBoundary(fish)` — file: `src/services/physics/CollisionService.ts`
-- [x] T039b [P] [NEW] Add tank shape to ITank interface: `shape: ITankShape` property, update tank creation to assign shape — file: `src/models/types/index.ts`
-- [x] T039c [P] [MODIFIED] Update Tank model to use shape-based collision: `resolveBoundaryCollision(fish, tank.shape)` instead of `resolveBoundaryCollision(fish, tank)` — file: `src/models/Tank.ts`
-- [x] T039d [P] [NEW] Add feature flag for shape system: `USE_TANK_SHAPES` flag for safe rollback — file: `src/lib/constants.ts`
-- [x] T039e [P] [NEW] Add integration test for shape-collision integration: verify both rectangular and circular collision work — file: `tests/integration/ShapeCollisionIntegration.test.ts`
-- [x] T039f [P] [NEW] **E2E UPDATE**: Extend tank boundary e2e tests to cover feature flag rollback scenarios and shape integration — file: `tests/e2e/tank-boundaries.spec.ts`
+- ✅ T039a [P] [MODIFIED] Update CollisionService to use tank shape abstraction: replace hardcoded rectangular logic with `tank.shape.resolveBoundary(fish)` — file: `src/services/physics/CollisionService.ts`
+- ✅ T039b [P] [NEW] Add tank shape to ITank interface: `shape: ITankShape` property, update tank creation to assign shape — file: `src/models/types/index.ts`
+- ✅ T039c [P] [MODIFIED] Update Tank model to use shape-based collision: `resolveBoundaryCollision(fish, tank.shape)` instead of `resolveBoundaryCollision(fish, tank)` — file: `src/models/Tank.ts`
+- ✅ T039d [P] [NEW] Add feature flag for shape system: `USE_TANK_SHAPES` flag for safe rollback — file: `src/lib/constants.ts`
+- ✅ T039e [P] [NEW] Add integration test for shape-collision integration: verify both rectangular and circular collision work — file: `tests/integration/ShapeCollisionIntegration.test.ts`
+- ✅ T039f [P] [NEW] **E2E UPDATE**: Extend tank boundary e2e tests to cover feature flag rollback scenarios and shape integration — file: `tests/e2e/tank-boundaries.spec.ts`
 
 **Phase 4d: Debugging & Rollback Safety (Safety Net)**
 
@@ -129,12 +129,12 @@ Independent test criteria: Existing rectangular tanks continue working; new circ
 
 Independent test criteria: Debug tools can identify dual tanks, collision issues, rendering problems; feature flags allow safe rollback.
 
-- [x] T040a [P] [NEW] Create TankDebugger utility: log tank state, collision checks, rendering engine status — file: `src/lib/debug/TankDebugger.ts`
-- [x] T040b [P] [NEW] Add feature flags for Phase 4 features: `ENABLE_CIRCULAR_TANKS`, `USE_SHAPE_COLLISION`, `ENABLE_MULTI_TANK_DISPLAY`, `USE_TANK_SHAPES` — file: `src/lib/constants.ts`
+- ✅ T040a [P] [NEW] Create TankDebugger utility: log tank state, collision checks, rendering engine status — file: `src/lib/debug/TankDebugger.ts`
+- ✅ T040b [P] [NEW] Add feature flags for Phase 4 features: `ENABLE_CIRCULAR_TANKS`, `USE_SHAPE_COLLISION`, `ENABLE_MULTI_TANK_DISPLAY`, `USE_TANK_SHAPES` — file: `src/lib/constants.ts`
       **⚠️ CRITICAL ENABLEMENT ORDER:** 1️⃣ `USE_TANK_SHAPES` → 2️⃣ `USE_SHAPE_COLLISION` → 3️⃣ `ENABLE_CIRCULAR_TANKS` → 4️⃣ `ENABLE_MULTI_TANK_DISPLAY`
-- [x] T040c [P] [NEW] Create tank state validator: check for duplicate tanks, inconsistent tank arrays, missing required properties — file: `src/lib/validation/TankValidator.ts`
-- [x] T040d [P] [NEW] Add debug UI overlay: show tank count, engine instance count, collision statistics (dev mode only) — file: `src/components/debug/DebugOverlay.tsx`
-- [x] T040e [P] [NEW] **E2E UPDATE**: Add e2e tests for debug infrastructure and tank state validation in dev mode — file: `tests/e2e/debug-tools.spec.ts`
+- ✅ T040c [P] [NEW] Create tank state validator: check for duplicate tanks, inconsistent tank arrays, missing required properties — file: `src/lib/validation/TankValidator.ts`
+- ✅ T040d [P] [NEW] Add debug UI overlay: show tank count, engine instance count, collision statistics (dev mode only) — file: `src/components/debug/DebugOverlay.tsx`
+- ✅ T040e [P] [NEW] **E2E UPDATE**: Add e2e tests for debug infrastructure and tank state validation in dev mode — file: `tests/e2e/debug-tools.spec.ts`
 
 **Phase 4e: Floor Physics (From Original FR-017)**
 
@@ -144,7 +144,7 @@ Independent test criteria: Floor renders visible/invisible per tank type; fish s
 
 - [ ] T041a [FR-017] Implement floor entity as `IFloor` interface in types and add to tank model: defines floor type (visible/invisible), dimensions (30px/40px/1px), collision restitution (0.2) — file: `src/models/types/index.ts`
 - [ ] T041b [FR-017] Implement floor rendering in `TankContainer`: BOWL invisible 1px floor, STANDARD/BIG visible pebble/sand texture (procedurally generated, no assets) with color specs — files: `src/game/views/TankContainer.ts`, `src/lib/constants.ts`
-- [x] T041c [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
+- ✅ T041c [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
 - [ ] T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
 
 **Phase 4f: Procedural Tank Rendering (From Original FR-018)**
@@ -153,12 +153,12 @@ Independent test criteria: Floor renders visible/invisible per tank type; fish s
 
 Independent test criteria: BOWL renders as circle, STANDARD as square, BIG as rectangle; rendering scales without affecting physics; proper glass effect.
 
-- [x] T042a [FR-018] Add tank dimension constants with shape info: `TANK_BOWL_SIZE: 300`, `TANK_STANDARD_SIZE: 500`, `TANK_BIG_WIDTH: 800`, `TANK_BIG_HEIGHT: 400` — file: `src/lib/constants.ts`
-- [x] T042b [FR-018] Implement shape-aware tank rendering in TankContainer: use tank.shape.type to determine render method (drawCircle vs drawRect) — file: `src/game/views/TankContainer.ts`
-- [x] T042c [P] [FR-018] Implement responsive scaling: scale tank display (300–600px per tank desktop, full-width mobile) without affecting collision bounds or physics — file: `src/game/views/TankContainer.ts`
-- [x] T042d [FR-018] Add unit test for tank visuals: verify dimensions and shape types (circular, square, rectangle) render correctly — file: `tests/unit/TankVisuals.test.ts`
-- [x] T042e [P] [NEW] Add integration test for shape-visual consistency: verify rendered shape matches collision boundaries — file: `tests/integration/ShapeVisualConsistency.test.ts`
-- [x] T042f [P] [NEW] **E2E UPDATE**: Add e2e tests for procedural tank rendering across different tank types and responsive scaling — file: `tests/e2e/tank-visuals.spec.ts`
+- ✅ T042a [FR-018] Add tank dimension constants with shape info: `TANK_BOWL_SIZE: 300`, `TANK_STANDARD_SIZE: 500`, `TANK_BIG_WIDTH: 800`, `TANK_BIG_HEIGHT: 400` — file: `src/lib/constants.ts`
+- ✅ T042b [FR-018] Implement shape-aware tank rendering in TankContainer: use tank.shape.type to determine render method (drawCircle vs drawRect) — file: `src/game/views/TankContainer.ts`
+- ✅ T042c [P] [FR-018] Implement responsive scaling: scale tank display (300–600px per tank desktop, full-width mobile) without affecting collision bounds or physics — file: `src/game/views/TankContainer.ts`
+- ✅ T042d [FR-018] Add unit test for tank visuals: verify dimensions and shape types (circular, square, rectangle) render correctly — file: `tests/unit/TankVisuals.test.ts`
+- ✅ T042e [P] [NEW] Add integration test for shape-visual consistency: verify rendered shape matches collision boundaries — file: `tests/integration/ShapeVisualConsistency.test.ts`
+- ✅ T042f [P] [NEW] **E2E UPDATE**: Add e2e tests for procedural tank rendering across different tank types and responsive scaling — file: `tests/e2e/tank-visuals.spec.ts`
 
 **Phase 4g: Multi-Tank Display (From Original FR-019)**
 
@@ -178,10 +178,10 @@ Independent test criteria: Desktop shows all tanks in grid; tablets/mobile show 
 
 Independent test criteria: Fish-to-fish collision disabled (visual overlap allowed); dev mode starts with 1000 credits and STANDARD tank; tutorial disabled in dev mode.
 
-- [x] T044a [P] [FR-016] Remove fish-to-fish collision logic: update `CollisionService` to skip fish-fish collision checks, allowing visual overlap for 3D depth illusion — files: `src/services/physics/CollisionService.ts`, `src/models/types/index.ts`
-- [x] T044b [P] [FR-016] Add unit test: verify fish-fish collision is disabled while boundary collisions remain — file: `tests/unit/FishCollision.test.ts`
-- [x] T044c [FR-012-Update] Update Developer Mode constants: change starting credits from 100 to 1000 in `src/lib/constants.ts` and verify `DeveloperMode.test.ts` — files: `src/lib/constants.ts`, `tests/unit/DeveloperMode.test.ts`
-- [x] T044d [P] [FR-012-Update] Update tank progression code: verify BOWL capacity is 2 (was 1), STANDARD capacity is 15 (was 10), BIG is 30 (was 20); costs 75 (STANDARD) and 150 (BIG) — files: `src/store/useGameStore.ts`, `src/lib/constants.ts`, `tests/integration/Progression.test.ts`
+- ✅ T044a [P] [FR-016] Remove fish-to-fish collision logic: update `CollisionService` to skip fish-fish collision checks, allowing visual overlap for 3D depth illusion — files: `src/services/physics/CollisionService.ts`, `src/models/types/index.ts`
+- ✅ T044b [P] [FR-016] Add unit test: verify fish-fish collision is disabled while boundary collisions remain — file: `tests/unit/FishCollision.test.ts`
+- ✅ T044c [FR-012-Update] Update Developer Mode constants: change starting credits from 100 to 1000 in `src/lib/constants.ts` and verify `DeveloperMode.test.ts` — files: `src/lib/constants.ts`, `tests/unit/DeveloperMode.test.ts`
+- ✅ T044d [P] [FR-012-Update] Update tank progression code: verify BOWL capacity is 2 (was 1), STANDARD capacity is 15 (was 10), BIG is 30 (was 20); costs 75 (STANDARD) and 150 (BIG) — files: `src/store/useGameStore.ts`, `src/lib/constants.ts`, `tests/integration/Progression.test.ts`
 
 Phase 5: Enhanced UX & Polish (P2–P3)
 
@@ -204,12 +204,12 @@ Independent test criteria: water background renders with opacity based on pollut
 
 Final Phase: Polish & Cross-Cutting Concerns
 
-- [x] T029 Add tutorial popup event wiring and storage (`tutorialEvents[]`, `showTutorial(eventId)` action) — file: `src/store/useGameStore.ts`
-- [x] T030 Add UI selectors for core data (`selectCredits`, `selectTankFish`, `selectStoreInventory`, `selectSelectedFish`) — file: `src/store/useGameStore.ts`
-- [x] T031 [P] Create minimal HUD and store UI hooks/components: `src/components/HUD.tsx`, `src/components/StoreMenu.tsx` (UI may be lightweight, tests focus on store/actions) — files: `src/components/HUD.tsx`, `src/components/StoreMenu.tsx`
-- [x] T032 [infra] Add E2E Playwright test `tests/e2e/core-mechanics.spec.ts` for buy → feed → mature → sell flow — file: `tests/e2e/core-mechanics.spec.ts`
-- [x] T033 [infra] Run lint and tests and fix issues: `pnpm lint` and `pnpm test` — commands: `pnpm lint`, `pnpm test`
-- [x] T034 [infra] Add performance profiling notes and harness placeholder (`tests/perf/README.md`, `tests/perf/harness.ts`) — files: `tests/perf/README.md`, `tests/perf/harness.ts`
+- ✅ T029 Add tutorial popup event wiring and storage (`tutorialEvents[]`, `showTutorial(eventId)` action) — file: `src/store/useGameStore.ts`
+- ✅ T030 Add UI selectors for core data (`selectCredits`, `selectTankFish`, `selectStoreInventory`, `selectSelectedFish`) — file: `src/store/useGameStore.ts`
+- ✅ T031 [P] Create minimal HUD and store UI hooks/components: `src/components/HUD.tsx`, `src/components/StoreMenu.tsx` (UI may be lightweight, tests focus on store/actions) — files: `src/components/HUD.tsx`, `src/components/StoreMenu.tsx`
+- ✅ T032 [infra] Add E2E Playwright test `tests/e2e/core-mechanics.spec.ts` for buy → feed → mature → sell flow — file: `tests/e2e/core-mechanics.spec.ts`
+- ✅ T033 [infra] Run lint and tests and fix issues: `pnpm lint` and `pnpm test` — commands: `pnpm lint`, `pnpm test`
+- ✅ T034 [infra] Add performance profiling notes and harness placeholder (`tests/perf/README.md`, `tests/perf/harness.ts`) — files: `tests/perf/README.md`, `tests/perf/harness.ts`
 
 **QA & Code Quality Validation**
 
@@ -246,7 +246,7 @@ Output summary (updated November 22, 2025)
 
 - Path to generated tasks file: `specs/001-core-mechanics/tasks.md`
 - Total task count: 69 (T001–T069, including recent hotfixes, QA, and bug fixes)
-- **Project Status**: ✅ **MILESTONE 2 COMPLETE** - Production Ready (pending QA validation)
+- **Project Status**: ✅ **Core Mechanics MVP COMPLETE** (Phases 1-3) | 🔄 **Tank Rendering in Testing** (Phase 4a-4f: implemented, awaiting full test/acceptance) | 📋 **UI Polish & Multi-Tank Display** (Phase 4g-5: not started)
 
 **Phase Completion Status**:
 
@@ -301,14 +301,14 @@ The project has achieved a mature, production-ready state with comprehensive tes
 
 **Solution**: Implemented comprehensive collision physics improvements:
 
-- [x] T060 [HOTFIX] Enhanced boundary detection with 2px safety buffer (`COLLISION_BOUNDARY_BUFFER`)
-- [x] T061 [HOTFIX] Collision velocity forcing to ensure fish bounce away from walls
-- [x] T062 [HOTFIX] Debug logging system for collision tracking in test environment
-- [x] T063 [HOTFIX] Constants-based architecture - E2E tests use same values as implementation
-- [x] T064 [HOTFIX] E2E script improvements: separate HTML report generation (`test:e2e` vs `test:e2e:html`)
-- [x] T065 [DEBT] TypeScript: Zero `any` types, full strict mode compliance
-- [x] T066 [DEBT] Linting: Zero warnings with enhanced ESLint rules
-- [x] T067 [DEBT] Constants: Single source of truth for all physics/collision values
+- ✅ T060 [HOTFIX] Enhanced boundary detection with 2px safety buffer (`COLLISION_BOUNDARY_BUFFER`)
+- ✅ T061 [HOTFIX] Collision velocity forcing to ensure fish bounce away from walls
+- ✅ T062 [HOTFIX] Debug logging system for collision tracking in test environment
+- ✅ T063 [HOTFIX] Constants-based architecture - E2E tests use same values as implementation
+- ✅ T064 [HOTFIX] E2E script improvements: separate HTML report generation (`test:e2e` vs `test:e2e:html`)
+- ✅ T065 [DEBT] TypeScript: Zero `any` types, full strict mode compliance
+- ✅ T066 [DEBT] Linting: Zero warnings with enhanced ESLint rules
+- ✅ T067 [DEBT] Constants: Single source of truth for all physics/collision values
 
 **Results**:
 

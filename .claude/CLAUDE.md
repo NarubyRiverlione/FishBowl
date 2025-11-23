@@ -1,220 +1,118 @@
-# FishBowl - Claude Code Instructions
+# FishBowl - Claude Code Quick Reference
 
 You are an expert Game Developer and Software Architect working on "FishBowl", a web-based fish breeding simulation game.
 
-## 1. Project Context & Tech Stack
+## Tech Stack
 
-- **Domain**: Fish breeding simulation (genetics, water quality, economy)
-- **Stack**:
-  - **Runtime**: React + Vite
-  - **Language**: TypeScript (Strict Mode)
-  - **Game Engine**: Pixi.js (for the aquarium view)
-  - **State Management**: Zustand
-  - **Testing**: Vitest
-  - **Package Manager**: pnpm
-- **Governance**:
-  - `.specify/memory/constitution.md`: **Primary Source of Truth** - Defines architecture, workflow, and quality gates
-  - `PRD.md`: Functional requirements
+- **Runtime**: React 19 + Vite 7
+- **Language**: TypeScript 5.9 (Strict Mode)
+- **Game Engine**: Pixi.js 8
+- **State Management**: Zustand
+- **Testing**: Vitest (unit/integration) + Playwright (E2E)
+- **Package Manager**: pnpm
 
-## 2. Core Principles (Non-Negotiable)
+## Current Status
 
-- **Feature-Centric Architecture**: Implement features as cohesive, independently testable modules. Follow: Spec → Plan → Design → Impl
-- **Test-First (TDD)**: Write failing tests _before_ implementation. Target 90% coverage for critical paths (genetics, economy)
-- **Type Safety**: No `any`. Define explicit interfaces in `src/types` before coding logic
-- **Separation of Concerns**:
-  - **Logic**: Pure TypeScript models/services (no UI code)
-  - **View**: Pixi.js components (observers only)
-  - **UI**: React components (HUD, menus)
-- **Continuous Quality**: The linter (`pnpm lint`) MUST be executed successfully after the completion of every implementation phase. Zero warnings allowed
+✅ **Phases 1-3 COMPLETE** | 🔄 **Phase 4a-4f IN TESTING** | 📋 **Phase 4g-5 PLANNED**
 
-## 3. Architecture & Patterns
+See [IMPLEMENTATION_STATUS.md](../docs/IMPLEMENTATION_STATUS.md) for detailed progress.
 
-### Directory Structure
+> **📌 Milestone Numbering**: Milestone 1 = Spec 002 (POC), Milestone 2 = Spec 001 (Core Mechanics)
 
-Strictly follow the mandated structure:
+## Core Principles (Non-Negotiable)
 
-```
-src/
-├── types/       # Shared interfaces (IFish, ITank, IEconomy)
-├── models/      # Domain entities (Fish.ts, Tank.ts) - Pure logic
-├── services/    # Business logic (BreedingService, WaterQualityService)
-├── store/       # Zustand stores (useGameStore.ts)
-├── components/  # React UI components (HUD, Menus)
-├── game/        # Pixi.js rendering logic (FishSprite, TankView)
-└── lib/         # Utilities (Math, Random generators)
+- **Test-First (TDD)**: Write failing tests before implementation, target 90% coverage
+- **Type Safety**: No `any` types, strict TypeScript mode
+- **Separation of Concerns**: Logic (models/services) → State (Zustand) → View (Pixi.js) → UI (React)
+- **Zero Linting Warnings**: `pnpm lint` must pass after every phase
+- **Feature-Centric**: Implement features as cohesive, independently testable modules
+
+See [constitution.md](.specify/memory/constitution.md) for complete principles.
+
+## Quick Commands
+
+```bash
+pnpm dev              # Start dev server (http://localhost:5173)
+pnpm test             # Run unit & integration tests
+pnpm test --coverage  # Run tests with coverage
+pnpm test:e2e         # Run E2E tests
+pnpm lint             # Check linting (ESLint + TypeScript)
+pnpm lint --fix       # Auto-fix linting issues
+pnpm format           # Format code (Prettier)
+pnpm build            # Build for production
 ```
 
-### State Management (Zustand)
+**Developer Mode**: Add `?dev=true` to URL for 1000 credits, STANDARD tank, no tutorial.
 
-- **Global State**: Use Zustand for the game loop state
-- **Actions**: Define actions in the store or delegate to Services. Keep components "dumb"
-- **Selectors**: Use specific selectors to prevent unnecessary React re-renders
+## Key Files & Architecture
 
-### Game Loop
+| Layer | Purpose | Location |
+|-------|---------|----------|
+| **Models** | Pure domain logic (Fish, Tank) | `src/models/` |
+| **Services** | Business logic (Physics, Economy) | `src/services/` |
+| **Store** | Zustand state management | `src/store/slices/` |
+| **Game** | Pixi.js rendering | `src/game/` |
+| **Components** | React UI (HUD, menus) | `src/components/` |
+| **Types** | TypeScript interfaces | `src/models/types/` |
+| **Tests** | Unit & integration tests | `tests/unit/`, `tests/integration/` |
 
-- **Tick System**: Simulation runs on a "tick" (delta time), independent of frame rate
-- **Interpolation**: Pixi.js renders the state by interpolating between ticks for smoothness
+See [README.md](README.md) for full project structure and architecture overview.
 
-## 4. Development Workflows
-
-### Running the Project
-
-- **Start Dev Server**: `pnpm dev`
-- **Run Tests**: `pnpm test` (Vitest)
-- **Linting**: `pnpm lint` (ESLint Strict)
-- **Formatting**: `pnpm format` (Prettier)
-
-### Adding a New Feature (Workflow)
-
-1. **Spec**: Define requirements in `PRD.md` or a feature spec
-2. **Type**: Define interfaces in `src/types/`
-3. **Test**: Write a failing test in `tests/` (or co-located)
-4. **Model**: Implement domain logic in `src/models/`
-5. **Store**: Update Zustand store if global state is needed
-6. **View**: Implement visual representation in `src/game/` or `src/components/`
-7. **Verify**: Run `pnpm lint` and `pnpm test` to ensure quality gates are passed
-
-## 5. Code Quality Standards
-
-### TypeScript
-
-- **Strict Mode**: All strict options enabled
-- **No `any`**: Use proper types or `unknown` with type guards
-- **Explicit Return Types**: Always specify function return types
-- **Interface First**: Define interfaces in `src/types/` before implementation
-
-### Testing
-
-- **Test-Driven Development**: Write tests before implementation
-- **Coverage Target**: 90% for critical paths (genetics, economy, water quality)
-- **Test Organization**:
-  - Unit tests: `tests/unit/`
-  - Integration tests: `tests/integration/`
-  - Use descriptive test names that explain the behavior
-
-### Linting
-
-- **Zero Warnings**: All code must pass `pnpm lint` with no warnings
-- **ESLint**: Configured with TypeScript-aware strict rules
-- **Pre-commit**: Ensure lint passes before committing
-
-## 6. Architecture Patterns
-
-### Models (Pure Logic)
-
-- No framework dependencies (React, Pixi.js)
-- Pure TypeScript classes with business logic
-- Testable in isolation
-- Example: `Fish.ts`, `Tank.ts`
-
-### Services (Business Logic)
-
-- Stateless operations
-- Reusable across the application
-- Example: `BreedingService`, `WaterQualityService`, `PhysicsService`
-
-### Views (Pixi.js)
-
-- Observer pattern: React to model changes
-- No business logic
-- Example: `FishSprite`, `TankView`, `TankContainer`
-
-### Components (React UI)
-
-- Presentational components
-- No business logic
-- Connected to Zustand store via selectors
-- Example: HUD, menus, control panels
-
-## 7. Current Project Status
-
-### Implemented Features
-
-- Core game loop with tick-based simulation
-- Tank model with geometry and physics
-- Fish model with lifecycle, movement, and genetics
-- Collision detection and boundary handling
-- Water quality and pollution system
-- Basic economy (credits, buying fish, feeding)
-- Rendering engine with Pixi.js integration
-- Developer mode for testing
-
-### Key Files
-
-- **State**: `src/store/useGameStore.ts`
-- **Models**: `src/models/Fish.ts`, `src/models/Tank.ts`
-- **Types**: `src/models/types/` (fish.ts, tank.ts, tankShape.ts)
-- **Services**: `src/services/physics/` (PhysicsService, CollisionService)
-- **Game Engine**: `src/game/engine/RenderingEngine.ts`
-- **Views**: `src/game/views/TankContainer.ts`, `src/game/views/FishSprite.ts`
-
-## 8. Important Notes for Claude Code
+## Important Implementation Notes
 
 ### Store Architecture
-
-The project uses a single-source-of-truth pattern with Zustand:
-- The `RenderingEngine` syncs with the store, not the other way around
-- Tank and Fish models are created from store data
-- Store state includes geometry information (e.g., `tank.geometry.width`, `fish.geometry.position`)
-
-### Testing Strategy
-
-When refactoring models:
-- Always check if tests need updates due to architectural changes
-- Reset store state in tests to avoid cross-test contamination
-- Example: `useGameStore.setState({ tank: null, tanks: [] })` in `beforeEach()`
+- `RenderingEngine` syncs with store (not vice versa)
+- Single source of truth pattern with Zustand
+- Store state includes geometry (position, velocity, dimensions)
 
 ### Geometry Pattern
+- Fish: `geometry: IFishGeometry` (position, velocity, radius)
+- Tank: `geometry: ITankGeometry` (width, height, centerX, centerY)
+- Legacy getters/setters for backward compatibility (e.g., `fish.x`, `fish.y`)
 
-Fish and Tank use a composition pattern for geometry:
-- Fish has `geometry: IFishGeometry` with `position`, `velocity`, `radius`
-- Tank has `geometry: ITankGeometry` with `width`, `height`, `centerX`, `centerY`
-- Legacy properties (e.g., `fish.x`, `fish.y`) are getters/setters for backward compatibility
+### Testing Strategy
+- Reset store state in tests: `useGameStore.setState({ tank: null, tanks: [] })`
+- Write tests before implementation
+- Keep tests isolated and focused
 
 ### Phase-Based Development
+- Each phase on separate git branch
+- After each phase: run tests → run linter → update docs
+- Use `loc-audit` skill to verify code quality
 
-The project follows a phased approach:
-- Each phase should be completed on a separate git branch
-- After each phase: run tests, run linter, update docs
-- Use the `loc-audit` skill to verify code quality after implementation
+## Common Tasks
 
-## 9. Common Tasks
-
-### Running Tests for Specific Files
-
+**Run specific tests**:
 ```bash
-pnpm test tests/unit/Tank.test.ts
-pnpm test tests/integration/RenderingEngine.test.ts
+pnpm test tests/unit/Fish.test.ts
+pnpm test tests/integration/Breeding.test.ts
 ```
 
-### Fixing Linting Issues
-
-```bash
-pnpm lint          # Check for issues
-pnpm lint --fix    # Auto-fix where possible
-```
-
-### Adding a New Fish Species
-
+**Add new fish species**:
 1. Update `FishSpecies` enum in `src/models/types/fish.ts`
-2. Add species-specific constants in `src/lib/constants.ts`
+2. Add constants in `src/lib/constants.ts`
 3. Update `FishController` spawn logic
-4. Add tests for the new species
-5. Run `pnpm lint` and `pnpm test`
+4. Add tests
+5. Run `pnpm lint && pnpm test`
 
-### Refactoring Models
+**Refactor models**: Update interfaces → implementation → tests → store slices → RenderingEngine sync → full test suite
 
-When refactoring core models (Fish, Tank):
-1. Update the interfaces in `src/models/types/`
-2. Update the model implementation
-3. Check all tests that use the model
-4. Update store slices if geometry/properties changed
-5. Verify `RenderingEngine` sync logic
-6. Run full test suite
+## Documentation
 
-## 10. References
+| Document | Purpose |
+|----------|---------|
+| [README.md](README.md) | Project overview, tech stack, architecture |
+| [IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md) | Progress tracking, milestone status, code quality analysis |
+| [constitution.md](.specify/memory/constitution.md) | Project governance, principles, standards |
+| [QUICKSTART.md](QUICKSTART.md) | Setup and development guide |
+| [tasks.md](specs/001-core-mechanics/tasks.md) | Milestone 2 implementation tasks |
+| [PRD.md](docs/PRD_Eng.md) | Product requirements (detailed features) |
+| [PHYSICS.md](docs/PHYSICS.md) | Physics engine implementation details |
+| [TEST_ORGANIZATION_GUIDE.md](docs/TEST_ORGANIZATION_GUIDE.md) | Testing patterns and organization |
+| [ARCHITECTURE_CONCERNS.md](ARCHITECTURE_CONCERNS.md) | Known architectural issues and refactoring notes |
 
-- **Constitution**: `.specify/memory/constitution.md`
-- **PRD**: `PRD.md`
-- **Architecture Decisions**: Check git commit history for architectural changes
-- **Test Examples**: `tests/unit/` and `tests/integration/` for patterns
+## References
+
+- **Primary Source of Truth**: [constitution.md](.specify/memory/constitution.md)
+- **Specifications**: [specs/001-core-mechanics/](specs/001-core-mechanics/), [specs/002-visual-prototype/](specs/002-visual-prototype/)
+- **Git History**: Check commits for architectural decisions and refactoring context

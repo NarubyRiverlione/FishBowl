@@ -34,12 +34,19 @@ test.describe('Tank Shape Visual Rendering', () => {
       const gameStore = window.__GAME_STORE_DEBUG__ || {}
       const tank = gameStore.tank || {}
 
+      // Map tank.size to shape type
+      const shapeTypeMap: Record<string, string> = {
+        BOWL: 'circular',
+        STANDARD: 'rectangular',
+        BIG: 'rectangular',
+      }
+
       return {
         tankSize: tank.size,
-        tankShape: tank.shape?.type,
-        tankWidth: tank.width,
-        tankHeight: tank.height,
-        hasShape: !!tank.shape,
+        tankShape: shapeTypeMap[tank.size] || null,
+        tankWidth: tank.geometry?.width || tank.width,
+        tankHeight: tank.geometry?.height || tank.height,
+        hasShape: !!tank.size,
         canvasWidth: document.querySelector('canvas')?.width || 0,
         canvasHeight: document.querySelector('canvas')?.height || 0,
       }
@@ -68,12 +75,19 @@ test.describe('Tank Shape Visual Rendering', () => {
       const gameStore = window.__GAME_STORE_DEBUG__ || {}
       const tank = gameStore.tank || {}
 
+      // Map tank.size to shape type
+      const shapeTypeMap: Record<string, string> = {
+        BOWL: 'circular',
+        STANDARD: 'rectangular',
+        BIG: 'rectangular',
+      }
+
       return {
         tankSize: tank.size,
-        tankShape: tank.shape?.type,
-        tankWidth: tank.width,
-        tankHeight: tank.height,
-        hasShape: !!tank.shape,
+        tankShape: shapeTypeMap[tank.size] || null,
+        tankWidth: tank.geometry?.width || tank.width,
+        tankHeight: tank.geometry?.height || tank.height,
+        hasShape: !!tank.size,
       }
     })
 

@@ -10,11 +10,17 @@
 
 FishBowl is a web-based fish breeding simulation game. This document tracks the implementation progress across planned features.
 
-## Current Status: ✅ Milestone 2 (Core Mechanics) - MVP Complete
+## Current Status: ✅ Phases 1-3 COMPLETE | 🔄 Phase 4a-4f IN TESTING | 📋 Phase 4g-5 PLANNED
 
-### 🎯 **Achievement**: Complete MVP Ready for Production
+> **📌 Note on Milestone Numbering**: Milestone numbering reflects execution order (POC first), not spec creation order:
+> - **Milestone 1** = Spec 002 (Visual Prototype - built as POC to validate approach)
+> - **Milestone 2** = Spec 001 (Core Mechanics - initial specification, implemented after POC validation)
 
-**All core game mechanics implemented and tested**:
+### 🎯 **Achievement**: Core Mechanics MVP Ready for Production (Phases 1-3 Complete)
+
+**Core game mechanics implemented and tested. Phase 4 rendering infrastructure coded, awaiting full validation. Phase 4g and Phase 5 not yet started.**
+
+**Phases 1-3 (Complete)**:
 
 - 127 tests passing (35 unit + 10 E2E)
 - 89% statement coverage with comprehensive collision physics testing

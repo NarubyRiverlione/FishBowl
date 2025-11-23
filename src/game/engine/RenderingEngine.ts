@@ -100,9 +100,13 @@ export class RenderingEngine {
     }
 
     try {
+      // Initialize canvas to fill container
+      const containerWidth = element.clientWidth || this.tank.geometry.width
+      const containerHeight = element.clientHeight || this.tank.geometry.height
+
       await this.app.init({
-        width: this.tank.geometry.width,
-        height: this.tank.geometry.height,
+        width: containerWidth,
+        height: containerHeight,
         backgroundColor: 0x333333,
         antialias: true,
       })
@@ -122,6 +126,15 @@ export class RenderingEngine {
       if (!this.app.stage) {
         throw new Error('Pixi.js stage not available after initialization')
       }
+
+      // Center tank view on canvas
+      const canvasWidth = this.app.canvas.width
+      const canvasHeight = this.app.canvas.height
+      const tankWidth = this.tank.geometry.width
+      const tankHeight = this.tank.geometry.height
+
+      this.tankView.x = (canvasWidth - tankWidth) / 2
+      this.tankView.y = (canvasHeight - tankHeight) / 2
 
       // Add tank view to stage
       this.app.stage.addChild(this.tankView)
