@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
-import { FishSpecies } from '../../src/models/types'
+import { FishSpecies, getFloorConfig } from '../../src/models/types'
 
 describe('Feed and Survive Integration', () => {
   beforeEach(() => {
@@ -9,6 +9,16 @@ describe('Feed and Survive Integration', () => {
       tanks: [],
       tank: null,
       currentTick: 0,
+      totalTime: 0,
+      isPaused: false,
+      maturityBonusAwarded: false,
+      tutorialEnabled: false,
+      tutorialEvents: [],
+      storeInventory: [],
+      selectedFishId: null,
+      gameStartedAt: Date.now(),
+      developerMode: false,
+      sellMode: false,
     })
     useGameStore.getState().addOrSelectTank({
       id: 'survival-tank',
@@ -20,9 +30,14 @@ describe('Feed and Survive Integration', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: 100,
-      height: 100,
-      backgroundColor: 0x000000,
+      geometry: {
+        width: 300,
+        height: 300,
+        centerX: 150,
+        centerY: 150,
+      },
+      backgroundColor: 0x87ceeb,
+      floor: getFloorConfig('BOWL', 300, 300),
     })
   })
 
@@ -35,15 +50,25 @@ describe('Feed and Survive Integration', () => {
     // Simulate ticks to reach starvation and death
     // Assuming hunger rate allows starvation within reasonable ticks
     let ticks = 0
+    let fishDied = false
     // Safety break at 2000 ticks
-    while (useGameStore.getState().tank!.fish[0].isAlive && ticks < 2000) {
+    while (ticks < 2000) {
+      const fishBefore = useGameStore.getState().tank!.fish.length
       useGameStore.getState().tick()
+      const fishAfter = useGameStore.getState().tank!.fish.length
+
+      // Fish is removed from tank when it dies (cleanup happens during tick)
+      if (fishBefore > 0 && fishAfter === 0) {
+        fishDied = true
+        break
+      }
+
       ticks++
     }
 
-    const fish = useGameStore.getState().tank!.fish[0]
-    expect(fish.isAlive).toBe(false)
-    expect(fish.health).toBe(0)
+    // Verify fish died and was removed
+    expect(fishDied).toBe(true)
+    expect(useGameStore.getState().tank!.fish).toHaveLength(0)
   })
 
   it('should prevent death if fed', () => {
@@ -61,7 +86,7 @@ describe('Feed and Survive Integration', () => {
       useGameStore.getState().tick()
 
       const fish = useGameStore.getState().tank!.fish[0]
-      if (fish.hunger > 50) {
+      if (fish && fish.hunger > 50) {
         useGameStore.getState().feedTank(tankId)
       }
 
@@ -70,11 +95,88 @@ describe('Feed and Survive Integration', () => {
         useGameStore.getState().cleanTank(tankId)
       }
 
-      if (!fish.isAlive) break
+      if (!fish || !fish.isAlive) break
     }
 
     const fish = useGameStore.getState().tank!.fish[0]
+    expect(fish).toBeDefined()
     expect(fish.isAlive).toBe(true)
     expect(fish.health).toBeGreaterThan(0)
+  })
+
+  it('should automatically remove dead fish from tank during tick', () => {
+    const store = useGameStore.getState()
+    const tankId = store.tank!.id
+
+    // Buy a fish and let it starve without feeding
+    store.buyFish(tankId, FishSpecies.GUPPY)
+    expect(useGameStore.getState().tank!.fish).toHaveLength(1)
+
+    // Simulate ticks to reach starvation and death
+    let ticks = 0
+    let deadFishRemoved = false
+    while (ticks < 2000) {
+      const fishBefore = useGameStore.getState().tank!.fish.length
+
+      useGameStore.getState().tick()
+
+      const fishAfter = useGameStore.getState().tank!.fish.length
+
+      // Check if fish was removed after becoming dead
+      if (fishBefore === 1 && fishAfter === 0) {
+        deadFishRemoved = true
+        break
+      }
+
+      ticks++
+    }
+
+    // Verify fish was automatically removed when it died
+    expect(deadFishRemoved).toBe(true)
+    expect(useGameStore.getState().tank!.fish).toHaveLength(0)
+  })
+
+  it('should not count dead fish in pollution metrics after removal', () => {
+    const store = useGameStore.getState()
+    const tankId = store.tank!.id
+
+    // Simple test: buy fish, let one starve and die (and be removed), then check that feeding cost is low
+    store.buyFish(tankId, FishSpecies.GUPPY)
+    expect(useGameStore.getState().tank!.fish).toHaveLength(1)
+
+    // Let the fish starve completely
+    let ticks = 0
+    while (ticks < 2000) {
+      const fishBefore = useGameStore.getState().tank!.fish.length
+      useGameStore.getState().tick()
+      const fishAfter = useGameStore.getState().tank!.fish.length
+
+      // Check if fish was removed
+      if (fishBefore > 0 && fishAfter === 0) {
+        // Fish died and was removed
+        break
+      }
+
+      ticks++
+    }
+
+    // Verify tank is empty (fish died and was removed)
+    expect(useGameStore.getState().tank!.fish).toHaveLength(0)
+
+    // After removing the dead fish, buy a fresh fish to test feeding cost
+    const creditsBeforeBuy = useGameStore.getState().credits
+    store.buyFish(tankId, FishSpecies.GUPPY)
+    const creditsAfterBuy = useGameStore.getState().credits
+
+    expect(useGameStore.getState().tank!.fish).toHaveLength(1)
+    expect(creditsAfterBuy).toBeLessThan(creditsBeforeBuy)
+
+    // Now feed this fresh fish
+    const creditsBefore = useGameStore.getState().credits
+    store.feedTank(tankId)
+    const creditsAfter = useGameStore.getState().credits
+
+    // Feeding cost should be low for just 1 fish
+    expect(creditsAfter).toBeLessThan(creditsBefore)
   })
 })

@@ -204,9 +204,12 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
         return fishLogicToData(updatedFishLogic)
       })
 
+      // Remove dead fish from tank (cleanup dead fish after they're marked dead)
+      const aliveOnlyFish = newFish.filter((f) => f.isAlive)
+
       return {
         ...tank,
-        fish: newFish,
+        fish: aliveOnlyFish,
         pollution: newPollution,
         waterQuality: newWaterQuality,
       }

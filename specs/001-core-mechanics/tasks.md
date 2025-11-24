@@ -134,7 +134,7 @@ Independent test criteria: Debug tools can identify dual tanks, collision issues
 
 - ✅ T040a [P] [NEW] Create TankDebugger utility: log tank state, collision checks, rendering engine status — file: `src/lib/debug/TankDebugger.ts`
 - ✅ T040b [P] [NEW] Add feature flags for Phase 4 features: `ENABLE_CIRCULAR_TANKS`, `USE_SHAPE_COLLISION`, `ENABLE_MULTI_TANK_DISPLAY`, `USE_TANK_SHAPES` — file: `src/lib/constants.ts`
-      **⚠️ CRITICAL ENABLEMENT ORDER:** 1️⃣ `USE_TANK_SHAPES` → 2️⃣ `USE_SHAPE_COLLISION` → 3️⃣ `ENABLE_CIRCULAR_TANKS` → 4️⃣ `ENABLE_MULTI_TANK_DISPLAY`
+  **⚠️ CRITICAL ENABLEMENT ORDER:** 1️⃣ `USE_TANK_SHAPES` → 2️⃣ `USE_SHAPE_COLLISION` → 3️⃣ `ENABLE_CIRCULAR_TANKS` → 4️⃣ `ENABLE_MULTI_TANK_DISPLAY`
 - ✅ T040c [P] [NEW] Create tank state validator: check for duplicate tanks, inconsistent tank arrays, missing required properties — file: `src/lib/validation/TankValidator.ts`
 - ✅ T040d [P] [NEW] Add debug UI overlay: show tank count, engine instance count, collision statistics (dev mode only) — file: `src/components/debug/DebugOverlay.tsx`
 - ✅ T040e [P] [NEW] **E2E UPDATE**: Add e2e tests for debug infrastructure and tank state validation in dev mode — file: `tests/e2e/debug-tools.spec.ts`
@@ -145,8 +145,8 @@ Independent test criteria: Debug tools can identify dual tanks, collision issues
 
 Independent test criteria: Floor renders visible/invisible per tank type; fish settle with 0.2 restitution vs 0.8 for walls; natural resting behavior.
 
-- [x] T041a [FR-017] Implement floor entity as `IFloor` interface in types and add to tank model: defines floor type (visible/invisible), dimensions (30px/40px/1px), collision restitution (0.2) — file: `src/models/types/index.ts`
-- [x] T041b [FR-017] Implement floor rendering in `TankContainer`: BOWL invisible 1px floor, STANDARD/BIG visible pebble/sand texture (procedurally generated, no assets) with color specs — files: `src/game/views/TankContainer.ts`, `src/lib/constants.ts`
+- ✅ T041a [FR-017] Implement floor entity as `IFloor` interface in types and add to tank model: defines floor type (visible/invisible), dimensions (30px/40px/1px), collision restitution (0.2) — file: `src/models/types/index.ts`
+- ✅ T041b [FR-017] Implement floor rendering in `TankContainer`: BOWL invisible 1px floor, STANDARD/BIG visible pebble/sand texture (procedurally generated, no assets) with color specs — files: `src/game/views/TankContainer.ts`, `src/lib/constants.ts`
 - ✅ T041c [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
 - [x] T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
 
@@ -176,17 +176,20 @@ Independent test criteria: BOWL renders as circle, STANDARD as square, BIG as re
 - ✅ T042d [FR-018] Add unit test for tank visuals: verify dimensions and shape types (circular, square, rectangle) render correctly — file: `tests/unit/TankVisuals.test.ts`
 - ✅ T042e [P] [NEW] Add integration test for shape-visual consistency: verify rendered shape matches collision boundaries — file: `tests/integration/ShapeVisualConsistency.test.ts`
 - ✅ T042f [P] [NEW] **E2E UPDATE**: Add e2e tests for procedural tank rendering across different tank types and responsive scaling — file: `tests/e2e/tank-visuals.spec.ts`
-- [ ] T042g [QA] [VERIFICATION] Verify BIG tank rendering consistency: confirm BIG tank renders as rectangle (800×400px) with same visual style as STANDARD (glass effect, rim, procedural texture), same water level (95%), same floor type (visible pebble texture); compare side-by-side in browser dev mode (`?dev=true`) — file: visual verification + screenshot comparison (documentation only)
-- [ ] T042h [QA] [VERIFICATION] Add unit test for BIG tank visual consistency: verify BIG tank dimensions (800×400), confirm same rendering properties as STANDARD (wall color, floor texture type, water level %, rim style) — file: `tests/unit/TankVisuals.test.ts`
 
 **Phase 4f-Design: Tank Display Scaling Architecture (Future Enhancement)**
 
 **⚠️ DESIGN NOTE**: Current implementation constrains all tanks to same display size range (TANK_DISPLAY_MIN_SIZE=300, TANK_DISPLAY_MAX_SIZE=800). This means:
+
 - Game world coordinates (450×450 bowl, 450×450 standard) are independent of display size
 - Display scaling is responsive (scales to fit viewport) but uniform across all tank types
 - Larger game worlds don't visually appear larger on screen (e.g., 900×900 tank scales down to fit same 300-800px range)
 
+- [ ] T042g Verify BIG tank rendering consistency: confirm BIG tank renders as rectangle (800×400px) with same visual style as STANDARD (glass effect, rim, procedural texture), same water level (95%), same floor type (visible pebble texture); compare side-by-side in browser dev mode (`?dev=true`) — file: visual verification + screenshot comparison (documentation only)
+- [ ] T042h Add unit test for BIG tank visual consistency: verify BIG tank dimensions (800×400), confirm same rendering properties as STANDARD (wall color, floor texture type, water level %, rim style) — file: `tests/unit/TankVisuals.test.ts`
+
 **Future improvement options** (to be implemented in Phase 5 UI Polish):
+
 1. **Per-tank display sizing**: Store display scale preference with tank data, allow bowl/standard/big to render at different visual sizes
 2. **Proportional scaling**: Remove display constraints and scale game world size proportionally (bigger tanks look bigger)
 3. **Adaptive display sizing**: Calculate display size based on tank type (BOWL: 250-400px, STANDARD: 400-700px, BIG: 600-1000px)
@@ -249,7 +252,6 @@ Final Phase: Polish & Cross-Cutting Concerns
 
 - [ ] T068 [QA] Code complexity validation: scan all TypeScript files to identify any exceeding 120 lines of code (excluding empty lines and comments); ensure proper separation of concerns by breaking down large files into focused modules — command: custom script to analyze line counts and suggest refactoring
 - [x] T070 [CLEANUP] Remove all feature flags and their logic (cleanup required before PR): search codebase for all feature flag constants (`USE_TANK_SHAPES`, `USE_SHAPE_COLLISION`, `ENABLE_CIRCULAR_TANKS`, `ENABLE_MULTI_TANK_DISPLAY`), remove feature flag checks and conditionals, simplify code paths to use implemented features as default — files: `src/lib/constants.ts`, all files with feature flag conditionals
-
 
 Dependencies (user-story completion order)
 
