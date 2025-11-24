@@ -156,9 +156,25 @@ export class FishSprite extends Sprite {
     // Apply life stage visual effects (in case age changed)
     this.applyLifeStageVisuals()
 
-    // Rotate based on velocity from Fish model
+    // Rotate and flip based on velocity direction
     if (this.fish.vx !== 0 || this.fish.vy !== 0) {
-      this.rotation = Math.atan2(this.fish.vy, this.fish.vx)
+      // Flip horizontally based on direction: scaleX = 1 (right), -1 (left)
+      const scaleY = this.scale?.y ?? 1
+      const isSwimmingLeft = this.fish.vx < 0
+      if (this.scale) {
+        this.scale.x = isSwimmingLeft ? -Math.abs(scaleY) : Math.abs(scaleY)
+      }
+
+      // Rotation based on vertical tilt only, using absolute vx
+      let rotationAngle = Math.atan2(this.fish.vy, Math.abs(this.fish.vx))
+
+      // When sprite is flipped (swimming left), negate rotation because flip reverses the tilt direction
+      if (isSwimmingLeft) {
+        rotationAngle = -rotationAngle
+      }
+
+      // Clamp rotation to [-π/2, π/2] to prevent upside-down
+      this.rotation = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, rotationAngle))
     }
 
     // console.log('🎨 FishSprite.update synced with Fish model:', {
