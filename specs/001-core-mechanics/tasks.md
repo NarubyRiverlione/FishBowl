@@ -223,6 +223,19 @@ Independent test criteria: water background renders with opacity based on pollut
 - [ ] T058 [FR-017] Implement background rendering + shader or Canvas2D blur in `RenderingEngine` with a toggle and LOD (disable on low-end devices); expose API to set blur/tint by pollution grade — files: `src/game/RenderingEngine.ts`, `src/game/views/TankContainer.ts`
 - [ ] T059 [FR-017] Add integration/perf tests `tests/integration/WaterVisuals.test.ts` to ensure visual changes reflect pollution and that performance remains acceptable (FPS/CPU thresholds) — file: `tests/integration/WaterVisuals.test.ts`
 
+**Fish Animation & Visual Polish (P3 - Visual Enhancement)**
+
+Independent test criteria: Fish tail and fins animate smoothly based on movement velocity; animation frequency increases with swimming speed; animation frame rate is consistent and doesn't impact gameplay performance; animation works in all 8 directions (up, down, left, right, diagonals).
+
+- [ ] T060a [FR-019] Extract tail and fin assets from fish.svg as separate SVG elements or create procedurally drawable components; document animation pivot points (attachment to body for natural rotation) — files: `src/assets/fish-tail.svg` (optional), `src/assets/fish-fin.svg` (optional), `src/game/views/FishSprite.ts` (procedural alternative)
+- [ ] T060b [FR-019] Implement procedural tail animation in `FishSprite.update()`: tail rotation = `Math.sin(gameTime * swimSpeed * frequency) * maxAngle`; wire tail rotation to fish velocity; add animation tuning constants (`FISH_TAIL_WAG_FREQUENCY`, `FISH_TAIL_WAG_AMPLITUDE`) — files: `src/game/views/FishSprite.ts`, `src/lib/constants.ts`
+- [ ] T060c [FR-019] Implement fin animation with phase offset: fin rotation = `Math.sin(gameTime * swimSpeed * frequency + Math.PI/4) * maxAngle`; ensure fins animate out-of-phase with tail for natural appearance — file: `src/game/views/FishSprite.ts`
+- [ ] T060d [FR-019] Add animation responsiveness: animation speed scales with fish velocity; stationary fish have minimal/no animation; faster-moving fish have faster animation; test across movement speeds — file: `src/game/views/FishSprite.ts`
+- [ ] T060e [P] Add unit tests for animation timing: verify sine wave frequency, amplitude clamping, phase offset math; test animation at various fish velocities — file: `tests/unit/FishAnimation.test.ts`
+- [ ] T060f [P] Add integration test for animation responsiveness: verify animation correlates with fish speed, check animation works in all 8 movement directions — file: `tests/integration/FishAnimationPhysics.test.ts`
+- [ ] T060g [P] **E2E UPDATE**: Add e2e tests for visual fish animation: verify animated fish appear more lifelike, compare frame rates during animation, ensure performance impact is <3% CPU overhead — file: `tests/e2e/fish-animation.spec.ts`
+- [ ] T060h [QA] Performance validation: profile fish animation during stress test (20+ fish); ensure animation doesn't exceed 5% CPU overhead; validate FPS remains stable (60 FPS target) — file: performance profiling notes
+
 Final Phase: Polish & Cross-Cutting Concerns
 
 - ✅ T029 Add tutorial popup event wiring and storage (`tutorialEvents[]`, `showTutorial(eventId)` action) — file: `src/store/useGameStore.ts`
@@ -261,11 +274,11 @@ Validation checklist
 - All tasks follow the required checklist format with Task IDs.
 - Each user story is paired with independent test criteria and implementation tasks.
 
-Output summary (updated November 22, 2025)
+Output summary (updated November 24, 2025)
 
 - Path to generated tasks file: `specs/001-core-mechanics/tasks.md`
-- Total task count: 69 (T001–T069, including recent hotfixes, QA, and bug fixes)
-- **Project Status**: ✅ **Core Mechanics MVP COMPLETE** (Phases 1-3) | 🔄 **Tank Rendering in Testing** (Phase 4a-4f: implemented, awaiting full test/acceptance) | 📋 **UI Polish & Multi-Tank Display** (Phase 4g-5: not started)
+- Total task count: 77 (T001–T077, including recent hotfixes, QA, bug fixes, and fish animation feature)
+- **Project Status**: ✅ **Core Mechanics MVP COMPLETE** (Phases 1-3) | 🔄 **Tank Rendering in Testing** (Phase 4a-4f: implemented, awaiting full test/acceptance) | 📋 **UI Polish & Fish Animation** (Phase 5: planned)
 
 **Phase Completion Status**:
 
