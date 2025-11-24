@@ -31,8 +31,8 @@ describe('Dev Mode Fish Visibility Fix', () => {
     // 4. Verify the tank is a dev tank with correct dimensions
     expect(state.tank!.size).toBe('STANDARD')
     expect(state.tank!.capacity).toBe(15)
-    expect(state.tank!.geometry.width).toBe(300)
-    expect(state.tank!.geometry.height).toBe(300)
+    expect(state.tank!.geometry.width).toBe(450)
+    expect(state.tank!.geometry.height).toBe(450)
 
     // Test passes if no errors are thrown and fish are populated
     expect(container).toBeDefined()
