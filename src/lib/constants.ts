@@ -37,28 +37,6 @@ export const PERCENTAGE_MAX = 100 // Maximum value for percentages (health, hung
 export const PERFORMANCE_LOG_INTERVAL_MS = 1000 // Interval for performance logging
 export const MILLISECONDS_PER_SECOND = 1000 // Conversion factor
 export const DEFAULT_FPS_FALLBACK = 60 // Fallback FPS value for calculations
-// Phase 4 Feature Flags (T040b)
-// ⚠️  CRITICAL: Enable flags in this exact order for safe rollout:
-//
-// 🏗️  PHASE 4A: Foundation (Prerequisites)
-// 1️⃣  USE_TANK_SHAPES = true        // Tank shape abstraction system (T037a-f)
-//     ↳ Must be first - provides shape interface and factory
-// 2️⃣  USE_SHAPE_COLLISION = true    // Shape-based collision detection (T039a-f)
-//     ↳ Depends on USE_TANK_SHAPES - integrates shapes with collision
-//
-// 🎨 PHASE 4B: Visual Features (Safe after foundation)
-// 3️⃣  ENABLE_CIRCULAR_TANKS = true  // Circular tank shapes (T037c + T042b)
-//     ↳ Depends on both above - adds circular collision + rendering
-// 4️⃣  ENABLE_MULTI_TANK_DISPLAY = true // Multi-tank layout (T043a-e)
-//     ↳ Independent - can enable anytime after foundation
-//
-// 🚨 Never enable ENABLE_CIRCULAR_TANKS without the foundation flags!
-// 🚨 Test each flag independently in dev mode before production rollout
-//
-export const USE_TANK_SHAPES = true // 1️⃣  Tank shape abstraction system
-export const USE_SHAPE_COLLISION = true // 2️⃣  Shape-based collision detection
-export const ENABLE_CIRCULAR_TANKS = true // 3️⃣  Circular tank shapes
-export const ENABLE_MULTI_TANK_DISPLAY = true // 4️⃣  Multi-tank layout (already stable)
 //#endregion
 
 //#region Economic Constants

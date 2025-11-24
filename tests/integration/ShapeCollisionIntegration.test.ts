@@ -4,7 +4,6 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest'
-import { USE_TANK_SHAPES } from '../../src/lib/constants'
 import { resolveBoundaryCollision } from '../../src/services/physics/CollisionService'
 
 describe('Tank Shape Collision Integration', () => {
@@ -12,31 +11,15 @@ describe('Tank Shape Collision Integration', () => {
     // Reset any mocks if needed
   })
 
-  it('should have USE_TANK_SHAPES feature flag properly configured', () => {
-    // This test verifies the feature flag is accessible and defined
-    expect(typeof USE_TANK_SHAPES).toBe('boolean')
-
-    if (USE_TANK_SHAPES) {
-      console.log('✅ Tank shapes feature flag is enabled')
-    } else {
-      console.log('⏭️ Tank shapes feature flag is disabled (legacy mode)')
-    }
-  })
-
   it('should verify collision service integration pattern', () => {
     // Test that the collision service functions are accessible
     expect(typeof resolveBoundaryCollision).toBe('function')
 
-    // Test demonstrates that the collision service is available for integration
+    // Test demonstrates that the collision service is available for tank shape integration
     console.log('✅ Collision service functions are available for tank shape integration')
   })
 
-  it('should verify tank shape factory integration when flag enabled', async () => {
-    if (!USE_TANK_SHAPES) {
-      console.log('⏭️ Skipping tank shape factory test - feature flag disabled')
-      return
-    }
-
+  it('should verify tank shape factory integration', async () => {
     // Dynamically import tank shape factory to verify it exists
     const { createTankShape } = await import('../../src/services/physics/TankShapeFactory')
 
@@ -54,24 +37,18 @@ describe('Tank Shape Collision Integration', () => {
     console.log('✅ Tank shape factory is properly integrated')
   })
 
-  it('should demonstrate feature flag conditional behavior', async () => {
-    // This test shows how the feature flag affects code paths
-    if (USE_TANK_SHAPES) {
-      // When enabled, tank shapes should be used
-      const { createTankShape } = await import('../../src/services/physics/TankShapeFactory')
-      const shape = createTankShape('BOWL')
+  it('should use tank shape collision detection', async () => {
+    // Tank shapes should be used for collision detection
+    const { createTankShape } = await import('../../src/services/physics/TankShapeFactory')
+    const shape = createTankShape('BOWL')
 
-      expect(shape).toBeDefined()
-      expect(shape.resolveBoundary).toBeDefined()
+    expect(shape).toBeDefined()
+    expect(shape.resolveBoundary).toBeDefined()
 
-      console.log('✅ Feature flag enabled: using tank shape collision detection')
-    } else {
-      // When disabled, should fallback to legacy rectangular collision
-      console.log('✅ Feature flag disabled: using legacy rectangular collision detection')
-    }
+    console.log('✅ Using tank shape collision detection')
   })
 
-  it('should verify collision service can handle both modes', async () => {
+  it('should verify collision service has all required functions', async () => {
     // Import collision service default export
     const CollisionModule = await import('../../src/services/physics/CollisionService')
 
@@ -83,23 +60,16 @@ describe('Tank Shape Collision Integration', () => {
     // Also verify named export
     expect(resolveBoundaryCollision).toBeDefined()
 
-    // The collision service should be able to handle both:
-    // 1. Tanks with shape property (when USE_TANK_SHAPES is true)
-    // 2. Tanks without shape property (legacy mode)
-
-    console.log('✅ Collision service supports both shape-based and legacy collision modes')
+    console.log('✅ Collision service has all required collision detection methods')
   })
 
-  it('should verify integration points exist for Phase 4.c implementation', () => {
+  it('should verify integration points exist for tank shape system', () => {
     // This test verifies that the key integration points are in place
 
-    // 1. Feature flag controls behavior
-    expect(typeof USE_TANK_SHAPES).toBe('boolean')
-
-    // 2. Collision service has the right interface
+    // 1. Collision service has the right interface
     expect(typeof resolveBoundaryCollision).toBe('function')
 
-    // 3. The system can gracefully handle both modes
-    console.log(`✅ Phase 4.c integration points verified (USE_TANK_SHAPES=${USE_TANK_SHAPES})`)
+    // 2. Tank shape system is fully implemented
+    console.log('✅ Tank shape integration points verified')
   })
 })

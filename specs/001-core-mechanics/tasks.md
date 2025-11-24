@@ -248,7 +248,7 @@ Final Phase: Polish & Cross-Cutting Concerns
 **QA & Code Quality Validation**
 
 - [ ] T068 [QA] Code complexity validation: scan all TypeScript files to identify any exceeding 120 lines of code (excluding empty lines and comments); ensure proper separation of concerns by breaking down large files into focused modules — command: custom script to analyze line counts and suggest refactoring
-- [ ] T070 [CLEANUP] Remove all feature flags and their logic (cleanup required before PR): search codebase for all feature flag constants (`USE_TANK_SHAPES`, `USE_SHAPE_COLLISION`, `ENABLE_CIRCULAR_TANKS`, `ENABLE_MULTI_TANK_DISPLAY`), remove feature flag checks and conditionals, simplify code paths to use implemented features as default — files: `src/lib/constants.ts`, all files with feature flag conditionals
+- [x] T070 [CLEANUP] Remove all feature flags and their logic (cleanup required before PR): search codebase for all feature flag constants (`USE_TANK_SHAPES`, `USE_SHAPE_COLLISION`, `ENABLE_CIRCULAR_TANKS`, `ENABLE_MULTI_TANK_DISPLAY`), remove feature flag checks and conditionals, simplify code paths to use implemented features as default — files: `src/lib/constants.ts`, all files with feature flag conditionals
 
 
 Dependencies (user-story completion order)
