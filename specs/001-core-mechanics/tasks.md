@@ -40,9 +40,9 @@ Independent test criteria: hunger increases per tick; `feedTank` reduces hunger 
 - ✅ T016 [US2] Implement `feedTank()` action: cost calc, deduct credits, reduce all living fish hunger by 30, set `lastFedAt`, and record `feedingsThisTick` for pollution — files: `src/store/useGameStore.ts`, `src/services/EconomyService.ts`
 - ✅ T017 [US2] Add unit test `tests/unit/Feeding.test.ts` for feed cost, hunger reduction and `lastFedAt` update — file: `tests/unit/Feeding.test.ts`
 - ✅ T018 [US2] Add integration test `tests/integration/FeedAndSurvive.test.ts` to accelerate ticks and verify feeding prevents death — file: `tests/integration/FeedAndSurvive.test.ts`
-- [ ] T018a [US2] [BUGFIX] Implement automatic fish removal when health reaches 0: add `cleanupDeadFish()` action to remove fish with `isAlive: false` from tank.fish array during game tick; fish are marked dead but not visually removed — files: `src/store/slices/tankSlice.ts`, `src/store/slices/gameSlice.ts`
-- [ ] T018b [US2] [BUGFIX] Add unit test `tests/unit/FishDeath.test.ts` to verify: health = 0 → `isAlive: false`, dead fish are removed from tank after next tick, dead fish don't contribute to game metrics (pollution, capacity, feeding cost) — file: `tests/unit/FishDeath.test.ts`
-- [ ] T018c [US2] [BUGFIX] Update integration test `tests/integration/FeedAndSurvive.test.ts` to verify dead fish removal: starvation → death → automatic removal from tank.fish array — file: `tests/integration/FeedAndSurvive.test.ts`
+- ✅ T018a [US2] [BUGFIX] Implement automatic fish removal when health reaches 0: add `cleanupDeadFish()` action to remove fish with `isAlive: false` from tank.fish array during game tick; fish are marked dead but not visually removed — files: `src/store/slices/tankSlice.ts`, `src/store/slices/gameSlice.ts`
+- ✅ T018b [US2] [BUGFIX] Add unit test `tests/unit/FishDeath.test.ts` to verify: health = 0 → `isAlive: false`, dead fish are removed from tank after next tick, dead fish don't contribute to game metrics (pollution, capacity, feeding cost) — file: `tests/unit/FishDeath.test.ts`
+- ✅ T018c [US2] [BUGFIX] Update integration test `tests/integration/FeedAndSurvive.test.ts` to verify dead fish removal: starvation → death → automatic removal from tank.fish array — file: `tests/integration/FeedAndSurvive.test.ts`
 
 **User Story 3 - Water Quality & Maintenance (P1)**
 
@@ -148,7 +148,7 @@ Independent test criteria: Floor renders visible/invisible per tank type; fish s
 - ✅ T041a [FR-017] Implement floor entity as `IFloor` interface in types and add to tank model: defines floor type (visible/invisible), dimensions (30px/40px/1px), collision restitution (0.2) — file: `src/models/types/index.ts`
 - ✅ T041b [FR-017] Implement floor rendering in `TankContainer`: BOWL invisible 1px floor, STANDARD/BIG visible pebble/sand texture (procedurally generated, no assets) with color specs — files: `src/game/views/TankContainer.ts`, `src/lib/constants.ts`
 - ✅ T041c [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
-- [x] T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
+- ✅ T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
 
 **Phase 4e-Advanced: Composite Shape Collision Detection (Required for Complex Bowls)**
 
@@ -251,7 +251,7 @@ Final Phase: Polish & Cross-Cutting Concerns
 **QA & Code Quality Validation**
 
 - [ ] T068 [QA] Code complexity validation: scan all TypeScript files to identify any exceeding 120 lines of code (excluding empty lines and comments); ensure proper separation of concerns by breaking down large files into focused modules — command: custom script to analyze line counts and suggest refactoring
-- [x] T070 [CLEANUP] Remove all feature flags and their logic (cleanup required before PR): search codebase for all feature flag constants (`USE_TANK_SHAPES`, `USE_SHAPE_COLLISION`, `ENABLE_CIRCULAR_TANKS`, `ENABLE_MULTI_TANK_DISPLAY`), remove feature flag checks and conditionals, simplify code paths to use implemented features as default — files: `src/lib/constants.ts`, all files with feature flag conditionals
+- ✅ T070 [CLEANUP] Remove all feature flags and their logic (cleanup required before PR): search codebase for all feature flag constants (`USE_TANK_SHAPES`, `USE_SHAPE_COLLISION`, `ENABLE_CIRCULAR_TANKS`, `ENABLE_MULTI_TANK_DISPLAY`), remove feature flag checks and conditionals, simplify code paths to use implemented features as default — files: `src/lib/constants.ts`, all files with feature flag conditionals
 
 Dependencies (user-story completion order)
 
