@@ -1,8 +1,6 @@
 // Game constants centralized for Core Game Mechanics (MVP)
 import { FishSpecies, IFishSpeciesConfig } from '../models/types/fish'
 //#region Game Mechanics Constants
-export const GAME_INITIAL_CREDITS = 100
-export const GAME_DEV_MODE_CREDITS = 1000
 export const GAME_INITIAL_TICK = 0
 export const GAME_INITIAL_TIME = 0
 export const TICK_RATE_SECONDS = 1
@@ -64,6 +62,8 @@ export const ENABLE_MULTI_TANK_DISPLAY = true // 4️⃣  Multi-tank layout (alr
 //#endregion
 
 //#region Economic Constants
+export const GAME_INITIAL_CREDITS = 1000
+export const GAME_DEV_MODE_CREDITS = 1000
 // Buying fish
 export const BUY_FISH_BASE_COST = 20
 export const BUY_FISH_PER_SIZE_COST = 30
@@ -121,12 +121,12 @@ export const FISH_AGE_YOUNG_MAX = 120 // Ticks when fish becomes mature
 export const FISH_AGE_MATURE_MAX = 300 // Ticks when fish becomes old
 export const FISH_LIFE_STAGE_YOUNG_SCALE = 1.0 // Size multiplier for young fish
 export const FISH_LIFE_STAGE_MATURE_SCALE = 1.3 // Size multiplier for mature fish
-export const FISH_LIFE_STAGE_OLD_SCALE = 1.3 // Size multiplier for old fish
+export const FISH_LIFE_STAGE_OLD_SCALE = 1.5 // Size multiplier for old fish
 export const FISH_LIFE_STAGE_OLD_SATURATION = 0.6 // Color saturation multiplier for old fish
 
 // Fish Physics Constants
-export const FISH_BASE_SIZE = 150 // Base width/height in pixels
-export const FISH_BASE_RADIUS = 25 // Base collision radius in pixels
+export const FISH_BASE_SIZE = 200 // Base width/height in pixels
+export const FISH_BASE_RADIUS = 60 // Base collision radius in pixels
 export const FISH_BASE_MASS = 1 // Base mass for physics calculations
 export const FISH_FRICTION = 0.002 // Water resistance coefficient
 

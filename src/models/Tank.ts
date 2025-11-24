@@ -111,12 +111,13 @@ export class Tank implements ITankLogic {
 
   private checkBoundaryRectangular(fish: IFishLogic): boolean {
     const { marginX, waterTop, waterBottom } = this.getRectangularMargins()
+    const effectiveRadius = (fish as Fish).getEffectiveRadius()
 
     return (
-      fish.geometry.position.x - fish.geometry.radius <= marginX ||
-      fish.geometry.position.x + fish.geometry.radius >= this.geometry.width - marginX ||
-      fish.geometry.position.y - fish.geometry.radius <= waterTop ||
-      fish.geometry.position.y + fish.geometry.radius >= waterBottom
+      fish.geometry.position.x - effectiveRadius <= marginX ||
+      fish.geometry.position.x + effectiveRadius >= this.geometry.width - marginX ||
+      fish.geometry.position.y - effectiveRadius <= waterTop ||
+      fish.geometry.position.y + effectiveRadius >= waterBottom
     )
   }
 
@@ -125,9 +126,10 @@ export class Tank implements ITankLogic {
     const centerY = this.geometry.centerY
     const radius = Math.min(this.geometry.width, this.geometry.height) / 2
     const waterLevel = this.geometry.height * 0.95 // WATER_LEVEL constant
+    const effectiveRadius = (fish as Fish).getEffectiveRadius()
 
     // Check if above water surface
-    if (fish.geometry.position.y - fish.geometry.radius < waterLevel - this.geometry.height) {
+    if (fish.geometry.position.y - effectiveRadius < waterLevel - this.geometry.height) {
       return true
     }
 
@@ -135,7 +137,7 @@ export class Tank implements ITankLogic {
     const distanceFromCenter = Math.sqrt(
       Math.pow(fish.geometry.position.x - centerX, 2) + Math.pow(fish.geometry.position.y - centerY, 2)
     )
-    return distanceFromCenter + fish.geometry.radius > radius
+    return distanceFromCenter + effectiveRadius > radius
   }
 
   resolveBoundary(fish: IFishLogic): void {
@@ -148,22 +150,23 @@ export class Tank implements ITankLogic {
 
   private resolveBoundaryRectangular(fish: IFishLogic): void {
     const { marginX, waterTop, waterBottom } = this.getRectangularMargins()
+    const effectiveRadius = (fish as Fish).getEffectiveRadius()
 
     // Handle boundary collisions
-    if (fish.geometry.position.x - fish.geometry.radius <= marginX) {
-      fish.geometry.position.x = marginX + fish.geometry.radius
+    if (fish.geometry.position.x - effectiveRadius <= marginX) {
+      fish.geometry.position.x = marginX + effectiveRadius
       fish.geometry.velocity.vx = Math.abs(fish.geometry.velocity.vx) // Bounce right
     }
-    if (fish.geometry.position.x + fish.geometry.radius >= this.geometry.width - marginX) {
-      fish.geometry.position.x = this.geometry.width - marginX - fish.geometry.radius
+    if (fish.geometry.position.x + effectiveRadius >= this.geometry.width - marginX) {
+      fish.geometry.position.x = this.geometry.width - marginX - effectiveRadius
       fish.geometry.velocity.vx = -Math.abs(fish.geometry.velocity.vx) // Bounce left
     }
-    if (fish.geometry.position.y - fish.geometry.radius <= waterTop) {
-      fish.geometry.position.y = waterTop + fish.geometry.radius
+    if (fish.geometry.position.y - effectiveRadius <= waterTop) {
+      fish.geometry.position.y = waterTop + effectiveRadius
       fish.geometry.velocity.vy = Math.abs(fish.geometry.velocity.vy) // Bounce down
     }
-    if (fish.geometry.position.y + fish.geometry.radius >= waterBottom) {
-      fish.geometry.position.y = waterBottom - fish.geometry.radius
+    if (fish.geometry.position.y + effectiveRadius >= waterBottom) {
+      fish.geometry.position.y = waterBottom - effectiveRadius
       fish.geometry.velocity.vy = -Math.abs(fish.geometry.velocity.vy) // Bounce up
     }
   }
@@ -174,10 +177,11 @@ export class Tank implements ITankLogic {
     const radius = Math.min(this.geometry.width, this.geometry.height) / 2
     const waterLevel = this.geometry.height * 0.95 // WATER_LEVEL constant
     const waterTop = this.geometry.height - waterLevel
+    const effectiveRadius = (fish as Fish).getEffectiveRadius()
 
     // Check if above water surface (hard ceiling)
-    if (fish.geometry.position.y - fish.geometry.radius < waterTop) {
-      fish.geometry.position.y = waterTop + fish.geometry.radius
+    if (fish.geometry.position.y - effectiveRadius < waterTop) {
+      fish.geometry.position.y = waterTop + effectiveRadius
       fish.geometry.velocity.vy = Math.abs(fish.geometry.velocity.vy) // Force downward
     }
 
@@ -186,11 +190,11 @@ export class Tank implements ITankLogic {
       Math.pow(fish.geometry.position.x - centerX, 2) + Math.pow(fish.geometry.position.y - centerY, 2)
     )
 
-    if (distanceFromCenter + fish.geometry.radius > radius) {
+    if (distanceFromCenter + effectiveRadius > radius) {
       // Push fish back inside the circle
       const angle = Math.atan2(fish.geometry.position.y - centerY, fish.geometry.position.x - centerX)
-      fish.geometry.position.x = centerX + Math.cos(angle) * (radius - fish.geometry.radius)
-      fish.geometry.position.y = centerY + Math.sin(angle) * (radius - fish.geometry.radius)
+      fish.geometry.position.x = centerX + Math.cos(angle) * (radius - effectiveRadius)
+      fish.geometry.position.y = centerY + Math.sin(angle) * (radius - effectiveRadius)
 
       // Reflect velocity off the circular boundary
       const vx = fish.geometry.velocity.vx

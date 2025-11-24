@@ -10,9 +10,7 @@ import { Fish } from '../../src/models/Fish'
 import { TankSize, FishSpecies } from '../../src/models/types'
 import {
   TANK_BOWL_WIDTH,
-  TANK_BOWL_HEIGHT,
   TANK_STANDARD_WIDTH,
-  TANK_STANDARD_HEIGHT,
   TANK_BIG_WIDTH,
   TANK_BIG_HEIGHT,
   WATER_LEVEL,

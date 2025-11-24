@@ -9,6 +9,7 @@ import {
 import { FishService } from '../../src/services/FishService'
 import { Tank } from '../../src/models/Tank'
 import { FishSpecies } from '../../src/models/types'
+import { TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT, FISH_BASE_RADIUS, COLLISION_BOUNDARY_BUFFER, FLOOR_RESTITUTION, WALL_RESTITUTION } from '../../src/lib/constants'
 
 describe('Fish Collision Behavior (T044b)', () => {
   it('should disable fish-to-fish collision detection', () => {
@@ -16,11 +17,13 @@ describe('Fish Collision Behavior (T044b)', () => {
     const fish1 = FishService.createFish(FishSpecies.GUPPY)
     const fish2 = FishService.createFish(FishSpecies.GUPPY)
 
-    // Position them at same location (complete overlap)
-    fish1.x = 100
-    fish1.y = 100
-    fish2.x = 100
-    fish2.y = 100
+    // Position them at tank center (complete overlap)
+    const centerX = TANK_STANDARD_WIDTH / 2
+    const centerY = TANK_STANDARD_HEIGHT / 2
+    fish1.x = centerX
+    fish1.y = centerY
+    fish2.x = centerX
+    fish2.y = centerY
 
     // Fish-to-fish collision should be disabled
     const collision = detectFishCollision(fish1, fish2)
@@ -32,13 +35,15 @@ describe('Fish Collision Behavior (T044b)', () => {
     const fish1 = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Fish1')
     const fish2 = FishService.createFish(FishSpecies.GUPPY, '#00FF00', 'Fish2')
 
-    fish1.x = 100
-    fish1.y = 100
+    const centerX = TANK_STANDARD_WIDTH / 2
+    const centerY = TANK_STANDARD_HEIGHT / 2
+    fish1.x = centerX
+    fish1.y = centerY
     fish1.vx = 5
     fish1.vy = 3
 
-    fish2.x = 100
-    fish2.y = 100
+    fish2.x = centerX
+    fish2.y = centerY
     fish2.vx = -2
     fish2.vy = 4
 
@@ -64,43 +69,45 @@ describe('Fish Collision Behavior (T044b)', () => {
     // Create a fish near the tank boundary
     const fish = FishService.createFish(FishSpecies.GUPPY)
 
-    // Create tank with width/height
-    const tank = new Tank(400, 300, 0x87ceeb)
+    // Create tank with standard dimensions
+    const tank = new Tank(TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT, 0x87ceeb)
 
-    // Position fish at left wall with velocity towards wall
-    fish.x = 10 // Close to left wall (x=0)
-    fish.y = 150
+    // Position fish penetrating left wall so collision is detected
+    const fishRadius = FISH_BASE_RADIUS * 0.5
+    fish.x = fishRadius * 0.5 // Inside the wall boundary
+    fish.y = TANK_STANDARD_HEIGHT / 2
     fish.vx = -5 // Moving towards wall
     fish.vy = 2
-    fish.radius = 20
+    fish.geometry.radius = fishRadius
 
     // Boundary collision should still work
     resolveBoundaryCollision(fish, tank)
 
     // Fish should be repositioned and velocity reversed
-    expect(fish.x).toBeGreaterThanOrEqual(fish.radius) // Should be at or pushed away from wall
-    expect(fish.vx).toBeGreaterThan(0) // Velocity should be reversed (positive)
+    expect(fish.x).toBeGreaterThanOrEqual(fishRadius) // Should be pushed away from wall
+    expect(fish.vx).toBeGreaterThan(0) // Velocity should be reversed (positive, bouncing right)
   })
 
   it('should use gentle floor restitution vs normal wall restitution', () => {
     const fish1 = FishService.createFish(FishSpecies.GUPPY)
     const fish2 = FishService.createFish(FishSpecies.GUPPY)
 
-    const tank = new Tank(400, 300, 0x87ceeb)
+    const tank = new Tank(TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT, 0x87ceeb)
+    const fishRadius = FISH_BASE_RADIUS * 0.5
 
     // Fish hitting floor (bottom)
-    fish1.x = 200
-    fish1.y = 290 // Near bottom
+    fish1.x = TANK_STANDARD_WIDTH / 2
+    fish1.y = TANK_STANDARD_HEIGHT - fishRadius - COLLISION_BOUNDARY_BUFFER // Near bottom
     fish1.vx = 2
     fish1.vy = 5 // Moving downward
-    fish1.radius = 15
+    fish1.geometry.radius = fishRadius
 
     // Fish hitting side wall
-    fish2.x = 10 // Near left wall
-    fish2.y = 150
+    fish2.x = fishRadius + COLLISION_BOUNDARY_BUFFER // Near left wall
+    fish2.y = TANK_STANDARD_HEIGHT / 2
     fish2.vx = -5 // Moving towards wall
     fish2.vy = 2
-    fish2.radius = 15
+    fish2.geometry.radius = fishRadius
 
     const initialFloorVy = fish1.vy
     const initialWallVx = fish2.vx
