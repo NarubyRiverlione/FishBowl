@@ -9,7 +9,7 @@ test.describe('Tank Shape Detection', () => {
 
   test('should detect tank shape via debug overlay in dev mode', async ({ page }) => {
     // Use dev mode which has debug overlay
-    await page.goto('http://localhost:5174/?dev=true')
+    await page.goto('/?dev=true')
 
     await page.waitForSelector('#root > div')
     const canvas = page.locator('canvas').first()

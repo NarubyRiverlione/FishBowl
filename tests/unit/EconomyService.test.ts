@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import { EconomyService } from '../../src/services/EconomyService'
-import { FishSpecies, FISH_SPECIES_CONFIG, ITank, IFish } from '../../src/models/types'
+import { FishSpecies, ITankData } from '../../src/models/types'
+import { FISH_SPECIES_CONFIG } from '../../src/lib/constants'
 import { BUSINESS_LOGIC } from '../config/testConstants'
 
 describe('EconomyService', () => {
   it('returns correct fish cost from species config', () => {
     const cost = EconomyService.getFishCost(FishSpecies.GUPPY)
-    expect(cost).toBe(FISH_SPECIES_CONFIG[FishSpecies.GUPPY].baseValue)
+    const { baseValue } = FISH_SPECIES_CONFIG[FishSpecies.GUPPY]
+    expect(cost).toBe(baseValue)
   })
 
   it('canBuyFish respects credits and tank capacity', () => {
@@ -15,7 +17,7 @@ describe('EconomyService', () => {
       capacity: 1,
       size: 'BOWL',
       hasFilter: false,
-    } as unknown as ITank
+    } as unknown as ITankData
 
     // Enough credits and empty tank -> can buy
     const sufficientCredits = BUSINESS_LOGIC.COSTS.GUPPY * 2 // More than enough
@@ -46,8 +48,8 @@ describe('EconomyService', () => {
   })
 
   it('canClean and canBuyFilter and canUpgradeTank behaviors', () => {
-    const tankStandard = { size: 'STANDARD', hasFilter: false } as unknown as ITank
-    const tankBowl = { size: 'BOWL', hasFilter: false } as unknown as ITank
+    const tankStandard = { size: 'STANDARD', hasFilter: false } as unknown as ITankData
+    const tankBowl = { size: 'BOWL', hasFilter: false } as unknown as ITankData
 
     expect(EconomyService.canClean(100)).toBe(true)
     expect(EconomyService.canClean(0)).toBe(false)

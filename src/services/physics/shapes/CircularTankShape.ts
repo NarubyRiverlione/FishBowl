@@ -10,6 +10,10 @@ export class CircularTankShape implements ITankShape {
     this.geometry = { centerX, centerY, width: radius * 2, height: radius * 2 }
   }
 
+  get radius(): number {
+    return this.geometry.width / 2
+  }
+
   checkBoundary(fish: IFishLogic): boolean {
     // Calculate water surface (95% of tank height from center)
     const waterSurfaceY = this.geometry.centerY + (this.geometry.height / 2) * WATER_SURFACE_RATIO

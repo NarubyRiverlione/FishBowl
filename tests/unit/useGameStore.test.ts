@@ -16,7 +16,7 @@ describe('useGameStore selectors and basic behaviors', () => {
     const state = useTestStore.getState()
 
     expect(selectCredits(state)).toBeDefined()
-    expect(selectCredits(state)).toBe(50)
+    expect(selectCredits(state)).toBe(100)
     expect(selectTankFish(state)).toEqual([])
     expect(selectSelectedFish(state)).toBeNull()
   })

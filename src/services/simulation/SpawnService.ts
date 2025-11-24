@@ -1,11 +1,7 @@
 import { Fish } from '../../models/Fish'
 import { getSpeciesColor, randomPosition, randomVelocity, randomSize } from '../../lib/random'
 import { FishSpecies, ITankLogic } from '../../models/types'
-import {
-  DEFAULT_MAX_VELOCITY,
-  FISH_SPAWN_SIZE_MIN,
-  FISH_SPAWN_SIZE_MAX,
-} from '../../lib/constants'
+import { DEFAULT_MAX_VELOCITY, FISH_SPAWN_SIZE_MIN, FISH_SPAWN_SIZE_MAX } from '../../lib/constants'
 import type FishRenderManager from '../../game/managers/FishRenderManager'
 
 export class SpawnService {

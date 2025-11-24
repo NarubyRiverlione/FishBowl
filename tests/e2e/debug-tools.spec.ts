@@ -61,6 +61,10 @@ test.describe('Debug Tools E2E', () => {
   })
 
   test('should display rendering engine statistics', async ({ page }) => {
+    // Wait for canvas to be fully rendered
+    const canvas = page.locator('canvas')
+    await expect(canvas).toBeVisible()
+
     // Wait for debug overlay to load
     await expect(page.locator('text=🛠️ Debug Info')).toBeVisible()
 
@@ -126,12 +130,12 @@ test.describe('Debug Tools E2E', () => {
     const fishTotalElement = page.locator('text=Fish Total:').locator('..').locator('span').nth(1)
     const initialFishCount = await fishTotalElement.textContent()
 
-    // Open store and try to buy a fish
-    await page.locator('button', { hasText: 'Store' }).click()
+    // Open buy menu and buy a fish
+    await page.getByRole('button', { name: /Buy/ }).click()
 
-    // Buy a guppy (if enough credits)
-    const guppyButton = page.locator('button', { hasText: /GUPPY.*50/ })
-    if (await guppyButton.isVisible()) {
+    // Buy a guppy (if available)
+    const guppyButton = page.getByRole('button', { name: /GUPPY/ })
+    if (await guppyButton.isVisible({ timeout: 3000 }).catch(() => false)) {
       await guppyButton.click()
 
       // Wait for stats to update

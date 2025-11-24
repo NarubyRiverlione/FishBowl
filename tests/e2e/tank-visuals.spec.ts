@@ -21,17 +21,20 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
       const canvas = page.locator('canvas')
       await expect(canvas).toBeVisible()
 
+      // Wait for app to fully initialize
+      await page.waitForTimeout(1000)
+
       // Verify tank type through game store
       const tankInfo = await page.evaluate(() => {
         const store = (window as Window & { __GAME_STORE_DEBUG__?: { tank: Record<string, unknown> } })
           .__GAME_STORE_DEBUG__
-        if (store) {
-          const tank = store.tank
+        if (store && store.tank) {
+          const tank = store.tank as Record<string, unknown>
           return {
             size: tank.size,
-            shape: tank.shape ? tank.shape.type : 'unknown',
-            width: tank.width,
-            height: tank.height,
+            shape: (tank.shape as Record<string, unknown> | undefined)?.type || 'unknown',
+            width: tank.geometry ? (tank.geometry as Record<string, unknown>).width : tank.width,
+            height: tank.geometry ? (tank.geometry as Record<string, unknown>).height : tank.height,
           }
         }
         return null
@@ -50,17 +53,20 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
       // Start with dev mode (already has STANDARD tank)
       await page.waitForSelector('canvas')
 
+      // Wait for app to fully initialize
+      await page.waitForTimeout(1000)
+
       // Get tank info from game store
       const tankInfo = await page.evaluate(() => {
         const store = (window as Window & { __GAME_STORE_DEBUG__?: { tank: Record<string, unknown> } })
           .__GAME_STORE_DEBUG__
-        if (store) {
-          const tank = store.tank
+        if (store && store.tank) {
+          const tank = store.tank as Record<string, unknown>
           return {
             size: tank.size,
-            shape: tank.shape ? tank.shape.type : 'unknown',
-            width: tank.width,
-            height: tank.height,
+            shape: (tank.shape as Record<string, unknown> | undefined)?.type || 'unknown',
+            width: tank.geometry ? (tank.geometry as Record<string, unknown>).width : tank.width,
+            height: tank.geometry ? (tank.geometry as Record<string, unknown>).height : tank.height,
           }
         }
         return null

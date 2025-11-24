@@ -104,7 +104,7 @@ export class Tank implements ITankLogic {
     // Water y: 20-94 (20% top margin, 6% bottom margin)
     return {
       marginX: this.geometry.width * 0.06,
-      waterTop: this.geometry.height * 0.20,
+      waterTop: this.geometry.height * 0.2,
       waterBottom: this.geometry.height * 0.94,
     }
   }

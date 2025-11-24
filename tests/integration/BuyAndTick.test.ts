@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
-import { FishSpecies, FISH_SPECIES_CONFIG } from '../../src/models/types'
+import { FishSpecies } from '../../src/models/types'
+import { FISH_SPECIES_CONFIG } from '../../src/lib/constants'
 import { TEST_VALUES } from '../config/testConstants'
 
 describe('Buy and Tick Integration', () => {

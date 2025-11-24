@@ -120,13 +120,24 @@ For detailed setup, see [QUICKSTART.md](./QUICKSTART.md).
 
 ```
 src/
-├── types/       # TypeScript interfaces (IFish, ITank, IRender)
-├── models/      # Domain entities with pure logic (Fish, Tank)
-├── lib/         # Utility functions (physics, collision, random)
-├── game/        # Pixi.js rendering (FishSprite, TankView, RenderingEngine)
-├── components/  # React UI (AquariumCanvas wrapper)
-└── assets/      # SVG graphics and images
+├── models/
+│   ├── types/        # TypeScript interfaces
+│   │   ├── fish.ts   # IFishData, IFishLogic, IFishGeometry
+│   │   ├── tank.ts   # ITankData, ITankLogic, ITankGeometry
+│   │   └── ...
+│   ├── Fish.ts       # Fish class (implements IFishLogic)
+│   └── Tank.ts       # Tank class (implements ITankLogic)
+├── services/         # Business logic (FishService, Physics, Collision)
+├── game/             # Pixi.js rendering (FishSprite, TankView, RenderingEngine)
+├── store/            # Zustand state management (stores IFishData, ITankData)
+├── components/       # React UI (AquariumCanvas wrapper)
+└── assets/           # SVG graphics and images
 ```
+
+**Key Design**: Separation of **Data** (IFishData, ITankData) and **Logic** (IFishLogic, ITankLogic)
+- Data interfaces are serializable and stored in Zustand
+- Logic interfaces extend data with behavioral methods for game simulation
+- See [Data Model](./specs/001-core-mechanics/data-model.md) for full interface definitions
 
 ## Architecture
 

@@ -18,11 +18,11 @@ declare global {
 test.describe('Tank Shape Visual Rendering', () => {
   test('should render circular bowl tank visually', async ({ page }) => {
     // Start with default bowl tank in normal mode (should be circular)
-    await page.goto('http://localhost:5173/')
+    await page.goto('/')
 
     // Wait for app to load
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(2500)
 
     // Check that canvas exists
     const canvas = page.locator('canvas').first()
@@ -31,8 +31,8 @@ test.describe('Tank Shape Visual Rendering', () => {
     // Get canvas and tank shape information
     const tankInfo = await page.evaluate(() => {
       // Check tank state from game store
-      const gameStore = window.__GAME_STORE_DEBUG__ || {}
-      const tank = gameStore.tank || {}
+      const gameStore = (window as Window & { __GAME_STORE_DEBUG__?: Record<string, unknown> }).__GAME_STORE_DEBUG__ || {}
+      const tank = (gameStore.tank || {}) as Record<string, unknown>
 
       // Map tank.size to shape type
       const shapeTypeMap: Record<string, string> = {
@@ -55,7 +55,7 @@ test.describe('Tank Shape Visual Rendering', () => {
     console.log('Tank rendering info:', tankInfo)
 
     // Verify bowl tank should have circular shape when shape system is enabled
-    expect(tankInfo.tankSize).toBe('BOWL')
+    expect(tankInfo.size).toBe('BOWL')
     expect(tankInfo.hasShape).toBe(true)
     expect(tankInfo.tankShape).toBe('circular')
     expect(tankInfo.tankWidth).toBe(300) // TANK_BOWL_SIZE
@@ -64,16 +64,16 @@ test.describe('Tank Shape Visual Rendering', () => {
 
   test('should render different shapes for different tank sizes in dev mode', async ({ page }) => {
     // Go to dev mode (STANDARD tank)
-    await page.goto('http://localhost:5173/?dev=true')
+    await page.goto('/?dev=true')
 
     // Wait for app to load
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(2500)
 
     // Check tank shape in dev mode
     const devTankInfo = await page.evaluate(() => {
-      const gameStore = window.__GAME_STORE_DEBUG__ || {}
-      const tank = gameStore.tank || {}
+      const gameStore = (window as Window & { __GAME_STORE_DEBUG__?: Record<string, unknown> }).__GAME_STORE_DEBUG__ || {}
+      const tank = (gameStore.tank || {}) as Record<string, unknown>
 
       // Map tank.size to shape type
       const shapeTypeMap: Record<string, string> = {
@@ -101,17 +101,19 @@ test.describe('Tank Shape Visual Rendering', () => {
 
   test('should visually detect tank shape through canvas pixels (advanced)', async ({ page }) => {
     // This test uses canvas pixel sampling to detect circular vs rectangular shapes
-    await page.goto('http://localhost:5173/')
+    await page.goto('/')
 
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2000)
 
     const shapeDetection = await page.evaluate(() => {
-      const canvas = document.querySelector('canvas') as HTMLCanvasElement
+      const canvas = document.querySelector('canvas') as HTMLCanvasElement | null
       if (!canvas) return { error: 'No canvas found' }
 
       const ctx = canvas.getContext('2d')
-      if (!ctx) return { error: 'No 2D context' }
+      if (!ctx) {
+        return { error: 'No 2D context' }
+      }
 
       const centerX = canvas.width / 2
       const centerY = canvas.height / 2

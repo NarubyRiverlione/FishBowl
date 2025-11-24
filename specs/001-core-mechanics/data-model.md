@@ -8,9 +8,13 @@
 
 ## 1. Domain Entities
 
-### 1.1 Fish (`IFish`)
+### 1.1 Fish (`IFishData` / `IFishLogic`)
 
 **Purpose**: Represents a single fish in the tank with genetics, stats, and lifecycle.
+
+**Architecture**: Two interfaces support different use cases:
+- **`IFishData`**: Pure data interface (stored in Zustand) with no methods
+- **`IFishLogic`**: Extends `IFishData` with behavioral methods (used by game logic)
 
 **Fields**:
 
@@ -28,6 +32,29 @@
 | `genetics`  | `IGeneticMarkers` (future) | -                                   | Reserved for breeding/mutations (Phase 2)       |
 | `createdAt` | `timestamp`                | -                                   | Unix milliseconds; used for value calculation   |
 | `lastFedAt` | `timestamp`                | -                                   | Unix milliseconds; used for hunger reset        |
+| `geometry`  | `IFishGeometry`            | -                                   | **Single source of truth** for position, velocity, and radius (see below) |
+
+**Geometry (Single Source of Truth)**:
+
+The `geometry` field contains position and physics state:
+
+```typescript
+interface IFishGeometry {
+  position: { x: number; y: number }    // Fish position in tank
+  velocity: { vx: number; vy: number }  // Velocity components
+  radius: number                         // Collision radius
+}
+```
+
+**Legacy Properties** (IFishLogic only, access geometry via getters/setters):
+- `x`, `y`: Position (read/write through geometry)
+- `vx`, `vy`: Velocity (read/write through geometry)
+- `radius`: Collision radius (read/write through geometry)
+
+**Behavioral Methods** (IFishLogic only):
+- `update(delta: number): void` - Updates position and velocity based on physics
+- `swim(): void` - Applies random directional forces
+- `getEffectiveRadius(): number` - Returns radius accounting for life stage
 
 **State Transitions**:
 
@@ -48,7 +75,7 @@ SPAWNED → LIVING → STARVING → DEAD
 - `size` must be > 0.
 - `age` is never negative.
 
-**Example Instance**:
+**Example Instance** (IFishData):
 
 ```typescript
 {
@@ -63,15 +90,24 @@ SPAWNED → LIVING → STARVING → DEAD
   isAlive: true,
   genetics: {},
   createdAt: 1731866134949,
-  lastFedAt: 1731866094949
+  lastFedAt: 1731866094949,
+  geometry: {
+    position: { x: 400, y: 300 },
+    velocity: { vx: 5.2, vy: -2.1 },
+    radius: 8
+  }
 }
 ```
 
 ---
 
-### 1.2 Tank (`ITank`)
+### 1.2 Tank (`ITankData` / `ITankLogic`)
 
 **Purpose**: Container for fish, tracks environment and capacity.
+
+**Architecture**: Two interfaces support different use cases:
+- **`ITankData`**: Pure data interface (stored in Zustand) with no methods
+- **`ITankLogic`**: Extends `ITankData` with behavioral methods (used by game logic)
 
 **Fields**:
 
@@ -84,14 +120,41 @@ SPAWNED → LIVING → STARVING → DEAD
 | `pollution`    | `number`        | 0-100                     | Pollution level from fish waste and feeding                                                     |
 | `hasFilter`    | `boolean`       | true/false                | Whether a filter is installed (reduces pollution rate). Filters are not allowed for BOWL tanks. |
 | `temperature`  | `number`        | 0-40 °C                   | Tank temperature; affects metabolism (future)                                                   |
-| `fish`         | `IFish[]`       | -                         | List of living fish in tank                                                                     |
+| `backgroundColor` | `number`     | 0x000000-0xFFFFFF         | Hex color for tank background                                                                   |
+| `fish`         | `IFishData[]`   | -                         | List of living fish in tank                                                                     |
 | `createdAt`    | `timestamp`     | -                         | When tank was created                                                                           |
+| `geometry`     | `ITankGeometry` | -                         | **Single source of truth** for tank dimensions and positioning (see below) |
+
+**Geometry (Single Source of Truth)**:
+
+The `geometry` field contains tank dimensions and center point:
+
+```typescript
+interface ITankGeometry {
+  width: number    // Tank width in pixels
+  height: number   // Tank height in pixels
+  centerX: number  // Center X coordinate
+  centerY: number  // Center Y coordinate
+}
+```
+
+**Behavioral Methods** (ITankLogic only):
+- `addFish(fish: IFishLogic): void` - Add fish to tank
+- `removeFish(fishId: string): void` - Remove fish from tank
+- `update(delta: number): void` - Update all fish and check collisions
+- `checkBoundary(fish: IFishLogic): boolean` - Check if fish hits boundary
+- `resolveBoundary(fish: IFishLogic): void` - Resolve boundary collision
+- `getSpawnBounds(): ISpawnBounds` - Get safe spawn area for new fish
+
+**Performance Metrics** (ITankLogic only):
+- `collisionChecks: number` - Number of collision checks performed
+- `collisionsResolved: number` - Number of collisions resolved
 
 **Validation Rules**:
 
 - `id` must be a valid UUID v4.
 - `size` must be `BOWL`, `STANDARD`, or `BIG`.
-- `capacity` must match size: BOWL = 1, STANDARD = 10, BIG = 20.
+- `capacity` must match size: BOWL = 2, STANDARD = 15, BIG = 30.
 - `hasFilter` can only be true if `size !== 'BOWL'` (BOWL cannot have filters).
 - `waterQuality` is clamped to 0-100 (calculated as `100 - pollution`).
 - `pollution` is clamped to 0-100.
@@ -106,22 +169,29 @@ SPAWNED → LIVING → STARVING → DEAD
 
 **Multi-Tank Support**:
 
-- Players may own multiple tanks (array of `ITank` instances). By default the game supports owning up to 2–3 tanks; each tank enforces its own `capacity`.
-- Game state should model `tanks: ITank[]` instead of a single `tank` to allow transfers, per-tank upgrades, and independent maintenance actions.
+- Players may own multiple tanks (array of `ITankData` instances). By default the game supports owning up to 2–3 tanks; each tank enforces its own `capacity`.
+- Game state should model `tanks: ITankData[]` instead of a single `tank` to allow transfers, per-tank upgrades, and independent maintenance actions.
 
-**Example Instance**:
+**Example Instance** (ITankData):
 
 ```typescript
 {
   id: "660e8400-e29b-41d4-a716-446655440001",
   size: "STANDARD",
-  capacity: 10,
+  capacity: 15,
   waterQuality: 85,
   pollution: 15,
   hasFilter: false,
   temperature: 24,
-  fish: [ /* IFish instances */ ],
-  createdAt: 1731866134949
+  backgroundColor: 0x000000,
+  fish: [ /* IFishData instances */ ],
+  createdAt: 1731866134949,
+  geometry: {
+    width: 1200,
+    height: 600,
+    centerX: 600,
+    centerY: 300
+  }
 }
 ```
 
@@ -141,7 +211,7 @@ SPAWNED → LIVING → STARVING → DEAD
 | `maturityBonusAwarded` | `boolean`        | Whether the 50 credit maturity bonus has been given                     |
 | `tutorialEnabled`      | `boolean`        | Whether tutorial popups are enabled                                     |
 | `tutorialEvents`       | `string[]`       | List of tutorial events already shown (e.g., "first_buy", "first_feed") |
-| `tanks`                | `ITank[]`        | The player's tanks (array). By default allow owning up to 2–3 tanks.    |
+| `tanks`                | `ITankData[]`    | The player's tanks (array). By default allow owning up to 2–3 tanks.    |
 | `credits`              | `number`         | Player's currency                                                       |
 | `storeInventory`       | `IStoreItem[]`   | Available items for purchase                                            |
 | `selectedFishId`       | `string \| null` | Currently selected fish for UI                                          |
@@ -170,11 +240,15 @@ SPAWNED → LIVING → STARVING → DEAD
   currentTick: 420,
   totalTime: 420,
   isPaused: false,
-  tank: { /* ITank */ },
+  tanks: [ /* ITankData instances */ ],
   credits: 75,
   storeInventory: [ { species: "GUPPY", cost: 50 }, ... ],
   selectedFishId: "550e8400-...",
-  gameStartedAt: 1731866134949
+  gameStartedAt: 1731866134949,
+  developerMode: false,
+  tutorialEnabled: true,
+  maturityBonusAwarded: false,
+  tutorialEvents: ["first_buy"]
 }
 ```
 
@@ -390,7 +464,16 @@ enum FishSpecies {
 }
 
 // Interfaces
-interface IFish {
+
+// Fish Geometry (Single Source of Truth)
+interface IFishGeometry {
+  position: { x: number; y: number }
+  velocity: { vx: number; vy: number }
+  radius: number
+}
+
+// Fish Data (Pure data, stored in Zustand)
+interface IFishData {
   id: UUID
   species: FishSpecies
   name?: string
@@ -400,25 +483,68 @@ interface IFish {
   health: number // 0-100
   hunger: number // 0-100
   isAlive: boolean
-  genetics: Record<string, unknown> // Future
+  genetics: Record<string, unknown>
   createdAt: Timestamp
-  lastFedAt: Timestamp
+  lastFedAt?: Timestamp
+  geometry: IFishGeometry // Single source of truth for position/physics
 }
 
-interface ITank {
+// Fish Logic (Extends data with behavioral methods)
+interface IFishLogic extends IFishData {
+  update(delta: number): void
+  swim(): void
+  getEffectiveRadius(): number
+  // Legacy properties for backward compatibility
+  x: number; y: number
+  vx: number; vy: number
+  radius: number
+}
+
+// Tank Geometry (Single Source of Truth)
+interface ITankGeometry {
+  width: number
+  height: number
+  centerX: number
+  centerY: number
+}
+
+// Tank Data (Pure data, stored in Zustand)
+interface ITankData {
   id: UUID
+  size: TankSize
   capacity: number
   waterQuality: number // 0-100
+  pollution: number // 0-100
+  hasFilter: boolean
   temperature: number // 0-40 °C
-  fish: IFish[]
+  backgroundColor: number
+  fish: IFishData[]
   createdAt: Timestamp
+  geometry: ITankGeometry // Single source of truth for dimensions
 }
 
+// Tank Logic (Extends data with behavioral methods)
+interface ITankLogic extends ITankData {
+  collisionChecks: number
+  collisionsResolved: number
+  addFish(fish: IFishLogic): void
+  removeFish(fishId: string): void
+  update(delta: number): void
+  checkBoundary(fish: IFishLogic): boolean
+  resolveBoundary(fish: IFishLogic): void
+  getSpawnBounds(): ISpawnBounds
+}
+
+// Game State
 interface IGameState {
   currentTick: number
   totalTime: number
   isPaused: boolean
-  tanks: ITank[] // Support multiple tanks per player (default 1 at game start)
+  developerMode: boolean
+  tutorialEnabled: boolean
+  maturityBonusAwarded: boolean
+  tutorialEvents: string[]
+  tanks: ITankData[] // Support multiple tanks per player
   credits: Credits
   storeInventory: IStoreItem[]
   selectedFishId?: UUID

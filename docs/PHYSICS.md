@@ -44,14 +44,16 @@ Where:
 
 ```typescript
 // src/services/physics/CollisionService.ts
-static checkFishCollision(fish1: IFish, fish2: IFish): boolean {
-  const dx = fish1.position.x - fish2.position.x
-  const dy = fish1.position.y - fish2.position.y
+static checkFishCollision(fish1: IFishLogic, fish2: IFishLogic): boolean {
+  const dx = fish1.geometry.position.x - fish2.geometry.position.x
+  const dy = fish1.geometry.position.y - fish2.geometry.position.y
   const distance = Math.sqrt(dx * dx + dy * dy)
-  const minDistance = fish1.radius + fish2.radius
+  const minDistance = fish1.geometry.radius + fish2.geometry.radius
   return distance < minDistance
 }
 ```
+
+**Note**: Fish use `geometry` property for position and physics (see [Data Model](../specs/001-core-mechanics/data-model.md#geometry-single-source-of-truth))
 
 **Complexity**: O(n²) for n fish
 
@@ -98,18 +100,18 @@ Where:
 
 ```typescript
 // src/services/physics/CollisionService.ts
-static resolveFishCollision(fish1: IFish, fish2: IFish): void {
+static resolveFishCollision(fish1: IFishLogic, fish2: IFishLogic): void {
   // Calculate collision normal
-  const dx = fish2.position.x - fish1.position.x
-  const dy = fish2.position.y - fish1.position.y
+  const dx = fish2.geometry.position.x - fish1.geometry.position.x
+  const dy = fish2.geometry.position.y - fish1.geometry.position.y
   const distance = Math.sqrt(dx * dx + dy * dy)
 
   const nx = dx / distance  // normalized collision vector
   const ny = dy / distance
 
   // Relative velocity along collision normal
-  const dvx = fish2.velocity.x - fish1.velocity.x
-  const dvy = fish2.velocity.y - fish1.velocity.y
+  const dvx = fish2.geometry.velocity.vx - fish1.geometry.velocity.vx
+  const dvy = fish2.geometry.velocity.vy - fish1.geometry.velocity.vy
   const dvn = dvx * nx + dvy * ny
 
   // Don't resolve if velocities are separating

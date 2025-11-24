@@ -2,6 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { TankContainer } from '../../src/game/views/TankContainer'
 import { Tank } from '../../src/models/Tank'
 
+// Mock SVG assets
+vi.mock('../../src/assets/fishbowl.svg', () => ({
+  default: 'fishbowl-svg-mock',
+}))
+
+vi.mock('../../src/assets/recttank.svg', () => ({
+  default: 'recttank-svg-mock',
+}))
+
 // Mock Pixi.js
 vi.mock('pixi.js', () => {
   class GraphicsMock {
@@ -21,19 +30,30 @@ vi.mock('pixi.js', () => {
 
   class SpriteMock {
     anchor = { set: vi.fn() }
-    width = 0
-    height = 0
+    scale = { set: vi.fn() }
+    texture = { width: 100, height: 100 }
+    parent: unknown = null
+    width = 100
+    height = 100
     tint = 0
     x = 0
     y = 0
     rotation = 0
   }
 
+  class TextureMock {
+    width = 100
+    height = 100
+  }
+
   return {
     Container: ContainerMock,
     Graphics: GraphicsMock,
     Sprite: SpriteMock,
-    Texture: { WHITE: {} },
+    Texture: { WHITE: new TextureMock() },
+    Assets: {
+      load: vi.fn().mockResolvedValue(new TextureMock()),
+    },
   }
 })
 

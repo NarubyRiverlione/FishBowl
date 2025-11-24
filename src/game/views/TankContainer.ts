@@ -65,7 +65,7 @@ export class TankContainer extends Container {
 
     // Ensure we respect the bounds returned by the tank
     // getSpawnBounds returns the safe area for a standard fish.
-    // We add a small buffer for the specific fish radius if needed, 
+    // We add a small buffer for the specific fish radius if needed,
     // but getSpawnBounds already includes a safe margin.
     // To be extra safe, we ensure the fish center is within the bounds.
 
@@ -99,7 +99,7 @@ export class TankContainer extends Container {
     try {
       // If test helpers are enabled, expose diagnostic info when sprites are added
 
-      ; (
+      ;(
         globalThis as typeof globalThis & {
           __TEST_HELPERS__?: {
             _lastAddedFishId?: string
@@ -115,23 +115,23 @@ export class TankContainer extends Container {
             }
           }
         ).__TEST_HELPERS__ || {}
-        ; (
-          globalThis as typeof globalThis & {
-            __TEST_HELPERS__?: {
-              _lastAddedFishId?: string
-              _addedSpritesCount?: number
-            }
+      ;(
+        globalThis as typeof globalThis & {
+          __TEST_HELPERS__?: {
+            _lastAddedFishId?: string
+            _addedSpritesCount?: number
           }
-        ).__TEST_HELPERS__!._lastAddedFishId = fish.id
-        // `fishSprites` is a Map, use `size` to report accurate count
-        ; (
-          globalThis as typeof globalThis & {
-            __TEST_HELPERS__?: {
-              _lastAddedFishId?: string
-              _addedSpritesCount?: number
-            }
+        }
+      ).__TEST_HELPERS__!._lastAddedFishId = fish.id
+      // `fishSprites` is a Map, use `size` to report accurate count
+      ;(
+        globalThis as typeof globalThis & {
+          __TEST_HELPERS__?: {
+            _lastAddedFishId?: string
+            _addedSpritesCount?: number
           }
-        ).__TEST_HELPERS__!._addedSpritesCount = this.fishSprites.size
+        }
+      ).__TEST_HELPERS__!._addedSpritesCount = this.fishSprites.size
       // Also write a debug console so browser logs capture sprite adds
 
       console.debug('TankContainer.addFish - added', fish.id, 'sprites=', this.fishSprites.size)

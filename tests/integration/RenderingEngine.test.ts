@@ -11,6 +11,7 @@ vi.mock('pixi.js', async () => {
     Application: class {
       stage = { addChild: vi.fn(), removeChild: vi.fn() }
       canvas = document.createElement('canvas')
+      screen = { width: 800, height: 600 }
       ticker = { add: vi.fn(), remove: vi.fn(), start: vi.fn(), stop: vi.fn(), destroy: vi.fn() }
       init = vi.fn().mockResolvedValue(undefined)
       destroy = vi.fn()
@@ -19,6 +20,9 @@ vi.mock('pixi.js', async () => {
       addChild = vi.fn()
       removeChild = vi.fn()
       removeChildren = vi.fn()
+      scale = { x: 1, y: 1, set: vi.fn() }
+      x = 0
+      y = 0
     },
     Sprite: class {
       anchor = { set: vi.fn() }
