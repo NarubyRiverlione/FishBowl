@@ -90,8 +90,8 @@ export const FISH_LIFE_STAGE_OLD_SATURATION = 0.6 // Color saturation multiplier
 // Tank Dimensions
 export const TANK_DEFAULT_WIDTH = 400
 export const TANK_DEFAULT_HEIGHT = 300
-export const TANK_UPGRADED_WIDTH = 1800
-export const TANK_UPGRADED_HEIGHT = 1800
+export const TANK_UPGRADED_WIDTH = 300
+export const TANK_UPGRADED_HEIGHT = 300
 
 // Game Values
 export const GAME_INITIAL_CREDITS = 100

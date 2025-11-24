@@ -118,8 +118,8 @@ test.describe('Tank Shape Detection', () => {
     if (!devModeTank.error) {
       expect(devModeTank.size).toBe('STANDARD')
       expect(devModeTank.capacity).toBe(15)
-      expect(devModeTank.width).toBe(800) // TANK_UPGRADED_WIDTH
-      expect(devModeTank.height).toBe(600) // TANK_UPGRADED_HEIGHT
+      expect(devModeTank.width).toBe(300) // TANK_UPGRADED_WIDTH
+      expect(devModeTank.height).toBe(300) // TANK_UPGRADED_HEIGHT
       expect(devModeTank.hasShape).toBe(true)
     }
   })
