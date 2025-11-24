@@ -58,8 +58,8 @@ test.describe('Tank Shape Visual Rendering', () => {
     expect(tankInfo.size).toBe('BOWL')
     expect(tankInfo.hasShape).toBe(true)
     expect(tankInfo.tankShape).toBe('circular')
-    expect(tankInfo.tankWidth).toBe(300) // TANK_BOWL_SIZE
-    expect(tankInfo.tankHeight).toBe(300) // TANK_BOWL_SIZE
+    expect(tankInfo.tankWidth).toBe(450) // TANK_BOWL_WIDTH
+    expect(tankInfo.tankHeight).toBe(450) // TANK_BOWL_HEIGHT
   })
 
   test('should render different shapes for different tank sizes in dev mode', async ({ page }) => {

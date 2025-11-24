@@ -9,8 +9,10 @@ import { Tank } from '../../src/models/Tank'
 import { Fish } from '../../src/models/Fish'
 import { TankSize, FishSpecies } from '../../src/models/types'
 import {
-  TANK_BOWL_SIZE,
-  TANK_STANDARD_SIZE,
+  TANK_BOWL_WIDTH,
+  TANK_BOWL_HEIGHT,
+  TANK_STANDARD_WIDTH,
+  TANK_STANDARD_HEIGHT,
   TANK_BIG_WIDTH,
   TANK_BIG_HEIGHT,
   WATER_LEVEL,
@@ -21,7 +23,7 @@ describe('Shape-Visual Consistency (T042e)', () => {
 
   beforeEach(() => {
     // Base tank template
-    mockTank = new Tank(TANK_BOWL_SIZE, TANK_BOWL_SIZE, 0x87ceeb)
+    mockTank = new Tank(TANK_BOWL_WIDTH, TANK_BOWL_WIDTH, 0x87ceeb)
     mockTank.id = 'test-tank'
     mockTank.size = 'BOWL' as TankSize
     mockTank.capacity = 2
@@ -33,12 +35,12 @@ describe('Shape-Visual Consistency (T042e)', () => {
 
   describe('Collision Boundary Consistency', () => {
     it('should have consistent boundaries for BOWL tank (circular)', () => {
-      const tank = new Tank(TANK_BOWL_SIZE, TANK_BOWL_SIZE, 0x87ceeb)
+      const tank = new Tank(TANK_BOWL_WIDTH, TANK_BOWL_WIDTH, 0x87ceeb)
       tank.size = 'BOWL' as TankSize
       const container = new TankContainer(tank)
 
       // Test collision boundaries match visual boundaries
-      const radius = TANK_BOWL_SIZE / 2
+      const radius = TANK_BOWL_WIDTH / 2
       const centerX = tank.geometry.width / 2
       const centerY = tank.geometry.height / 2
 
@@ -64,7 +66,7 @@ describe('Shape-Visual Consistency (T042e)', () => {
     })
 
     it('should have consistent boundaries for STANDARD tank (rectangular)', () => {
-      const tank = new Tank(TANK_STANDARD_SIZE, TANK_STANDARD_SIZE, 0x87ceeb)
+      const tank = new Tank(TANK_STANDARD_WIDTH, TANK_STANDARD_WIDTH, 0x87ceeb)
       tank.size = 'STANDARD' as TankSize
 
       const container = new TankContainer(tank)
@@ -87,8 +89,8 @@ describe('Shape-Visual Consistency (T042e)', () => {
       expect(isOutsideOutOfBounds).toBe(true) // Should be out of bounds
 
       // Visual rendering should use the same dimensions
-      expect(tank.geometry.width).toBe(TANK_STANDARD_SIZE)
-      expect(tank.geometry.height).toBe(TANK_STANDARD_SIZE)
+      expect(tank.geometry.width).toBe(TANK_STANDARD_WIDTH)
+      expect(tank.geometry.height).toBe(TANK_STANDARD_WIDTH)
       expect(container).toBeDefined()
     })
 
@@ -124,7 +126,7 @@ describe('Shape-Visual Consistency (T042e)', () => {
 
   describe('Spawn Area Consistency', () => {
     it('should have consistent spawn areas between collision and visual systems', () => {
-      const tank = new Tank(TANK_BOWL_SIZE, TANK_BOWL_SIZE, 0x87ceeb)
+      const tank = new Tank(TANK_BOWL_WIDTH, TANK_BOWL_WIDTH, 0x87ceeb)
       tank.size = 'BOWL' as TankSize
 
       const container = new TankContainer(tank)
@@ -145,7 +147,7 @@ describe('Shape-Visual Consistency (T042e)', () => {
     })
 
     it('should have consistent spawn areas for rectangular tanks', () => {
-      const tank = new Tank(TANK_STANDARD_SIZE, TANK_STANDARD_SIZE, 0x87ceeb)
+      const tank = new Tank(TANK_STANDARD_WIDTH, TANK_STANDARD_WIDTH, 0x87ceeb)
       tank.size = 'STANDARD' as TankSize
 
       const container = new TankContainer(tank)
@@ -167,7 +169,7 @@ describe('Shape-Visual Consistency (T042e)', () => {
 
   describe('Water Level Consistency', () => {
     it('should render water level that matches collision water boundaries', () => {
-      const tank = new Tank(TANK_BOWL_SIZE, TANK_BOWL_SIZE, 0x87ceeb)
+      const tank = new Tank(TANK_BOWL_WIDTH, TANK_BOWL_WIDTH, 0x87ceeb)
       tank.size = 'BOWL' as TankSize
 
       const container = new TankContainer(tank)

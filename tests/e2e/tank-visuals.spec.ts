@@ -44,8 +44,8 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
       if (tankInfo) {
         expect(tankInfo.size).toBe('BOWL')
         expect(tankInfo.shape).toBe('circular')
-        expect(tankInfo.width).toBe(300) // TANK_BOWL_SIZE
-        expect(tankInfo.height).toBe(300)
+        expect(tankInfo.width).toBe(450) // TANK_BOWL_WIDTH
+        expect(tankInfo.height).toBe(450)
       }
     })
 
@@ -76,8 +76,8 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
       if (tankInfo) {
         expect(tankInfo.size).toBe('STANDARD')
         expect(tankInfo.shape).toBe('rectangular')
-        expect(tankInfo.width).toBe(500) // TANK_STANDARD_SIZE
-        expect(tankInfo.height).toBe(500)
+        expect(tankInfo.width).toBe(450) // TANK_STANDARD_WIDTH
+        expect(tankInfo.height).toBe(450)
       }
     })
   })

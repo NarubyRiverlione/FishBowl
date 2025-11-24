@@ -110,16 +110,16 @@ test.describe('Tank Shape Detection', () => {
     if (!normalModeTank.error) {
       expect(normalModeTank.size).toBe('BOWL')
       expect(normalModeTank.capacity).toBe(2)
-      expect(normalModeTank.width).toBe(450) // TANK_BOWL_SIZE
-      expect(normalModeTank.height).toBe(450) // TANK_BOWL_SIZE
+      expect(normalModeTank.width).toBe(450) // TANK_BOWL_WIDTH
+      expect(normalModeTank.height).toBe(450) // TANK_BOWL_HEIGHT
       expect(normalModeTank.hasShape).toBe(true)
     }
 
     if (!devModeTank.error) {
       expect(devModeTank.size).toBe('STANDARD')
       expect(devModeTank.capacity).toBe(15)
-      expect(devModeTank.width).toBe(450) // TANK_UPGRADED_WIDTH
-      expect(devModeTank.height).toBe(450) // TANK_UPGRADED_HEIGHT
+      expect(devModeTank.width).toBe(450) // TANK_STANDARD_WIDTH
+      expect(devModeTank.height).toBe(450) // TANK_STANDARD_HEIGHT
       expect(devModeTank.hasShape).toBe(true)
     }
   })

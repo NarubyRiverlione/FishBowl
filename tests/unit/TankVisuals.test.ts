@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { TankContainer } from '../../src/game/views/TankContainer'
 import { ITankLogic, TankSize } from '../../src/models/types'
-import { TANK_BOWL_SIZE, TANK_STANDARD_SIZE, TANK_BIG_WIDTH, TANK_BIG_HEIGHT } from '../../src/lib/constants'
+import { TANK_BOWL_WIDTH, TANK_STANDARD_WIDTH, TANK_BIG_WIDTH, TANK_BIG_HEIGHT } from '../../src/lib/constants'
 
 // Mock SVG assets
 vi.mock('../../src/assets/fishbowl.svg', () => ({
@@ -113,10 +113,10 @@ describe('Tank Visual Rendering (T042d)', () => {
       backgroundColor: 0x87ceeb,
       createdAt: Date.now(),
       geometry: {
-        width: TANK_BOWL_SIZE,
-        height: TANK_BOWL_SIZE,
-        centerX: TANK_BOWL_SIZE / 2,
-        centerY: TANK_BOWL_SIZE / 2,
+        width: TANK_BOWL_WIDTH,
+        height: TANK_BOWL_WIDTH,
+        centerX: TANK_BOWL_WIDTH / 2,
+        centerY: TANK_BOWL_WIDTH / 2,
       },
       // Performance metrics
       collisionChecks: 0,
@@ -137,17 +137,17 @@ describe('Tank Visual Rendering (T042d)', () => {
         ...mockTank,
         size: 'BOWL' as TankSize,
         geometry: {
-          width: TANK_BOWL_SIZE,
-          height: TANK_BOWL_SIZE,
-          centerX: TANK_BOWL_SIZE / 2,
-          centerY: TANK_BOWL_SIZE / 2,
+          width: TANK_BOWL_WIDTH,
+          height: TANK_BOWL_WIDTH,
+          centerX: TANK_BOWL_WIDTH / 2,
+          centerY: TANK_BOWL_WIDTH / 2,
         },
       }
 
       const container = new TankContainer(tank)
 
-      expect(tank.geometry.width).toBe(TANK_BOWL_SIZE)
-      expect(tank.geometry.height).toBe(TANK_BOWL_SIZE)
+      expect(tank.geometry.width).toBe(TANK_BOWL_WIDTH)
+      expect(tank.geometry.height).toBe(TANK_BOWL_WIDTH)
       expect(tank.size).toBe('BOWL')
       expect(container).toBeDefined()
     })
@@ -157,17 +157,17 @@ describe('Tank Visual Rendering (T042d)', () => {
         ...mockTank,
         size: 'STANDARD' as TankSize,
         geometry: {
-          width: TANK_STANDARD_SIZE,
-          height: TANK_STANDARD_SIZE,
-          centerX: TANK_STANDARD_SIZE / 2,
-          centerY: TANK_STANDARD_SIZE / 2,
+          width: TANK_STANDARD_WIDTH,
+          height: TANK_STANDARD_WIDTH,
+          centerX: TANK_STANDARD_WIDTH / 2,
+          centerY: TANK_STANDARD_WIDTH / 2,
         },
       }
 
       const container = new TankContainer(tank)
 
-      expect(tank.geometry.width).toBe(TANK_STANDARD_SIZE)
-      expect(tank.geometry.height).toBe(TANK_STANDARD_SIZE)
+      expect(tank.geometry.width).toBe(TANK_STANDARD_WIDTH)
+      expect(tank.geometry.height).toBe(TANK_STANDARD_WIDTH)
       expect(tank.size).toBe('STANDARD')
       expect(container).toBeDefined()
     })
@@ -214,10 +214,10 @@ describe('Tank Visual Rendering (T042d)', () => {
         ...mockTank,
         size: 'STANDARD' as TankSize,
         geometry: {
-          width: TANK_STANDARD_SIZE,
-          height: TANK_STANDARD_SIZE,
-          centerX: TANK_STANDARD_SIZE / 2,
-          centerY: TANK_STANDARD_SIZE / 2,
+          width: TANK_STANDARD_WIDTH,
+          height: TANK_STANDARD_WIDTH,
+          centerX: TANK_STANDARD_WIDTH / 2,
+          centerY: TANK_STANDARD_WIDTH / 2,
         },
       }
 

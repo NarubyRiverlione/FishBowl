@@ -2,7 +2,7 @@ import { ITankShape } from '../../models/types/tankShape'
 import { TankSize } from '../../models/types/index'
 import { RectangularTankShape } from './shapes/RectangularTankShape'
 import { CircularTankShape } from './shapes/CircularTankShape'
-import { TANK_BOWL_SIZE, TANK_STANDARD_SIZE, TANK_BIG_WIDTH, TANK_BIG_HEIGHT } from '../../lib/constants'
+import { TANK_BOWL_WIDTH, TANK_STANDARD_WIDTH, TANK_BIG_WIDTH, TANK_BIG_HEIGHT } from '../../lib/constants'
 
 /**
  * Factory function to create appropriate tank shape based on tank size.
@@ -13,16 +13,16 @@ import { TANK_BOWL_SIZE, TANK_STANDARD_SIZE, TANK_BIG_WIDTH, TANK_BIG_HEIGHT } f
 export function createTankShape(size: TankSize): ITankShape {
   switch (size) {
     case 'BOWL':
-      // BOWL is circular with radius = TANK_BOWL_SIZE / 2
-      return new CircularTankShape(TANK_BOWL_SIZE / 2, TANK_BOWL_SIZE / 2, TANK_BOWL_SIZE / 2)
+      // BOWL is circular with radius = TANK_BOWL_WIDTH / 2
+      return new CircularTankShape(TANK_BOWL_WIDTH / 2, TANK_BOWL_WIDTH / 2, TANK_BOWL_WIDTH / 2)
 
     case 'STANDARD': {
       // STANDARD is square (rectangular with equal dimensions)
       return new RectangularTankShape(
-        TANK_STANDARD_SIZE / 2,
-        TANK_STANDARD_SIZE / 2,
-        TANK_STANDARD_SIZE,
-        TANK_STANDARD_SIZE
+        TANK_STANDARD_WIDTH / 2,
+        TANK_STANDARD_WIDTH / 2,
+        TANK_STANDARD_WIDTH,
+        TANK_STANDARD_WIDTH
       )
     }
 

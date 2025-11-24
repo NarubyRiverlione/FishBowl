@@ -14,9 +14,10 @@ import {
   TANK_UPGRADE_COST,
   TANK_CAPACITY_STANDARD,
   TANK_CAPACITY_BOWL,
-  TANK_BOWL_SIZE,
-  TANK_UPGRADED_WIDTH,
-  TANK_UPGRADED_HEIGHT,
+  TANK_BOWL_WIDTH,
+  TANK_BOWL_HEIGHT,
+  TANK_STANDARD_WIDTH,
+  TANK_STANDARD_HEIGHT,
   WATER_QUALITY_INITIAL,
   POLLUTION_INITIAL,
   TEMPERATURE_DEFAULT,
@@ -63,10 +64,10 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
     fish: [],
     createdAt: Date.now(),
     geometry: {
-      width: TANK_BOWL_SIZE,
-      height: TANK_BOWL_SIZE,
-      centerX: TANK_BOWL_SIZE / 2,
-      centerY: TANK_BOWL_SIZE / 2,
+      width: TANK_BOWL_WIDTH,
+      height: TANK_BOWL_HEIGHT,
+      centerX: TANK_BOWL_WIDTH / 2,
+      centerY: TANK_BOWL_HEIGHT / 2,
     },
     backgroundColor: 0x87ceeb, // Sky blue
   }
@@ -224,10 +225,10 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
           size: 'STANDARD',
           capacity: TANK_CAPACITY_STANDARD,
           geometry: {
-            width: TANK_UPGRADED_WIDTH,
-            height: TANK_UPGRADED_HEIGHT,
-            centerX: TANK_UPGRADED_WIDTH / 2,
-            centerY: TANK_UPGRADED_HEIGHT / 2,
+            width: TANK_STANDARD_WIDTH,
+            height: TANK_STANDARD_HEIGHT,
+            centerX: TANK_STANDARD_WIDTH / 2,
+            centerY: TANK_STANDARD_HEIGHT / 2,
           },
         } as ITankData // Cast to ensure type safety if needed, though should be inferred
 
