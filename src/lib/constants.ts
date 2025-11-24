@@ -157,10 +157,10 @@ export const WATER_SURFACE_RATIO = 0.95 // Ratio of tank height/diameter for wat
 // Used for physics, collision detection, and business logic (Fish, Tank models)
 // Fish movement, spawn bounds, and collision are calculated in these coordinates
 // ============================================================================
-export const TANK_BOWL_WIDTH = 450 // Circular bowl: game world coordinate space
-export const TANK_BOWL_HEIGHT = 450
-export const TANK_STANDARD_WIDTH = 450 // Standard tank: game world coordinate space
-export const TANK_STANDARD_HEIGHT = 450
+export const TANK_BOWL_WIDTH = 300 // Circular bowl: game world coordinate space
+export const TANK_BOWL_HEIGHT = 300
+export const TANK_STANDARD_WIDTH = 600 // Standard tank: game world coordinate space
+export const TANK_STANDARD_HEIGHT = 600
 export const TANK_BIG_WIDTH = 900 // Rectangular big tank: game world coordinate space
 export const TANK_BIG_HEIGHT = 500
 
@@ -170,8 +170,8 @@ export const TANK_BIG_HEIGHT = 500
 // Game world is scaled to fit these display size constraints
 // Changing these does NOT affect gameplay physics - only visual size
 // ============================================================================
-export const TANK_DISPLAY_MIN_SIZE = 300 // Minimum display size: tank never smaller than this
-export const TANK_DISPLAY_MAX_SIZE = 800 // Maximum display size: tank never larger than this
+export const TANK_DISPLAY_MIN_SIZE = 600 // Minimum display size: tank never smaller than this
+export const TANK_DISPLAY_MAX_SIZE = 1200 // Maximum display size: tank never larger than this
 export const MOBILE_BREAKPOINT = 768 // Switch to full-width below this viewport width
 export const DESKTOP_BREAKPOINT = 1024 // Switch to grid layout above this viewport width
 // Physics restitution (T041c)
