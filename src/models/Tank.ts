@@ -1,5 +1,7 @@
-import { ITankLogic, ITankGeometry, TankSize, UUID, IFishLogic } from './types'
+import { ITankLogic, ITankGeometry, TankSize, UUID, IFishLogic, IFloor } from './types'
 import { Fish } from './Fish'
+import { getFloorConfig } from './types/floor'
+
 import {
   resolveBoundaryCollision,
   resolveFishCollision,
@@ -20,6 +22,7 @@ export class Tank implements ITankLogic {
   backgroundColor: number
   fish: Fish[] = [] // Implementation uses Fish[] but interface expects IFish[]
   geometry: ITankGeometry
+  floor: IFloor
 
   // Metrics
   collisionChecks: number = 0
@@ -33,6 +36,7 @@ export class Tank implements ITankLogic {
       centerY: height / 2,
     }
     this.backgroundColor = backgroundColor
+    this.floor = getFloorConfig(this.size, width, height)
   }
 
   addFish(fish: IFishLogic): void {

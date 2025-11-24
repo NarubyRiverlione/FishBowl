@@ -14,9 +14,9 @@ describe('RenderingEngine helpers', () => {
     // inject mock tankView
     ;(
       engine as RenderingEngine & {
-        tankView: { getFishScreenPositions: () => Array<{ id: string; x: number; y: number }> }
+        tankView: { getFishScreenPositions: () => Array<{ id: string; x: number; y: number }> } | null
       }
-    ).tankView = mockTankView
+    ).tankView = mockTankView as never
 
     // Initially no positions
     expect(engine.getFishScreenPositions()).toEqual([])
@@ -31,6 +31,6 @@ describe('RenderingEngine helpers', () => {
     expect(ok).toBe(true)
     const pos = engine.getFishScreenPositions()
     expect(pos.length).toBeGreaterThan(0)
-    expect(pos[0].id).toBe('f1')
+    expect(pos[0]?.id).toBe('f1')
   })
 })

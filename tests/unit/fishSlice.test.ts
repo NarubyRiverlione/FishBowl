@@ -1,25 +1,29 @@
 import { create } from 'zustand'
 import { createFishSlice } from '../../src/store/slices/fishSlice'
-import { IFish } from '../../src/models/types/fish'
+import type { IFishData } from '../../src/models/types/fish'
+import { FishSpecies } from '../../src/models/types'
 import { describe, it, expect } from 'vitest'
 
 describe('Fish slice', () => {
   it('starts empty and allows adding and removing fish', () => {
     const useTestStore = create(createFishSlice)
 
-    const fish: IFish = {
+    const fish: IFishData = {
       id: 'f1',
-      x: 10,
-      y: 20,
-      vx: 0,
-      vy: 0,
-      scale: 1,
+      species: FishSpecies.GUPPY,
       color: '#ffffff',
-      width: 10,
-      height: 5,
-      mass: 1,
-      radius: 5,
-      update: () => {},
+      size: 1,
+      age: 0,
+      health: 100,
+      hunger: 0,
+      isAlive: true,
+      genetics: {},
+      createdAt: Date.now(),
+      geometry: {
+        position: { x: 10, y: 20 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 5,
+      },
     }
 
     // initial state

@@ -54,7 +54,7 @@ describe('RenderingEngine Integration', () => {
 
   it('should update fish positions on tick', () => {
     engine.spawnFish(1)
-    const fish = engine.tank.fish[0]
+    const fish = engine.tank.fish[0]!
     fish.vx = 10
     fish.vy = 0
 

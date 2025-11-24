@@ -98,7 +98,7 @@ describe('Feed and Survive Integration', () => {
       if (!fish || !fish.isAlive) break
     }
 
-    const fish = useGameStore.getState().tank!.fish[0]
+    const fish = useGameStore.getState().tank!.fish[0]!
     expect(fish).toBeDefined()
     expect(fish.isAlive).toBe(true)
     expect(fish.health).toBeGreaterThan(0)

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
+import type { ITankData } from '../../src/models/types'
 
 describe('Multi-tank support', () => {
   beforeEach(() => {
@@ -10,7 +11,7 @@ describe('Multi-tank support', () => {
   it('can add multiple tanks and select between them', () => {
     const store = useGameStore.getState()
 
-    const tankA = {
+    const tankA: ITankData = {
       id: 'tank-a',
       size: 'BOWL',
       capacity: 1,
@@ -20,9 +21,28 @@ describe('Multi-tank support', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
+      geometry: {
+        width: 300,
+        height: 300,
+        centerX: 150,
+        centerY: 150,
+      },
+      backgroundColor: 0x87ceeb,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: 290,
+          width: 300,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
     }
 
-    const tankB = {
+    const tankB: ITankData = {
       id: 'tank-b',
       size: 'STANDARD',
       capacity: 15,
@@ -32,6 +52,25 @@ describe('Multi-tank support', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
+      geometry: {
+        width: 600,
+        height: 600,
+        centerX: 300,
+        centerY: 300,
+      },
+      backgroundColor: 0x87ceeb,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: 590,
+          width: 600,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
     }
 
     store.addOrSelectTank?.(tankA)
@@ -56,7 +95,7 @@ describe('Multi-tank support', () => {
 
   it('setTanks replaces array and selects first', () => {
     const store = useGameStore.getState()
-    const t1 = {
+    const t1: ITankData = {
       id: 't1',
       size: 'BOWL',
       capacity: 1,
@@ -66,8 +105,27 @@ describe('Multi-tank support', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
+      geometry: {
+        width: 300,
+        height: 300,
+        centerX: 150,
+        centerY: 150,
+      },
+      backgroundColor: 0x87ceeb,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: 290,
+          width: 300,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
     }
-    const t2 = {
+    const t2: ITankData = {
       id: 't2',
       size: 'STANDARD',
       capacity: 15,
@@ -77,6 +135,25 @@ describe('Multi-tank support', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
+      geometry: {
+        width: 600,
+        height: 600,
+        centerX: 300,
+        centerY: 300,
+      },
+      backgroundColor: 0x87ceeb,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: 590,
+          width: 600,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
     }
 
     store.setTanks?.([t1, t2])
@@ -88,7 +165,7 @@ describe('Multi-tank support', () => {
 
   it('setTank upserts and selects', () => {
     const store = useGameStore.getState()
-    const t = {
+    const t: ITankData = {
       id: 'upsert',
       size: 'BOWL',
       capacity: 1,
@@ -98,6 +175,25 @@ describe('Multi-tank support', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
+      geometry: {
+        width: 300,
+        height: 300,
+        centerX: 150,
+        centerY: 150,
+      },
+      backgroundColor: 0x87ceeb,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: 290,
+          width: 300,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
     }
 
     store.setTank?.(t)
@@ -106,7 +202,7 @@ describe('Multi-tank support', () => {
     expect(s.tank?.id).toBe('upsert')
 
     // update same id
-    const t2 = { ...t, capacity: 5 }
+    const t2: ITankData = { ...t, capacity: 5 }
     store.setTank?.(t2)
     s = useGameStore.getState()
     const found = s.tanks.find((x) => x.id === 'upsert')

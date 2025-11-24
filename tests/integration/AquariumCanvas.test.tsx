@@ -7,8 +7,9 @@ declare global {
   interface Window {
     __TEST_HELPERS__?: {
       getFishScreenPositions?: () => unknown[]
-      awaitFishRendered?: (fishId: string, timeout?: number) => Promise<boolean>
+      awaitFishRendered?: (timeout?: number) => Promise<boolean>
       getStoreFishCount?: () => number
+      getStoreTanks?: () => unknown
       forceSync?: () => void
     }
   }
@@ -38,7 +39,10 @@ vi.mock('../../src/store/useGameStore', () => {
 
   const mockStore = vi.fn((selector) => {
     return selector ? selector(mockState) : mockState
-  })
+  }) as ReturnType<typeof vi.fn> & {
+    subscribe: ReturnType<typeof vi.fn>
+    getState: ReturnType<typeof vi.fn>
+  }
 
   // Add Zustand store methods
   mockStore.subscribe = vi.fn((callback) => {

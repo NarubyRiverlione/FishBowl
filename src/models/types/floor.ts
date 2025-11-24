@@ -37,11 +37,7 @@ export interface IFloor {
  * Get floor configuration based on tank size
  * Different tank types have different floor characteristics
  */
-export const getFloorConfig = (
-  tankSize: TankSize,
-  tankWidth: number,
-  tankHeight: number
-): IFloor => {
+export const getFloorConfig = (tankSize: TankSize, tankWidth: number, tankHeight: number): IFloor => {
   const baseY = tankHeight - 1 // 1px height for floor
 
   switch (tankSize) {

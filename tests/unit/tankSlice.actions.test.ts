@@ -7,7 +7,7 @@ import { IFishData, ITankData, FishSpecies } from '../../src/models/types'
 
 describe('Tank slice actions', () => {
   it('feedTank deducts cost and increases pollution', () => {
-    const useTestStore = create((set, get, api) => ({
+    const useTestStore = create<GameState & TankState>((set, get, api) => ({
       ...createTankSlice(
         set as Parameters<StateCreator<GameState & TankState>>[0],
         get as Parameters<StateCreator<GameState & TankState>>[1],
@@ -48,7 +48,7 @@ describe('Tank slice actions', () => {
   })
 
   it('cleanTank reduces pollution and deducts credits when affordable', () => {
-    const useTestStore = create((set, get, api) => ({
+    const useTestStore = create<GameState & TankState>((set, get, api) => ({
       ...createTankSlice(
         set as Parameters<StateCreator<GameState & TankState>>[0],
         get as Parameters<StateCreator<GameState & TankState>>[1],
@@ -72,7 +72,7 @@ describe('Tank slice actions', () => {
   })
 
   it('buyFilter requires STANDARD tank and sufficient credits', () => {
-    const useTestStore = create((set, get, api) => ({
+    const useTestStore = create<GameState & TankState>((set, get, api) => ({
       ...createTankSlice(
         set as Parameters<StateCreator<GameState & TankState>>[0],
         get as Parameters<StateCreator<GameState & TankState>>[1],
@@ -101,7 +101,7 @@ describe('Tank slice actions', () => {
   })
 
   it('upgradeTank turns BOWL into STANDARD when affordable', () => {
-    const useTestStore = create((set, get, api) => ({
+    const useTestStore = create<GameState & TankState>((set, get, api) => ({
       ...createTankSlice(
         set as Parameters<StateCreator<GameState & TankState>>[0],
         get as Parameters<StateCreator<GameState & TankState>>[1],

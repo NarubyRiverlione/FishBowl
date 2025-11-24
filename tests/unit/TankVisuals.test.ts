@@ -128,6 +128,18 @@ describe('Tank Visual Rendering (T042d)', () => {
       checkBoundary: vi.fn(() => false),
       resolveBoundary: vi.fn(),
       getSpawnBounds: vi.fn(() => ({ minX: 20, maxX: 80, minY: 20, maxY: 80 })),
+      floor: {
+        visible: false,
+        type: 'invisible',
+        geometry: {
+          x: 0,
+          y: TANK_BOWL_WIDTH - 1,
+          width: TANK_BOWL_WIDTH,
+          height: 1,
+        },
+        restitution: 0.2,
+        friction: 0.002,
+      },
     }
   })
 

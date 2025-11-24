@@ -5,8 +5,8 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
-import { FishSpecies } from '../../src/models/types'
-import { WATER_LEVEL } from '../../src/lib/constants'
+import { FishSpecies, ITankData } from '../../src/models/types'
+
 
 describe('Fish Death Mechanics', () => {
   beforeEach(() => {
@@ -76,9 +76,9 @@ describe('Fish Death Mechanics', () => {
         },
       ],
     }
-    useGameStore.getState().setTank(updatedTank)
+    useGameStore.getState().setTank(updatedTank as ITankData)
 
-    const deadFish = useGameStore.getState().tank!.fish[0]
+    const deadFish = useGameStore.getState().tank!.fish[0]!
     expect(deadFish.health).toBe(0)
     expect(deadFish.isAlive).toBe(false)
   })
@@ -91,20 +91,20 @@ describe('Fish Death Mechanics', () => {
     store.buyFish(tankId, FishSpecies.GUPPY)
     store.buyFish(tankId, FishSpecies.GUPPY)
 
-    let fish = useGameStore.getState().tank!.fish
+    const fish = useGameStore.getState().tank!.fish
     expect(fish).toHaveLength(2)
 
     // Mark first fish as dead
-    const deadFish = { ...fish[0], health: 0, isAlive: false }
+    const deadFish = { ...fish[0]!, health: 0, isAlive: false }
     const updatedTank = {
       ...useGameStore.getState().tank!,
-      fish: [deadFish, fish[1]],
+      fish: [deadFish, fish[1]!],
     }
-    useGameStore.getState().setTank(updatedTank)
+    useGameStore.getState().setTank(updatedTank as ITankData)
 
     // Before tick: dead fish still in array
     expect(useGameStore.getState().tank!.fish).toHaveLength(2)
-    expect(useGameStore.getState().tank!.fish[0].isAlive).toBe(false)
+    expect(useGameStore.getState().tank!.fish[0]!.isAlive).toBe(false)
 
     // Run tick - cleanup should remove dead fish
     store.tick()
@@ -112,7 +112,7 @@ describe('Fish Death Mechanics', () => {
     // After tick: dead fish should be removed
     const remainingFish = useGameStore.getState().tank!.fish
     expect(remainingFish).toHaveLength(1)
-    expect(remainingFish[0].isAlive).toBe(true)
+    expect(remainingFish[0]!.isAlive).toBe(true)
   })
 
   it('should not count dead fish in pollution metrics', () => {
@@ -123,16 +123,16 @@ describe('Fish Death Mechanics', () => {
     store.buyFish(tankId, FishSpecies.GUPPY)
     store.buyFish(tankId, FishSpecies.GUPPY)
 
-    let fish = useGameStore.getState().tank!.fish
+    const fish = useGameStore.getState().tank!.fish
     const initialPollution = useGameStore.getState().tank!.pollution
 
     // Mark first fish as dead
-    const deadFish = { ...fish[0], health: 0, isAlive: false }
+    const deadFish = { ...fish[0]!, health: 0, isAlive: false }
     const updatedTank = {
       ...useGameStore.getState().tank!,
-      fish: [deadFish, fish[1]],
+      fish: [deadFish, fish[1]!],
     }
-    useGameStore.getState().setTank(updatedTank)
+    useGameStore.getState().setTank(updatedTank as ITankData)
 
     // Run several ticks
     for (let i = 0; i < 5; i++) {
@@ -164,13 +164,13 @@ describe('Fish Death Mechanics', () => {
     expect(useGameStore.getState().tank!.fish).toHaveLength(3)
 
     // Mark one fish as dead
-    let fish = useGameStore.getState().tank!.fish
-    const deadFish = { ...fish[0], health: 0, isAlive: false }
+    const fish = useGameStore.getState().tank!.fish
+    const deadFish = { ...fish[0]!, health: 0, isAlive: false }
     const updatedTank = {
       ...useGameStore.getState().tank!,
-      fish: [deadFish, fish[1], fish[2]],
+      fish: [deadFish, fish[1]!, fish[2]!],
     }
-    useGameStore.getState().setTank(updatedTank)
+    useGameStore.getState().setTank(updatedTank as ITankData)
 
     // Run tick to cleanup
     store.tick()
@@ -201,19 +201,18 @@ describe('Fish Death Mechanics', () => {
     expect(useGameStore.getState().tank!.fish).toHaveLength(2)
 
     // Mark one fish as dead and update store
-    let fish = useGameStore.getState().tank!.fish
-    const deadFish = { ...fish[0], health: 0, isAlive: false }
+    const fish = useGameStore.getState().tank!.fish
+    const deadFish = { ...fish[0]!, health: 0, isAlive: false }
     const updatedTank = {
       ...useGameStore.getState().tank!,
-      fish: [deadFish, fish[1]],
+      fish: [deadFish, fish[1]!],
     }
-    useGameStore.getState().setTank(updatedTank)
+    useGameStore.getState().setTank(updatedTank as ITankData)
 
     // Run tick to cleanup
     store.tick()
 
     // After cleanup, feeding cost should reflect only 1 living fish
-    const tankBefore = useGameStore.getState().tank!
     const creditsBeforeFeed = useGameStore.getState().credits
 
     // Feed the tank (should only cost for 1 living fish)
@@ -240,17 +239,17 @@ describe('Fish Death Mechanics', () => {
     expect(useGameStore.getState().tank!.fish).toHaveLength(4)
 
     // Mark two fish as dead
-    let fish = useGameStore.getState().tank!.fish
+    const fish = useGameStore.getState().tank!.fish
     const updatedTank = {
       ...useGameStore.getState().tank!,
       fish: [
-        { ...fish[0], health: 0, isAlive: false },
-        fish[1],
-        { ...fish[2], health: 0, isAlive: false },
-        fish[3],
+        { ...fish[0]!, health: 0, isAlive: false },
+        fish[1]!,
+        { ...fish[2]!, health: 0, isAlive: false },
+        fish[3]!,
       ],
     }
-    useGameStore.getState().setTank(updatedTank)
+    useGameStore.getState().setTank(updatedTank as ITankData)
 
     expect(useGameStore.getState().tank!.fish).toHaveLength(4)
 
@@ -259,8 +258,8 @@ describe('Fish Death Mechanics', () => {
 
     // Should have 2 fish remaining (the living ones)
     expect(useGameStore.getState().tank!.fish).toHaveLength(2)
-    expect(useGameStore.getState().tank!.fish[0].isAlive).toBe(true)
-    expect(useGameStore.getState().tank!.fish[1].isAlive).toBe(true)
+    expect(useGameStore.getState().tank!.fish[0]!.isAlive).toBe(true)
+    expect(useGameStore.getState().tank!.fish[1]!.isAlive).toBe(true)
   })
 
   it('should clear selected fish if selected fish dies and is removed', () => {
@@ -269,7 +268,7 @@ describe('Fish Death Mechanics', () => {
 
     // Buy a fish
     store.buyFish(tankId, FishSpecies.GUPPY)
-    const fish = useGameStore.getState().tank!.fish[0]
+    const fish = useGameStore.getState().tank!.fish[0]!
 
     // Select the fish
     store.selectFish(fish.id)
@@ -281,7 +280,7 @@ describe('Fish Death Mechanics', () => {
       ...useGameStore.getState().tank!,
       fish: [deadFish],
     }
-    useGameStore.getState().setTank(updatedTank)
+    useGameStore.getState().setTank(updatedTank as ITankData)
 
     // Run tick to cleanup
     store.tick()
@@ -290,6 +289,6 @@ describe('Fish Death Mechanics', () => {
     expect(useGameStore.getState().tank!.fish).toHaveLength(0)
     // Selected fish should still be the old ID since the selection wasn't cleared
     // (The UI should handle this, but the store doesn't auto-clear)
-    expect(useGameStore.getState().selectedFishId).toBe(fish.id)
+    expect(useGameStore.getState().selectedFishId).toBe(fish!.id)
   })
 })

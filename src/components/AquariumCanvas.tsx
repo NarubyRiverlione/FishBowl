@@ -5,7 +5,7 @@ import useGameStore from '../store/useGameStore'
 
 interface TestHelpers {
   getFishScreenPositions: () => Array<{ id: string; x: number; y: number }>
-  awaitFishRendered: (timeoutMs?: number) => Promise<boolean>
+  awaitFishRendered: (timeout?: number) => Promise<boolean>
   getStoreFishCount: () => number
   getStoreTanks: () => unknown
   forceSync: () => void

@@ -5,16 +5,14 @@
 
 import { describe, it, expect, beforeEach } from 'vitest'
 import { FishService } from '../../src/services/FishService'
-import { createTankShape } from '../../src/services/physics/TankShapeFactory'
-import { FLOOR_RESTITUTION, WALL_RESTITUTION, WATER_LEVEL } from '../../src/lib/constants'
-import { getFloorConfig } from '../../src/models/types'
+import { FLOOR_RESTITUTION, WALL_RESTITUTION } from '../../src/lib/constants'
+import { getFloorConfig, FishSpecies } from '../../src/models/types'
 import { ITankLogic, ITankGeometry } from '../../src/models/types'
 
 describe('Floor Physics', () => {
   let tank: Partial<ITankLogic>
   const tankWidth = 600
   const tankHeight = 600
-  const floorY = tankHeight * WATER_LEVEL
 
   beforeEach(() => {
     const geometry: ITankGeometry = {
@@ -24,13 +22,10 @@ describe('Floor Physics', () => {
       centerY: tankHeight / 2,
     }
 
-    const shape = createTankShape('STANDARD')
-
     tank = {
       id: 'test-tank',
       size: 'STANDARD',
       geometry,
-      shape,
       floor: getFloorConfig('STANDARD', tankWidth, tankHeight),
     } as Partial<ITankLogic>
   })
@@ -61,13 +56,13 @@ describe('Floor Physics', () => {
 
   it('should apply gentle restitution when fish bounces off floor', () => {
     // Create a fish above the floor with downward velocity
-    const fish = FishService.createFish('GOLDFISH')
-    fish.geometry.x = tankWidth / 2
-    fish.geometry.y = tankHeight - 100 // Above floor
-    fish.geometry.velocityX = 0
-    fish.geometry.velocityY = 10 // Moving downward
+    const fish = FishService.createFish(FishSpecies.GOLDFISH)
+    fish.geometry.position.x = tankWidth / 2
+    fish.geometry.position.y = tankHeight - 100 // Above floor
+    fish.geometry.velocity.vx = 0
+    fish.geometry.velocity.vy = 10 // Moving downward
 
-    const initialVelocity = fish.geometry.velocityY
+    const initialVelocity = fish.geometry.velocity.vy
     const floor = tank.floor!
 
     // Simulate floor collision
@@ -117,16 +112,16 @@ describe('Floor Physics', () => {
 
   it('should allow fish to settle with natural resting behavior', () => {
     // Create a fish that will settle on the floor
-    const fish = FishService.createFish('GUPPY')
-    fish.geometry.x = tankWidth / 2
-    fish.geometry.y = tankHeight - 150
-    fish.geometry.velocityX = 5
-    fish.geometry.velocityY = 8
+    const fish = FishService.createFish(FishSpecies.GUPPY)
+    fish.geometry.position.x = tankWidth / 2
+    fish.geometry.position.y = tankHeight - 150
+    fish.geometry.velocity.vx = 5
+    fish.geometry.velocity.vy = 8
 
     const floor = tank.floor!
 
     // Simulate multiple bounces with floor restitution
-    let velocity = fish.geometry.velocityY
+    let velocity = fish.geometry.velocity.vy
     const bounces: number[] = []
 
     for (let i = 0; i < 5; i++) {
@@ -136,10 +131,10 @@ describe('Floor Physics', () => {
 
     // Each bounce should be smaller than the previous one
     for (let i = 1; i < bounces.length; i++) {
-      expect(bounces[i]).toBeLessThan(bounces[i - 1])
+      expect(bounces[i]!).toBeLessThan(bounces[i - 1]!)
     }
 
     // After several bounces, velocity should approach zero (settling)
-    expect(bounces[bounces.length - 1]).toBeLessThan(bounces[0] * 0.1)
+    expect(bounces[bounces.length - 1]!).toBeLessThan(bounces[0]! * 0.1)
   })
 })

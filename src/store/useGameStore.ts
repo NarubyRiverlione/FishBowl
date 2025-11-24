@@ -3,6 +3,7 @@ import { devtools } from 'zustand/middleware'
 import { createFishSlice, FishState } from './slices/fishSlice'
 import { createTankSlice, TankState } from './slices/tankSlice'
 import { createGameSlice, GameState } from './slices/gameSlice'
+import { ITankData } from '../models/types'
 
 type StoreState = TankState & FishState & GameState
 
@@ -16,8 +17,8 @@ const useGameStore = create<StoreState>()(
 
 // Expose store for E2E testing in development
 if (typeof window !== 'undefined' && typeof import.meta !== 'undefined' && 'env' in import.meta) {
-  ;(window as Window & { __GAME_STORE_DEBUG__?: Record<string, unknown> }).__GAME_STORE_DEBUG__ = {
-    get tank() {
+  ;(window as unknown as Record<string, unknown>)['__GAME_STORE_DEBUG__'] = {
+    get tank(): ITankData | null {
       return useGameStore.getState().tank
     },
     get credits() {

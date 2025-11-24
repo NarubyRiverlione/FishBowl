@@ -21,9 +21,25 @@ describe('Cleaning Workflow Integration', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
-      height: TEST_VALUES.DIMENSIONS.TANK_HEIGHT,
-      backgroundColor: 0x000000,
+      geometry: {
+        width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
+        height: TEST_VALUES.DIMENSIONS.TANK_HEIGHT,
+        centerX: TEST_VALUES.DIMENSIONS.TANK_WIDTH / 2,
+        centerY: TEST_VALUES.DIMENSIONS.TANK_HEIGHT / 2,
+      },
+      floor: {
+        visible: false,
+        type: 'invisible',
+        geometry: {
+          x: 0,
+          y: TEST_VALUES.DIMENSIONS.TANK_HEIGHT - 1,
+          width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
+          height: 1,
+        },
+        restitution: 0.2,
+        friction: 0.002,
+      },
+      backgroundColor: 0x87ceeb,
     })
   })
 

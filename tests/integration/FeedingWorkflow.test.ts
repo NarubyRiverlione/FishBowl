@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
 import { FishSpecies } from '../../src/models/types'
-import { FEED_BASE_COST, FEED_PER_FISH_COST, POLLUTION_PER_FEEDING } from '../../src/lib/constants'
+import { FEED_BASE_COST, FEED_PER_FISH_COST, POLLUTION_PER_FEEDING, TANK_CAPACITY_BOWL } from '../../src/lib/constants'
 import { TEST_VALUES, BUSINESS_LOGIC } from '../config/testConstants'
 
 describe('Feeding Workflow Integration', () => {
@@ -15,16 +15,32 @@ describe('Feeding Workflow Integration', () => {
     useGameStore.getState().addOrSelectTank({
       id: 'test-tank',
       size: 'BOWL',
-      capacity: BUSINESS_LOGIC.TANK_VALUES.BOWL_CAPACITY,
+      capacity: TANK_CAPACITY_BOWL,
       waterQuality: BUSINESS_LOGIC.TANK_VALUES.WATER_QUALITY_MAX,
       pollution: BUSINESS_LOGIC.TANK_VALUES.POLLUTION_MIN,
       hasFilter: false,
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: TEST_VALUES.DIMENSIONS.WIDTH,
-      height: TEST_VALUES.DIMENSIONS.HEIGHT,
+      geometry: {
+        width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
+        height: TEST_VALUES.DIMENSIONS.TANK_HEIGHT,
+        centerX: TEST_VALUES.DIMENSIONS.TANK_WIDTH / 2,
+        centerY: TEST_VALUES.DIMENSIONS.TANK_HEIGHT / 2,
+      },
       backgroundColor: 0x000000,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: TEST_VALUES.DIMENSIONS.TANK_HEIGHT - 10,
+          width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
     })
   })
 
@@ -61,7 +77,7 @@ describe('Feeding Workflow Integration', () => {
 
     // Update fish hunger in state directly for setup
     const hungryFish = { ...fish, hunger: TEST_VALUES.FEEDING.INITIAL_HUNGER }
-    const updatedTank = { ...tank, fish: [hungryFish] }
+    const updatedTank = { ...tank, fish: [hungryFish] } as typeof tank
     useGameStore.setState({
       tanks: [updatedTank],
       tank: updatedTank,
@@ -71,7 +87,7 @@ describe('Feeding Workflow Integration', () => {
     useGameStore.getState().feedTank(tankId)
 
     const newState = useGameStore.getState()
-    const fedFish = newState.tank!.fish[0]
+    const fedFish = newState.tank!.fish[0]!
 
     expect(fedFish.hunger).toBeLessThan(TEST_VALUES.FEEDING.INITIAL_HUNGER)
     expect(fedFish.lastFedAt).toBeDefined()

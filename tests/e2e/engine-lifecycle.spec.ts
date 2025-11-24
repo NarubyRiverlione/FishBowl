@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test'
 
 interface WindowWithTestHelpers extends Window {
   __TEST_HELPERS__?: {
-    awaitFishRendered?: (ms: number) => Promise<boolean>
+    getFishScreenPositions?: () => unknown[]
+    awaitFishRendered?: (timeout?: number) => Promise<boolean>
     getStoreFishCount?: () => number
     getStoreTanks?: () => unknown
     forceSync?: () => void

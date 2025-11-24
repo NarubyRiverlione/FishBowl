@@ -86,7 +86,7 @@ test.describe('Fish Inspect E2E', () => {
       console.log('DEBUG awaitFishRendered returned', rendered)
 
       // 3) Fetch positions
-      helperPositions = await page.evaluate(() => {
+      helperPositions = (await page.evaluate(() => {
         return (
           (
             window as Window & {
@@ -94,12 +94,12 @@ test.describe('Fish Inspect E2E', () => {
             }
           ).__TEST_HELPERS__?.getFishScreenPositions?.() || null
         )
-      })
+      })) as { id: string; x: number; y: number }[] | null
     } else {
       // Fallback: poll for positions directly (up to 3s)
       const start = Date.now()
       while (Date.now() - start < 3000) {
-        helperPositions = await page.evaluate(() => {
+        helperPositions = (await page.evaluate(() => {
           return (
             (
               window as Window & {
@@ -107,7 +107,7 @@ test.describe('Fish Inspect E2E', () => {
               }
             ).__TEST_HELPERS__?.getFishScreenPositions?.() || null
           )
-        })
+        })) as { id: string; x: number; y: number }[] | null
         if (helperPositions && helperPositions.length > 0) break
 
         await page.waitForTimeout(200)
@@ -146,7 +146,7 @@ test.describe('Fish Inspect E2E', () => {
     let panelVisible = false
     if (helperPositions && helperPositions.length > 0) {
       // Click the first fish position using canvas bounding box offset
-      const pos = helperPositions[0]
+      const pos = helperPositions[0]!
       await page.mouse.click(box.x + pos.x, box.y + pos.y)
       try {
         await expect(page.getByRole('dialog', { name: 'Fish info panel' })).toBeVisible({ timeout: 1000 })

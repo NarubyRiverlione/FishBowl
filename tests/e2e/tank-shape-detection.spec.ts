@@ -65,16 +65,16 @@ test.describe('Tank Shape Detection', () => {
       if (!store?.getState) return { error: 'Store not accessible' }
 
       const state = store.getState()
-      const tank = state?.tank
+      const tank = state?.tank as Record<string, unknown> | undefined
 
       if (!tank) return { error: 'No tank in state' }
 
       return {
-        size: tank.size,
-        width: tank.width,
-        height: tank.height,
-        capacity: tank.capacity,
-        hasShape: !!tank.shape,
+        size: tank['size'],
+        width: tank['width'],
+        height: tank['height'],
+        capacity: tank['capacity'],
+        hasShape: !!tank['shape'],
       }
     })
 
@@ -91,16 +91,16 @@ test.describe('Tank Shape Detection', () => {
       if (!store?.getState) return { error: 'Store not accessible' }
 
       const state = store.getState()
-      const tank = state?.tank
+      const tank = state?.tank as Record<string, unknown> | undefined
 
       if (!tank) return { error: 'No tank in state' }
 
       return {
-        size: tank.size,
-        width: tank.width,
-        height: tank.height,
-        capacity: tank.capacity,
-        hasShape: !!tank.shape,
+        size: tank['size'],
+        width: tank['width'],
+        height: tank['height'],
+        capacity: tank['capacity'],
+        hasShape: !!tank['shape'],
       }
     })
 
@@ -202,8 +202,8 @@ test.describe('Tank Shape Detection', () => {
     // Basic verification that the test setup works
     expect(flagCheck).toBeTruthy()
 
-    if (!flagCheck.error) {
-      expect(flagCheck.hasShapeBasedTanks).toBe(true)
+    if (!(flagCheck as { error?: string }).error) {
+      expect((flagCheck as { hasShapeBasedTanks?: boolean }).hasShapeBasedTanks).toBe(true)
     }
   })
 })

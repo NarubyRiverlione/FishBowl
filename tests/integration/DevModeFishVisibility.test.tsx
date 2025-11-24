@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { render } from '@testing-library/react'
 import useGameStore from '../../src/store/useGameStore'
 import AquariumCanvas from '../../src/components/AquariumCanvas'
+import { TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT } from '../../src/lib/constants'
 
 describe('Dev Mode Fish Visibility Fix', () => {
   beforeEach(() => {
@@ -31,8 +32,8 @@ describe('Dev Mode Fish Visibility Fix', () => {
     // 4. Verify the tank is a dev tank with correct dimensions
     expect(state.tank!.size).toBe('STANDARD')
     expect(state.tank!.capacity).toBe(15)
-    expect(state.tank!.geometry.width).toBe(450)
-    expect(state.tank!.geometry.height).toBe(450)
+    expect(state.tank!.geometry.width).toBe(TANK_STANDARD_WIDTH)
+    expect(state.tank!.geometry.height).toBe(TANK_STANDARD_HEIGHT)
 
     // Test passes if no errors are thrown and fish are populated
     expect(container).toBeDefined()

@@ -57,8 +57,8 @@ describe('TankContainer.getFishScreenPositions', () => {
       }
     ).fishSprites = new Map([['fish-y', sprite]])
     const positions = tc.getFishScreenPositions()
-    expect(positions[0].x).toBe(8) // 7 + 1
-    expect(positions[0].y).toBe(10) // 8 + 2
+    expect(positions[0]?.x).toBe(8) // 7 + 1
+    expect(positions[0]?.y).toBe(10) // 8 + 2
   })
 
   it('clicking background clears selection via pointerdown', () => {
@@ -82,16 +82,16 @@ describe('TankContainer.getFishScreenPositions', () => {
         listeners?: (event: string) => ((...args: unknown[]) => void)[]
       }
 
-      const fallback = (tc as EventableContainer).__events?.pointerdown?.[0]
+      const fallback = (tc as EventableContainer).__events?.['pointerdown']?.[0]
 
       const listeners =
         typeof (tc as EventableContainer).listeners === 'function'
-          ? (tc as EventableContainer).listeners('pointerdown')
+          ? (tc as EventableContainer).listeners?.('pointerdown')
           : null
       const handler = fallback || (listeners && listeners[0])
 
       if (handler) {
-        handler({ target: {} })
+        handler?.({ target: {} })
         expect(spy).toHaveBeenCalledWith(null)
       } else {
         // If test environment didn't expose handlers, mark as skipped but don't fail

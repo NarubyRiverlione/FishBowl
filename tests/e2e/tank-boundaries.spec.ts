@@ -271,14 +271,14 @@ test.describe('Tank Boundary Safety', () => {
         const collisionBuffer = 2.0
 
         // Check each fish against circular boundary
-        const violations = positions.filter((fish) => {
+        const violations = (positions as Array<{ id: string; x: number; y: number }>).filter((fish) => {
           const dx = fish.x - centerX
           const dy = fish.y - centerY
           const distance = Math.sqrt(dx * dx + dy * dy)
-          const waterBottom = centerY + radius * waterLevel
+          const waterBottom = centerY + (radius as number) * (waterLevel as unknown as number)
 
           return (
-            distance + fishBaseRadius > radius - collisionBuffer || // Outside circle
+            distance + fishBaseRadius > (radius as number) - collisionBuffer || // Outside circle
             fish.y > waterBottom - collisionBuffer // Above water level
           )
         })
@@ -299,7 +299,7 @@ test.describe('Tank Boundary Safety', () => {
     expect(circularBoundaryCheck.tankInfo?.type).toBe('circular')
 
     // Allow some tolerance during initial swimming
-    if (circularBoundaryCheck.totalFish > 0) {
+    if (circularBoundaryCheck.totalFish! > 0) {
       expect(circularBoundaryCheck.violations).toBeLessThanOrEqual(1)
     }
   })
@@ -349,9 +349,9 @@ test.describe('Tank Boundary Safety', () => {
         const left = centerX - width / 2
         const right = centerX + width / 2
         const top = centerY - height / 2
-        const waterBottom = centerY + (height / 2) * waterLevel
+        const waterBottom = centerY + ((height as number) / 2) * (waterLevel as unknown as number)
 
-        const violations = positions.filter((fish) => {
+        const violations = (positions as Array<{ id: string; x: number; y: number }>).filter((fish) => {
           return (
             fish.x - fishBaseRadius < left + collisionBuffer || // Left wall
             fish.x + fishBaseRadius > right - collisionBuffer || // Right wall
@@ -375,7 +375,7 @@ test.describe('Tank Boundary Safety', () => {
     expect(rectangularBoundaryCheck.error).toBeUndefined()
     expect(rectangularBoundaryCheck.tankInfo?.type).toBe('rectangular')
 
-    if (rectangularBoundaryCheck.totalFish > 0) {
+    if (rectangularBoundaryCheck.totalFish! > 0) {
       expect(rectangularBoundaryCheck.violations).toBeLessThanOrEqual(1)
     }
   })
@@ -422,7 +422,7 @@ test.describe('Tank Shape Integration (T039f)', () => {
       }
 
       // Test both collision detection approaches would work
-      const fishOutOfBounds = positions.filter((fish) => {
+      const fishOutOfBounds = (positions as Array<{ id: string; x: number; y: number }>).filter((fish) => {
         // Basic rectangular bounds check (legacy)
         const outOfRect = fish.x < 0 || fish.x > canvas.width || fish.y < 0 || fish.y > canvas.height
 
@@ -439,14 +439,14 @@ test.describe('Tank Shape Integration (T039f)', () => {
       return {
         totalFish: positions.length,
         outOfBounds: fishOutOfBounds.length,
-        positions: positions.map((p) => ({ x: p.x, y: p.y })),
+        positions: (positions as Array<{ id: string; x: number; y: number }>).map((p) => ({ x: p.x, y: p.y })),
         tankDimensions: { width: canvas.width, height: canvas.height },
       }
     })
 
     expect(shapeConsistencyCheck.error).toBeUndefined()
 
-    if (shapeConsistencyCheck.totalFish > 0) {
+    if (shapeConsistencyCheck.totalFish! > 0) {
       // Allow minimal violations due to timing or edge cases
       expect(shapeConsistencyCheck.outOfBounds).toBeLessThanOrEqual(1)
     }

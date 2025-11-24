@@ -27,9 +27,25 @@ describe('Pollution System Integration', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: 100,
-      height: 100,
+      geometry: {
+        width: 100,
+        height: 100,
+        centerX: 50,
+        centerY: 50,
+      },
       backgroundColor: 0x000000,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: 90,
+          width: 100,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
     })
   })
 
@@ -97,13 +113,13 @@ describe('Pollution System Integration', () => {
       tank: pollutedTank,
     })
 
-    const initialHealth = useGameStore.getState().tank!.fish[0].health
+    const initialHealth = useGameStore.getState().tank!.fish[0]!.health
 
     // Tick
     useGameStore.getState().tick()
 
     const newState = useGameStore.getState()
-    const fish = newState.tank!.fish[0]
+    const fish = newState.tank!.fish[0]!
 
     // Should have lost health due to pollution
     // Note: Hunger also increases, but starvation threshold is 80, so hunger shouldn't affect health yet (starts at 0)
@@ -134,9 +150,25 @@ describe('Pollution System Integration', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: 100,
-      height: 100,
+      geometry: {
+        width: 100,
+        height: 100,
+        centerX: 50,
+        centerY: 50,
+      },
       backgroundColor: 0x000000,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: 90,
+          width: 100,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
     })
 
     const tankId = 'bowl-tank'

@@ -9,7 +9,7 @@ import {
 import { FishService } from '../../src/services/FishService'
 import { Tank } from '../../src/models/Tank'
 import { FishSpecies } from '../../src/models/types'
-import { TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT, FISH_BASE_RADIUS, COLLISION_BOUNDARY_BUFFER, FLOOR_RESTITUTION, WALL_RESTITUTION } from '../../src/lib/constants'
+import { TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT, FISH_BASE_RADIUS, COLLISION_BOUNDARY_BUFFER } from '../../src/lib/constants'
 
 describe('Fish Collision Behavior (T044b)', () => {
   it('should disable fish-to-fish collision detection', () => {
@@ -32,8 +32,8 @@ describe('Fish Collision Behavior (T044b)', () => {
 
   it('should not resolve fish-to-fish collisions', () => {
     // Create two fish with initial velocities
-    const fish1 = FishService.createFish(FishSpecies.GUPPY, '#FF0000', 'Fish1')
-    const fish2 = FishService.createFish(FishSpecies.GUPPY, '#00FF00', 'Fish2')
+    const fish1 = FishService.createFish(FishSpecies.GUPPY)
+    const fish2 = FishService.createFish(FishSpecies.GUPPY)
 
     const centerX = TANK_STANDARD_WIDTH / 2
     const centerY = TANK_STANDARD_HEIGHT / 2

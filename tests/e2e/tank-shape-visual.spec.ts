@@ -32,7 +32,7 @@ test.describe('Tank Shape Visual Rendering', () => {
     const tankInfo = await page.evaluate(() => {
       // Check tank state from game store
       const gameStore = (window as Window & { __GAME_STORE_DEBUG__?: Record<string, unknown> }).__GAME_STORE_DEBUG__ || {}
-      const tank = (gameStore.tank || {}) as Record<string, unknown>
+      const tank = (gameStore['tank'] || {}) as Record<string, unknown>
 
       // Map tank.size to shape type
       const shapeTypeMap: Record<string, string> = {
@@ -41,12 +41,15 @@ test.describe('Tank Shape Visual Rendering', () => {
         BIG: 'rectangular',
       }
 
+      const tankSize = tank['size'] as string
+      const geometry = tank['geometry'] as Record<string, unknown> | undefined
+
       return {
-        tankSize: tank.size,
-        tankShape: shapeTypeMap[tank.size] || null,
-        tankWidth: tank.geometry?.width || tank.width,
-        tankHeight: tank.geometry?.height || tank.height,
-        hasShape: !!tank.size,
+        tankSize: tankSize,
+        tankShape: shapeTypeMap[tankSize] || null,
+        tankWidth: geometry?.['width'] || tank['width'],
+        tankHeight: geometry?.['height'] || tank['height'],
+        hasShape: !!tank['size'],
         canvasWidth: document.querySelector('canvas')?.width || 0,
         canvasHeight: document.querySelector('canvas')?.height || 0,
       }
@@ -55,7 +58,7 @@ test.describe('Tank Shape Visual Rendering', () => {
     console.log('Tank rendering info:', tankInfo)
 
     // Verify bowl tank should have circular shape when shape system is enabled
-    expect(tankInfo.size).toBe('BOWL')
+    expect(tankInfo.tankSize).toBe('BOWL')
     expect(tankInfo.hasShape).toBe(true)
     expect(tankInfo.tankShape).toBe('circular')
     expect(tankInfo.tankWidth).toBe(450) // TANK_BOWL_WIDTH
@@ -73,7 +76,7 @@ test.describe('Tank Shape Visual Rendering', () => {
     // Check tank shape in dev mode
     const devTankInfo = await page.evaluate(() => {
       const gameStore = (window as Window & { __GAME_STORE_DEBUG__?: Record<string, unknown> }).__GAME_STORE_DEBUG__ || {}
-      const tank = (gameStore.tank || {}) as Record<string, unknown>
+      const tank = (gameStore['tank'] || {}) as Record<string, unknown>
 
       // Map tank.size to shape type
       const shapeTypeMap: Record<string, string> = {
@@ -82,12 +85,15 @@ test.describe('Tank Shape Visual Rendering', () => {
         BIG: 'rectangular',
       }
 
+      const tankSize = tank['size'] as string
+      const geometry = tank['geometry'] as Record<string, unknown> | undefined
+
       return {
-        tankSize: tank.size,
-        tankShape: shapeTypeMap[tank.size] || null,
-        tankWidth: tank.geometry?.width || tank.width,
-        tankHeight: tank.geometry?.height || tank.height,
-        hasShape: !!tank.size,
+        tankSize: tankSize,
+        tankShape: shapeTypeMap[tankSize] || null,
+        tankWidth: geometry?.['width'] || tank['width'],
+        tankHeight: geometry?.['height'] || tank['height'],
+        hasShape: !!tank['size'],
       }
     })
 

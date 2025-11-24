@@ -7,7 +7,7 @@ import { IFishData, ITankData, FishSpecies } from '../../src/models/types'
 
 describe('Game slice - tick and mode behaviors', () => {
   it('awards maturity bonus once when fish is mature in BOWL tank', () => {
-    const useTestStore = create((set, get, api) => ({
+    const useTestStore = create<GameState & TankState>((set, get, api) => ({
       ...createTankSlice(
         set as Parameters<StateCreator<GameState & TankState>>[0],
         get as Parameters<StateCreator<GameState & TankState>>[1],
@@ -53,7 +53,7 @@ describe('Game slice - tick and mode behaviors', () => {
   })
 
   it('increments pollution per living fish and updates waterQuality', () => {
-    const useTestStore = create((set, get, api) => ({
+    const useTestStore = create<GameState & TankState>((set, get, api) => ({
       ...createTankSlice(
         set as Parameters<StateCreator<GameState & TankState>>[0],
         get as Parameters<StateCreator<GameState & TankState>>[1],
@@ -95,7 +95,7 @@ describe('Game slice - tick and mode behaviors', () => {
   })
 
   it('setMode dev sets developerMode and dev tank', () => {
-    const useTestStore = create((set, get, api) => ({
+    const useTestStore = create<GameState & TankState>((set, get, api) => ({
       ...createTankSlice(
         set as Parameters<StateCreator<GameState & TankState>>[0],
         get as Parameters<StateCreator<GameState & TankState>>[1],
@@ -115,7 +115,7 @@ describe('Game slice - tick and mode behaviors', () => {
   })
 
   it('initializeFromQuery honors dev and tutorial params', () => {
-    const useTestStore = create((set, get, api) => ({
+    const useTestStore = create<GameState & TankState>((set, get, api) => ({
       ...createTankSlice(
         set as Parameters<StateCreator<GameState & TankState>>[0],
         get as Parameters<StateCreator<GameState & TankState>>[1],

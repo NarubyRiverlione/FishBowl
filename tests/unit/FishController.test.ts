@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Tank } from '../../src/models/Tank'
 import { Fish } from '../../src/models/Fish'
 import { FishController } from '../../src/game/controllers/FishController'
-import { IFish, FishSpecies } from '../../src/models/types'
+import { FishSpecies } from '../../src/models/types'
+import type { IFishData } from '../../src/models/types'
 import { TankContainer } from '../../src/game/views/TankContainer'
 
 // Mock the FishRenderManager so we can observe calls to addFish/removeFish
@@ -42,7 +43,7 @@ describe('FishController', () => {
   })
 
   it('adds fish from store to tank and calls renderManager.addFish', () => {
-    const storeFish: IFish[] = [
+    const storeFish: IFishData[] = [
       {
         id: 'fish-1',
         species: FishSpecies.GUPPY,
@@ -54,6 +55,11 @@ describe('FishController', () => {
         isAlive: true,
         genetics: {},
         createdAt: Date.now(),
+        geometry: {
+          position: { x: 50, y: 50 },
+          velocity: { vx: 0, vy: 0 },
+          radius: 10,
+        },
       },
     ]
 
@@ -64,7 +70,7 @@ describe('FishController', () => {
 
     // Tank should now contain the new Fish model
     expect(tank.fish.length).toBe(1)
-    const added = tank.fish[0]
+    const added = tank.fish[0]!
     expect(added.id).toBe('fish-1')
     expect(added.species).toBe('GUPPY')
 

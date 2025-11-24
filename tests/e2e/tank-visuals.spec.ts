@@ -31,10 +31,10 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
         if (store && store.tank) {
           const tank = store.tank as Record<string, unknown>
           return {
-            size: tank.size,
-            shape: (tank.shape as Record<string, unknown> | undefined)?.type || 'unknown',
-            width: tank.geometry ? (tank.geometry as Record<string, unknown>).width : tank.width,
-            height: tank.geometry ? (tank.geometry as Record<string, unknown>).height : tank.height,
+            size: tank['size'],
+            shape: (tank['shape'] as Record<string, unknown> | undefined)?.['type'] || 'unknown',
+            width: tank['geometry'] ? (tank['geometry'] as Record<string, unknown>)['width'] : tank['width'],
+            height: tank['geometry'] ? (tank['geometry'] as Record<string, unknown>)['height'] : tank['height'],
           }
         }
         return null
@@ -63,10 +63,10 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
         if (store && store.tank) {
           const tank = store.tank as Record<string, unknown>
           return {
-            size: tank.size,
-            shape: (tank.shape as Record<string, unknown> | undefined)?.type || 'unknown',
-            width: tank.geometry ? (tank.geometry as Record<string, unknown>).width : tank.width,
-            height: tank.geometry ? (tank.geometry as Record<string, unknown>).height : tank.height,
+            size: tank['size'],
+            shape: (tank['shape'] as Record<string, unknown> | undefined)?.['type'] || 'unknown',
+            width: tank['geometry'] ? (tank['geometry'] as Record<string, unknown>)['width'] : tank['width'],
+            height: tank['geometry'] ? (tank['geometry'] as Record<string, unknown>)['height'] : tank['height'],
           }
         }
         return null
@@ -187,7 +187,7 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
             const imageData = ctx.getImageData(0, 0, canvasElement.width, canvasElement.height)
             // Check if there are any non-transparent pixels
             for (let i = 3; i < imageData.data.length; i += 4) {
-              if (imageData.data[i] > 0) return true // Found non-transparent pixel
+              if (imageData.data[i]! > 0) return true // Found non-transparent pixel
             }
           }
           return false
@@ -255,6 +255,8 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
           Math.abs(initialBox.width - newBox.width) > 10 || Math.abs(initialBox.height - newBox.height) > 10
 
         expect(dimensionsChanged).toBe(true)
+      } else {
+        throw new Error('Canvas bounding box not found')
       }
 
       // Canvas should still be visible and functional
@@ -326,7 +328,7 @@ test.describe('Procedural Tank Rendering (T042f)', () => {
 
       // Rapidly change viewport sizes
       for (let i = 0; i < viewports.length; i++) {
-        await page.setViewportSize(viewports[i])
+        await page.setViewportSize(viewports[i]!)
         await page.waitForTimeout(200) // Brief pause
 
         // Canvas should remain visible throughout

@@ -15,6 +15,25 @@ describe('Developer Mode Initialization Integration', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
+      geometry: {
+        width: 300,
+        height: 300,
+        centerX: 150,
+        centerY: 150,
+      },
+      floor: {
+        visible: false,
+        type: 'invisible',
+        geometry: {
+          x: 0,
+          y: 299,
+          width: 300,
+          height: 1,
+        },
+        restitution: 0.2,
+        friction: 0.002,
+      },
+      backgroundColor: 0x87ceeb,
     })
     // reset credits/tutorial/developerMode
     useGameStore.setState({ credits: 50, tutorialEnabled: true, developerMode: false })

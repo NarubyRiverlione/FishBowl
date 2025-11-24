@@ -19,9 +19,25 @@ describe('Fish inspect & sell flow', () => {
         temperature: 24,
         fish: [],
         createdAt: Date.now(),
-        width: 400,
-        height: 400,
+        geometry: {
+          width: 400,
+          height: 400,
+          centerX: 200,
+          centerY: 200,
+        },
         backgroundColor: 0x87ceeb,
+        floor: {
+          visible: true,
+          type: 'pebble',
+          geometry: {
+            x: 0,
+            y: 390,
+            width: 400,
+            height: 10,
+          },
+          restitution: 0.3,
+          friction: 0.5,
+        },
       },
     ])
     store.setMode('tutorial')
@@ -33,7 +49,7 @@ describe('Fish inspect & sell flow', () => {
     // Add a fish via service
     const fish = FishService.createFish(FishSpecies.GUPPY)
     // Add fish into tank
-    const t = store.tanks[0]
+    const t = store.tanks[0]!
     t.fish = [fish]
     store.setTanks([t])
 
@@ -50,7 +66,7 @@ describe('Fish inspect & sell flow', () => {
     const afterSell = useGameStore.getState()
 
     // After sell, fish should be removed and credits increased
-    expect(afterSell.tanks[0].fish.length).toBe(0)
+    expect(afterSell.tanks[0]?.fish.length).toBe(0)
     // Credits should have increased (initial 50 for normal mode)
     expect(afterSell.credits).toBeGreaterThanOrEqual(50)
   })

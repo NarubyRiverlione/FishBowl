@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { FishSprite } from '../../src/game/views/FishSprite'
-import { IFish, FishSpecies } from '../../src/models/types'
+import { FishSpecies } from '../../src/models/types'
+import type { IFishData, IFishLogic } from '../../src/models/types'
 
 // Mock PixiJS Texture and Assets
 vi.mock('pixi.js', async () => {
@@ -34,7 +35,7 @@ vi.mock('../../src/assets/fish.svg', () => ({
 
 describe('FishSprite', () => {
   it('should initialize with provided position and fish data', () => {
-    const fish: IFish = {
+    const fish: IFishData = {
       id: '1',
       species: FishSpecies.GUPPY,
       color: '#FF0000',
@@ -45,9 +46,14 @@ describe('FishSprite', () => {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      geometry: {
+        position: { x: 100, y: 200 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 10,
+      },
     }
 
-    const sprite = new FishSprite(fish, 100, 200)
+    const sprite = new FishSprite(fish as IFishLogic, 100, 200)
 
     expect(sprite.x).toBe(100)
     expect(sprite.y).toBe(200)
@@ -57,7 +63,7 @@ describe('FishSprite', () => {
   })
 
   it('should apply life stage visual effects based on fish age', () => {
-    const youngFish: IFish = {
+    const youngFish: IFishData = {
       id: 'young',
       species: FishSpecies.GUPPY,
       color: '#FF0000',
@@ -68,9 +74,14 @@ describe('FishSprite', () => {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      geometry: {
+        position: { x: 0, y: 0 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 10,
+      },
     }
 
-    const matureFish: IFish = {
+    const matureFish: IFishData = {
       id: 'mature',
       species: FishSpecies.GUPPY,
       color: '#FF0000',
@@ -81,9 +92,14 @@ describe('FishSprite', () => {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      geometry: {
+        position: { x: 0, y: 0 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 10,
+      },
     }
 
-    const oldFish: IFish = {
+    const oldFish: IFishData = {
       id: 'old',
       species: FishSpecies.GUPPY,
       color: '#FF0000',
@@ -94,11 +110,16 @@ describe('FishSprite', () => {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      geometry: {
+        position: { x: 0, y: 0 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 10,
+      },
     }
 
-    const youngSprite = new FishSprite(youngFish, 0, 0)
-    const matureSprite = new FishSprite(matureFish, 0, 0)
-    const oldSprite = new FishSprite(oldFish, 0, 0)
+    const youngSprite = new FishSprite(youngFish as IFishLogic, 0, 0)
+    const matureSprite = new FishSprite(matureFish as IFishLogic, 0, 0)
+    const oldSprite = new FishSprite(oldFish as IFishLogic, 0, 0)
 
     // Young fish: base size (1.0x) - but in mock environment, width/height are 0
     expect(youngSprite.width).toBe(0) // Mock Sprite has width = 0
@@ -114,7 +135,7 @@ describe('FishSprite', () => {
   })
 
   it('should update position with movement simulation', () => {
-    const fish: IFish = {
+    const fish: IFishData = {
       id: '1',
       species: FishSpecies.GUPPY,
       color: '#FF0000',
@@ -125,19 +146,24 @@ describe('FishSprite', () => {
       isAlive: true,
       genetics: {},
       createdAt: Date.now(),
+      geometry: {
+        position: { x: 100, y: 100 },
+        velocity: { vx: 0, vy: 0 },
+        radius: 10,
+      },
     }
 
-    const sprite = new FishSprite(fish, 100, 100)
+    const sprite = new FishSprite(fish as IFishLogic, 100, 100)
 
     // Initially, sprite should be positioned where we set the Fish model
     expect(sprite.x).toBe(100)
     expect(sprite.y).toBe(100)
-    expect(fish.x).toBe(100)
-    expect(fish.y).toBe(100)
+    expect(fish.geometry.position.x).toBe(100)
+    expect(fish.geometry.position.y).toBe(100)
 
     // Change Fish model position
-    fish.x = 200
-    fish.y = 150
+    fish.geometry.position.x = 200
+    fish.geometry.position.y = 150
 
     sprite.update()
 

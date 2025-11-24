@@ -12,7 +12,9 @@
       "Bash(git commit:*)",
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm eslint:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cut:*)",
+      "Bash(pnpm tsc:*)"
     ],
     "deny": [],
     "ask": []

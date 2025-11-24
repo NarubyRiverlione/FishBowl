@@ -30,7 +30,7 @@ describe('EconomyService', () => {
     expect(cannotAfford).toBe(false)
 
     // Tank full -> cannot buy even with credits
-    tank.fish = [{ id: 'f1', isAlive: true } as IFish]
+    tank.fish = [{ id: 'f1', isAlive: true } as never]
     const abundantCredits = BUSINESS_LOGIC.COSTS.GUPPY * 10
     const isFull = EconomyService.canBuyFish(abundantCredits, tank, FishSpecies.GUPPY)
     expect(isFull).toBe(false)
