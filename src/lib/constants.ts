@@ -40,7 +40,7 @@ export const DEFAULT_FPS_FALLBACK = 60 // Fallback FPS value for calculations
 //#endregion
 
 //#region Economic Constants
-export const GAME_INITIAL_CREDITS = 1000
+export const GAME_INITIAL_CREDITS = 100
 export const GAME_DEV_MODE_CREDITS = 1000
 // Buying fish
 export const BUY_FISH_BASE_COST = 20
@@ -99,7 +99,7 @@ export const FISH_AGE_YOUNG_MAX = 120 // Ticks when fish becomes mature
 export const FISH_AGE_MATURE_MAX = 300 // Ticks when fish becomes old
 export const FISH_LIFE_STAGE_YOUNG_SCALE = 1.0 // Size multiplier for young fish
 export const FISH_LIFE_STAGE_MATURE_SCALE = 1.3 // Size multiplier for mature fish
-export const FISH_LIFE_STAGE_OLD_SCALE = 1.5 // Size multiplier for old fish
+export const FISH_LIFE_STAGE_OLD_SCALE = 1.3 // Size multiplier for old fish (per FR-015: same as mature)
 export const FISH_LIFE_STAGE_OLD_SATURATION = 0.6 // Color saturation multiplier for old fish
 
 // Fish Physics Constants
@@ -135,10 +135,10 @@ export const WATER_SURFACE_RATIO = 0.95 // Ratio of tank height/diameter for wat
 // Used for physics, collision detection, and business logic (Fish, Tank models)
 // Fish movement, spawn bounds, and collision are calculated in these coordinates
 // ============================================================================
-export const TANK_BOWL_WIDTH = 300 // Circular bowl: game world coordinate space
-export const TANK_BOWL_HEIGHT = 300
-export const TANK_STANDARD_WIDTH = 600 // Standard tank: game world coordinate space
-export const TANK_STANDARD_HEIGHT = 600
+export const TANK_BOWL_WIDTH = 450 // Circular bowl: game world coordinate space
+export const TANK_BOWL_HEIGHT = 450
+export const TANK_STANDARD_WIDTH = 450 // Standard tank: game world coordinate space
+export const TANK_STANDARD_HEIGHT = 450
 export const TANK_BIG_WIDTH = 900 // Rectangular big tank: game world coordinate space
 export const TANK_BIG_HEIGHT = 500
 
