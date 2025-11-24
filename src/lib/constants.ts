@@ -151,18 +151,29 @@ export const MAX_TANKS_DEFAULT = 3
 // Tank Constants
 export const WATER_LEVEL = 0.95 // Water fills 95% of tank height (from bottom)
 export const WATER_SURFACE_RATIO = 0.95 // Ratio of tank height/diameter for water surface boundary
-// Tank Dimensions (T042a) - Core tank sizes used in gameplay
-export const TANK_BOWL_WIDTH = 450 // Circular bowl diameter
+
+// ============================================================================
+// GAME WORLD COORDINATES (T042a)
+// Used for physics, collision detection, and business logic (Fish, Tank models)
+// Fish movement, spawn bounds, and collision are calculated in these coordinates
+// ============================================================================
+export const TANK_BOWL_WIDTH = 450 // Circular bowl: game world coordinate space
 export const TANK_BOWL_HEIGHT = 450
-export const TANK_STANDARD_WIDTH = 450 // Standard/upgraded tank
+export const TANK_STANDARD_WIDTH = 450 // Standard tank: game world coordinate space
 export const TANK_STANDARD_HEIGHT = 450
-export const TANK_BIG_WIDTH = 900 // Rectangular big tank (future)
+export const TANK_BIG_WIDTH = 900 // Rectangular big tank: game world coordinate space
 export const TANK_BIG_HEIGHT = 500
-// Responsive Scaling (T042c)
-export const TANK_DISPLAY_MIN_SIZE = 300 // Minimum display size per tank
-export const TANK_DISPLAY_MAX_SIZE = 600 // Maximum display size per tank (desktop)
-export const MOBILE_BREAKPOINT = 768 // Switch to full-width below this
-export const DESKTOP_BREAKPOINT = 1024 // Grid layout above this
+
+// ============================================================================
+// DISPLAY/UI COORDINATES (T042c)
+// Used for responsive rendering on screen (RenderingEngine, TankContainer)
+// Game world is scaled to fit these display size constraints
+// Changing these does NOT affect gameplay physics - only visual size
+// ============================================================================
+export const TANK_DISPLAY_MIN_SIZE = 300 // Minimum display size: tank never smaller than this
+export const TANK_DISPLAY_MAX_SIZE = 800 // Maximum display size: tank never larger than this
+export const MOBILE_BREAKPOINT = 768 // Switch to full-width below this viewport width
+export const DESKTOP_BREAKPOINT = 1024 // Switch to grid layout above this viewport width
 // Physics restitution (T041c)
 export const FLOOR_RESTITUTION = 0.2 // Gentle bouncing on floor
 export const WALL_RESTITUTION = 0.8 // Normal bouncing on walls
