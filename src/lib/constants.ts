@@ -135,10 +135,10 @@ export const WATER_SURFACE_RATIO = 0.95 // Ratio of tank height/diameter for wat
 // Used for physics, collision detection, and business logic (Fish, Tank models)
 // Fish movement, spawn bounds, and collision are calculated in these coordinates
 // ============================================================================
-export const TANK_BOWL_WIDTH = 450 // Circular bowl: game world coordinate space
-export const TANK_BOWL_HEIGHT = 450
-export const TANK_STANDARD_WIDTH = 450 // Standard tank: game world coordinate space
-export const TANK_STANDARD_HEIGHT = 450
+export const TANK_BOWL_WIDTH = 300 // Circular bowl: game world coordinate space
+export const TANK_BOWL_HEIGHT = 300
+export const TANK_STANDARD_WIDTH = 600 // Standard tank: game world coordinate space
+export const TANK_STANDARD_HEIGHT = 600
 export const TANK_BIG_WIDTH = 900 // Rectangular big tank: game world coordinate space
 export const TANK_BIG_HEIGHT = 500
 
