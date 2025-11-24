@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand'
-import { ITankData, FishSpecies, UUID } from '../../models/types'
+import { ITankData, FishSpecies, UUID, getFloorConfig } from '../../models/types'
 import { GameState } from './gameSlice'
 import { EconomyService } from '../../services/EconomyService'
 import { FishService } from '../../services/FishService'
@@ -70,6 +70,7 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
       centerY: TANK_BOWL_HEIGHT / 2,
     },
     backgroundColor: 0x87ceeb, // Sky blue
+    floor: getFloorConfig('BOWL', TANK_BOWL_WIDTH, TANK_BOWL_HEIGHT),
   }
 
   return {
@@ -230,6 +231,7 @@ export const createTankSlice: StateCreator<TankState & GameState, [], [], TankSt
             centerX: TANK_STANDARD_WIDTH / 2,
             centerY: TANK_STANDARD_HEIGHT / 2,
           },
+          floor: getFloorConfig('STANDARD', TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT),
         } as ITankData // Cast to ensure type safety if needed, though should be inferred
 
         const newTanks = [...state.tanks]

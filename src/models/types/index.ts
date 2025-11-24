@@ -17,3 +17,6 @@ export * from './game'
 
 // Re-export store types
 export * from './storeItem'
+
+// Re-export floor types
+export * from './floor'

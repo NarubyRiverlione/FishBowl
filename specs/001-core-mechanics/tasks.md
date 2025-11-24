@@ -145,10 +145,10 @@ Independent test criteria: Debug tools can identify dual tanks, collision issues
 
 Independent test criteria: Floor renders visible/invisible per tank type; fish settle with 0.2 restitution vs 0.8 for walls; natural resting behavior.
 
-- [ ] T041a [FR-017] Implement floor entity as `IFloor` interface in types and add to tank model: defines floor type (visible/invisible), dimensions (30px/40px/1px), collision restitution (0.2) — file: `src/models/types/index.ts`
-- [ ] T041b [FR-017] Implement floor rendering in `TankContainer`: BOWL invisible 1px floor, STANDARD/BIG visible pebble/sand texture (procedurally generated, no assets) with color specs — files: `src/game/views/TankContainer.ts`, `src/lib/constants.ts`
+- [x] T041a [FR-017] Implement floor entity as `IFloor` interface in types and add to tank model: defines floor type (visible/invisible), dimensions (30px/40px/1px), collision restitution (0.2) — file: `src/models/types/index.ts`
+- [x] T041b [FR-017] Implement floor rendering in `TankContainer`: BOWL invisible 1px floor, STANDARD/BIG visible pebble/sand texture (procedurally generated, no assets) with color specs — files: `src/game/views/TankContainer.ts`, `src/lib/constants.ts`
 - ✅ T041c [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
-- [ ] T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
+- [x] T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
 
 **Phase 4e-Advanced: Composite Shape Collision Detection (Required for Complex Bowls)**
 

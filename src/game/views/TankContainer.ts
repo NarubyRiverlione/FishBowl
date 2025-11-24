@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture, Assets } from 'pixi.js'
+import { Container, Sprite, Texture, Assets, Graphics } from 'pixi.js'
 import { ITankLogic, IFishLogic } from '../../models/types'
 import { FishSprite } from './FishSprite'
 import fishbowlSvg from '../../assets/fishbowl.svg'
@@ -16,6 +16,7 @@ export class TankContainer extends Container {
   private fishSprites: Map<string, FishSprite> = new Map()
   private displayScale: number = 1
   private bowlSprite: Sprite | null = null
+  private floorGraphics: Graphics | null = null
   // Force fresh texture load on each session - helps with development
   private static textureCache: Map<string, Promise<Texture>> = new Map()
 
@@ -28,6 +29,7 @@ export class TankContainer extends Container {
     this.tank = tank
     this.calculateDisplayScale()
     this.initializeBowl()
+    this.initializeFloor()
     // Allow clicking on empty tank area to clear selection
     this.interactive = true
     // Attach pointer handler defensively (tests may not provide Pixi event methods)
@@ -241,6 +243,49 @@ export class TankContainer extends Container {
         )
       }
     }
+  }
+
+  private initializeFloor(): void {
+    const floor = this.tank.floor
+    if (!floor) return
+
+    // Only render visible floors
+    if (!floor.visible) return
+
+    this.floorGraphics = new Graphics()
+
+    // Draw floor based on type
+    if (floor.type === 'invisible') {
+      // Invisible floor - no rendering needed but collision still works
+      return
+    }
+
+    const color = floor.color ?? 0xc9a961
+    const opacity = floor.opacity ?? 0.8
+
+    // Draw floor rectangle with procedural texture pattern
+    this.floorGraphics.rect(floor.geometry.x, floor.geometry.y, floor.geometry.width, floor.geometry.height)
+    this.floorGraphics.fill({ color, alpha: opacity })
+
+    // Add procedural pebble/sand texture pattern
+    const pattern = new Graphics()
+    const dotSize = floor.type === 'pebble' ? 3 : 4
+    const dotSpacing = floor.type === 'pebble' ? 12 : 15
+
+    for (let x = floor.geometry.x; x < floor.geometry.x + floor.geometry.width; x += dotSpacing) {
+      for (let y = floor.geometry.y; y < floor.geometry.y + floor.geometry.height; y += dotSpacing) {
+        // Add slight variation to make texture more natural
+        const offsetX = (Math.random() - 0.5) * dotSpacing * 0.3
+        const offsetY = (Math.random() - 0.5) * dotSpacing * 0.3
+        const size = dotSize * (0.8 + Math.random() * 0.4)
+
+        pattern.circle(x + offsetX, y + offsetY, size)
+        pattern.fill({ color: 0x000000, alpha: 0.15 })
+      }
+    }
+
+    this.floorGraphics.addChild(pattern)
+    this.addChild(this.floorGraphics)
   }
 
   private async initializeBowl(): Promise<void> {

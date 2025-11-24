@@ -1,5 +1,6 @@
 // Tank-related types for the FishBowl game
 import { IFishData, IFishLogic } from './fish'
+import { IFloor } from './floor'
 
 export type UUID = string
 export type Timestamp = number
@@ -36,6 +37,9 @@ export interface ITankData {
 
   // Visual properties
   backgroundColor: number
+
+  // Floor entity (physics and rendering)
+  floor: IFloor
 
   // Fish population (data only)
   fish: IFishData[]

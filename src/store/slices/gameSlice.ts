@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand'
-import { ITankData, IStoreItem, UUID } from '../../models/types'
+import { ITankData, IStoreItem, UUID, getFloorConfig } from '../../models/types'
 import { TankState } from './tankSlice'
 import { FishService } from '../../services/FishService'
 import { createDeveloperModeFish } from '../../lib/fishHelpers'
@@ -93,6 +93,7 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
             centerY: TANK_STANDARD_HEIGHT / 2,
           },
           backgroundColor: 0x87ceeb,
+          floor: getFloorConfig('STANDARD', TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT),
         }
         maybeSetTank(devTank)
       } else {
@@ -121,6 +122,7 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
             centerY: TANK_BOWL_HEIGHT / 2,
           },
           backgroundColor: 0x87ceeb,
+          floor: getFloorConfig('BOWL', TANK_BOWL_WIDTH, TANK_BOWL_HEIGHT),
         }
         maybeSetTank(bowlTank)
       }
@@ -158,6 +160,7 @@ export const createGameSlice: StateCreator<GameState & TankState, [], [], GameSt
             centerY: TANK_STANDARD_HEIGHT / 2,
           },
           backgroundColor: 0x87ceeb,
+          floor: getFloorConfig('STANDARD', TANK_STANDARD_WIDTH, TANK_STANDARD_HEIGHT),
         }
         maybeSetTank(devTank)
       }
