@@ -179,6 +179,20 @@ Independent test criteria: BOWL renders as circle, STANDARD as square, BIG as re
 - [ ] T042g [QA] [VERIFICATION] Verify BIG tank rendering consistency: confirm BIG tank renders as rectangle (800×400px) with same visual style as STANDARD (glass effect, rim, procedural texture), same water level (95%), same floor type (visible pebble texture); compare side-by-side in browser dev mode (`?dev=true`) — file: visual verification + screenshot comparison (documentation only)
 - [ ] T042h [QA] [VERIFICATION] Add unit test for BIG tank visual consistency: verify BIG tank dimensions (800×400), confirm same rendering properties as STANDARD (wall color, floor texture type, water level %, rim style) — file: `tests/unit/TankVisuals.test.ts`
 
+**Phase 4f-Design: Tank Display Scaling Architecture (Future Enhancement)**
+
+**⚠️ DESIGN NOTE**: Current implementation constrains all tanks to same display size range (TANK_DISPLAY_MIN_SIZE=300, TANK_DISPLAY_MAX_SIZE=800). This means:
+- Game world coordinates (450×450 bowl, 450×450 standard) are independent of display size
+- Display scaling is responsive (scales to fit viewport) but uniform across all tank types
+- Larger game worlds don't visually appear larger on screen (e.g., 900×900 tank scales down to fit same 300-800px range)
+
+**Future improvement options** (to be implemented in Phase 5 UI Polish):
+1. **Per-tank display sizing**: Store display scale preference with tank data, allow bowl/standard/big to render at different visual sizes
+2. **Proportional scaling**: Remove display constraints and scale game world size proportionally (bigger tanks look bigger)
+3. **Adaptive display sizing**: Calculate display size based on tank type (BOWL: 250-400px, STANDARD: 400-700px, BIG: 600-1000px)
+
+This architectural separation (game world ≠ display coordinates) is intentional and enables responsive, consistent UI. When implementing visual tank differentiation, choose one of the above approaches based on UX goals.
+
 **Phase 4h: Legacy Tasks (Updated)**
 
 **Fish-to-Fish Collision Removal & Developer Mode Updates**
