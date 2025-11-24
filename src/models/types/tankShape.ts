@@ -15,11 +15,12 @@ export interface ISpawnBounds {
  * Uses composition pattern with ITankGeometry
  */
 export interface ITankShape {
+  geometry: ITankGeometry
   // Shape identifier
   type: 'circular' | 'rectangular'
 
   // Boundary checking methods that accept geometry
-  checkBoundary(fish: IFishLogic, geometry: ITankGeometry): boolean
-  resolveBoundary(fish: IFishLogic, geometry: ITankGeometry): void
-  getSpawnBounds(geometry: ITankGeometry): ISpawnBounds
+  checkBoundary(fish: IFishLogic): boolean
+  resolveBoundary(fish: IFishLogic): void
+  getSpawnBounds(): ISpawnBounds
 }

@@ -1,26 +1,20 @@
-import { IFishLogic } from '../../../models/types/index'
+import { IFishLogic, ITankGeometry } from '../../../models/types/index'
 import { ITankShape, ISpawnBounds } from '../../../models/types/tankShape'
 import { COLLISION_BOUNDARY_BUFFER, WATER_SURFACE_RATIO } from '../../../lib/constants'
 
 export class RectangularTankShape implements ITankShape {
   readonly type = 'rectangular'
-  centerX: number
-  centerY: number
-  width: number
-  height: number
+  geometry: ITankGeometry
 
   constructor(centerX: number, centerY: number, width: number, height: number) {
-    this.centerX = centerX
-    this.centerY = centerY
-    this.width = width
-    this.height = height
+    this.geometry = { centerX, centerY, width, height }
   }
 
   checkBoundary(fish: IFishLogic): boolean {
-    const left = this.centerX - this.width / 2
-    const right = this.centerX + this.width / 2
-    const top = this.centerY - this.height / 2
-    const waterBottom = this.centerY + (this.height / 2) * WATER_SURFACE_RATIO
+    const left = this.geometry.centerX - this.geometry.width / 2
+    const right = this.geometry.centerX + this.geometry.width / 2
+    const top = this.geometry.centerY - this.geometry.height / 2
+    const waterBottom = this.geometry.centerY + (this.geometry.height / 2) * WATER_SURFACE_RATIO
 
     return (
       fish.x - fish.radius > left + COLLISION_BOUNDARY_BUFFER &&
@@ -31,10 +25,10 @@ export class RectangularTankShape implements ITankShape {
   }
 
   resolveBoundary(fish: IFishLogic): void {
-    const left = this.centerX - this.width / 2
-    const right = this.centerX + this.width / 2
-    const top = this.centerY - this.height / 2
-    const waterBottom = this.centerY + (this.height / 2) * WATER_SURFACE_RATIO
+    const left = this.geometry.centerX - this.geometry.width / 2
+    const right = this.geometry.centerX + this.geometry.width / 2
+    const top = this.geometry.centerY - this.geometry.height / 2
+    const waterBottom = this.geometry.centerY + (this.geometry.height / 2) * WATER_SURFACE_RATIO
 
     // Left wall
     if (fish.x - fish.radius < left + COLLISION_BOUNDARY_BUFFER) {
@@ -62,10 +56,10 @@ export class RectangularTankShape implements ITankShape {
   }
 
   getSpawnBounds(): ISpawnBounds {
-    const left = this.centerX - this.width / 2
-    const right = this.centerX + this.width / 2
-    const top = this.centerY - this.height / 2
-    const waterBottom = this.centerY + (this.height / 2) * WATER_SURFACE_RATIO
+    const left = this.geometry.centerX - this.geometry.width / 2
+    const right = this.geometry.centerX + this.geometry.width / 2
+    const top = this.geometry.centerY - this.geometry.height / 2
+    const waterBottom = this.geometry.centerY + (this.geometry.height / 2) * WATER_SURFACE_RATIO
     const padding = 20
 
     return {
