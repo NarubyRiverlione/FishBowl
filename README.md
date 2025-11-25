@@ -6,14 +6,15 @@
 ![Coverage: Branches](https://img.shields.io/badge/Branches-63.71%25-orange)
 ![Coverage: Functions](https://img.shields.io/badge/Functions-83.92%25-green)
 ![Coverage: Lines](https://img.shields.io/badge/Lines-87.23%25-green)
-![Tests](https://img.shields.io/badge/Tests-127%20passing-brightgreen)
-![Test Files](https://img.shields.io/badge/Test%20Files-35%20unit%20+%2010%20E2E-blue)
+![Tests](https://img.shields.io/badge/Tests-197%20passing%2C%205%20failing-orange)
+![Test Files](https://img.shields.io/badge/Test%20Files-42%20unit/integration%20+%2036%20E2E-blue)
 
 A web-based fish breeding simulation game built with React, Pixi.js, and TypeScript.
 
-**Current Status**: ✅ Core Mechanics MVP Complete (Phases 1-3) | 🔄 Tank Rendering in Testing (Phase 4a-4f) | 📋 UI Polish Planned (Phase 4g-5)
+**Current Status**: ✅ Core Mechanics MVP Complete (Phases 1-3) | 🔧 Tank Rendering Implementation (Phase 4a-4f: collision detection working, 5 failing tests) | 📋 UI Polish Planned (Phase 4g-5)
 
 > **📌 Note on Milestone Numbering**: Milestone numbering reflects execution order (POC first), not spec creation order:
+>
 > - **Milestone 1** = Spec 002 (Visual Prototype - built as POC)
 > - **Milestone 2** = Spec 001 (Core Mechanics - initial spec, built after POC validation)
 
@@ -28,7 +29,7 @@ A web-based fish breeding simulation game built with React, Pixi.js, and TypeScr
 
 - **🎯 MVP Complete**: All core game mechanics implemented and tested
 - **🔧 Boundary Physics**: Enhanced collision system with proper fish boundary enforcement
-- **📊 Test Excellence**: 127 tests passing (35 unit + 10 E2E) with 89% statement coverage
+- **📊 Test Status**: 197 passing, 5 failing (42 unit/integration + 36 E2E) with 85% statement coverage
 - **🛠️ Code Quality**: Zero TypeScript errors, clean linting, constants-based architecture
 - **⚡ Performance**: Stable 60 FPS with collision detection and physics simulation
 - **🎮 Developer Experience**: Enhanced dev mode, test helpers, and debugging infrastructure
@@ -135,6 +136,7 @@ src/
 ```
 
 **Key Design**: Separation of **Data** (IFishData, ITankData) and **Logic** (IFishLogic, ITankLogic)
+
 - Data interfaces are serializable and stored in Zustand
 - Logic interfaces extend data with behavioral methods for game simulation
 - See [Data Model](./specs/001-core-mechanics/data-model.md) for full interface definitions
@@ -156,19 +158,19 @@ src/
 
 ## Testing
 
-**Coverage**: 127 tests passing (35 unit + 10 E2E tests)
+**Coverage**: 197 passing, 5 failing (42 unit/integration + 36 E2E tests)
 
 | Metric     | Coverage | Status                |
 | ---------- | -------- | --------------------- |
-| Statements | 89.22%   | 🟢 Near 90% target    |
-| Functions  | 83.89%   | 🟡 Approaching target |
-| Lines      | 92.20%   | ✅ Above 90% target   |
-| Branches   | 70.99%   | 🟡 Good coverage      |
+| Statements | 85.32%   | 🟡 Approaching target |
+| Functions  | 83.92%   | 🟡 Approaching target |
+| Lines      | 87.23%   | 🟡 Good coverage      |
+| Branches   | 63.71%   | 🟡 Moderate coverage  |
 
 **Test Organization** (Updated November 2025):
 
-- **Unit Tests** (35 files): Isolated component testing with mocked dependencies
-- **E2E Tests** (10 files): Full user flow testing with Playwright
+- **Unit/Integration Tests** (42 files): Isolated component testing and feature integration
+- **E2E Tests** (36 tests): Full user flow testing with Playwright
 - **Integration Tests**: End-to-end feature testing within unit test suite
   - Game mechanics, UI workflows, System interactions
 - **Performance Tests**: Stress testing with 50+ fish and boundary collision
@@ -240,10 +242,10 @@ Key principles:
 
 **Results**:
 
-- 100% boundary compliance in E2E tests (12 fish, 4000ms simulation)
-- Zero wall penetrations detected across all tank sizes
-- Proper water surface boundary enforcement (95% tank height)
-- Enhanced collision system with debug feedback
+- ✅ **Collision Detection**: Working boundary collision system with safety buffers
+- ✅ **E2E Tests**: 36 E2E tests passing (boundary compliance, fish interaction, core mechanics)
+- 🔧 **Current Status**: 197/202 tests passing (collision detection working, 5 failing tests in other areas)
+- ✅ **Enhanced collision system** with debug feedback
 
 ### ✅ **Testing Architecture Improvements**
 
@@ -270,7 +272,7 @@ pnpm test:e2e:html # Full HTML report (debugging)
 
 - **TypeScript**: Zero `any` types, full strict mode compliance
 - **Linting**: Zero warnings with enhanced ESLint rules
-- **Test Coverage**: 127 tests passing (35 unit + 10 E2E)
+- **Test Status**: 197 passing, 5 failing (202 total: 42 unit/integration + 36 E2E)
 - **Constants**: Single source of truth for all physics/collision values
 
 ## License

@@ -1,14 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import useGameStore from '../../src/store/useGameStore'
-import { FishSpecies, getFloorConfig } from '../../src/models/types'
-import {
-  MATURE_AGE_SECONDS,
-  MATURITY_BONUS,
-  TANK_UPGRADE_COST,
-  TANK_CAPACITY_STANDARD,
-  TANK_STANDARD_WIDTH,
-  TANK_STANDARD_HEIGHT
-} from '../../src/lib/constants'
+import { FishSpecies } from '../../src/models/types'
+import { MATURE_AGE_SECONDS, MATURITY_BONUS, TANK_UPGRADE_COST, TANK_CAPACITY_STANDARD } from '../../src/lib/constants'
 
 describe('Progression Mechanics', () => {
   beforeEach(() => {
@@ -30,14 +23,9 @@ describe('Progression Mechanics', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      geometry: {
-        width: 400,
-        height: 400,
-        centerX: 200,
-        centerY: 200,
-      },
+      width: 400,
+      height: 400,
       backgroundColor: 0x000000,
-      floor: getFloorConfig('BOWL', 400, 400),
     })
   })
 
@@ -57,7 +45,7 @@ describe('Progression Mechanics', () => {
     const fish = tank.fish[0]
     const matureFish = { ...fish, age: MATURE_AGE_SECONDS } // Exact age
 
-    const updatedTank = { ...tank, fish: [matureFish] } as typeof tank
+    const updatedTank = { ...tank, fish: [matureFish] }
     useGameStore.setState({
       tanks: [updatedTank],
       tank: updatedTank,
@@ -87,7 +75,7 @@ describe('Progression Mechanics', () => {
     const fish = tank.fish[0]
     const matureFish = { ...fish, age: MATURE_AGE_SECONDS + 10 }
 
-    const updatedTank = { ...tank, fish: [matureFish] } as typeof tank
+    const updatedTank = { ...tank, fish: [matureFish] }
     useGameStore.setState({
       tanks: [updatedTank],
       tank: updatedTank,
@@ -116,8 +104,8 @@ describe('Progression Mechanics', () => {
 
     expect(tank.size).toBe('STANDARD')
     expect(tank.capacity).toBe(TANK_CAPACITY_STANDARD)
-    expect(tank.geometry.width).toBe(TANK_STANDARD_WIDTH)
-    expect(tank.geometry.height).toBe(TANK_STANDARD_HEIGHT)
+    expect(tank.geometry.width).toBe(800)
+    expect(tank.geometry.height).toBe(600)
     expect(newState.credits).toBe(initialCredits - TANK_UPGRADE_COST)
   })
 

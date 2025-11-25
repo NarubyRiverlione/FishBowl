@@ -286,7 +286,14 @@ export class RenderingEngine {
     // See ARCHITECTURE_CONCERNS.md for detailed analysis
     // This method handles both game logic (tank.update) and rendering (tankView.update)
     // Future refactor should move game logic to store/game loop and keep only rendering here
-    this.tank.update(delta)
+
+    // Only update game physics when not paused
+    const gameState = useGameStore.getState()
+    if (!gameState.isPaused) {
+      this.tank.update(delta)
+    }
+
+    // Always continue rendering (visual updates) regardless of pause state
     this.tankView.update()
     this.performanceMonitor.update()
   }
