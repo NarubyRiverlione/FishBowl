@@ -29,6 +29,8 @@ export class TankContainer extends Container {
     super()
     this.tank = tank
     this.calculateDisplayScale()
+    // Initialize currentTankSize before initializeBowl so changes can be detected
+    this.currentTankSize = this.tank.size
     this.initializeBowl()
     this.initializeFloor()
     // Allow clicking on empty tank area to clear selection
@@ -292,17 +294,24 @@ export class TankContainer extends Container {
   // Check if tank size has changed and recreate sprite if needed
   // Called when tank is upgraded (e.g., BOWL → STANDARD)
   async recreateTankSpriteIfNeeded(): Promise<void> {
-    if (this.currentTankSize !== this.tank.size) {
-      // Tank size changed - remove old sprite and recreate with new SVG
-      if (this.bowlSprite && this.bowlSprite.parent === this) {
-        this.removeChild(this.bowlSprite)
-      }
-      this.bowlSprite = null
-      this.currentTankSize = null
-
-      // Load new sprite with correct SVG
-      await this.initializeBowl()
+    // Check if the tank size has actually changed
+    if (this.currentTankSize === this.tank.size) {
+      return // No change needed
     }
+
+    // Tank size changed - remove old sprite completely
+    if (this.bowlSprite) {
+      // Remove from parent if attached
+      if (this.bowlSprite.parent) {
+        this.bowlSprite.parent.removeChild(this.bowlSprite)
+      }
+      // Destroy the sprite to free resources
+      this.bowlSprite.destroy()
+      this.bowlSprite = null
+    }
+
+    // Load new sprite with correct SVG
+    await this.initializeBowl()
   }
 
   private async initializeBowl(): Promise<void> {
