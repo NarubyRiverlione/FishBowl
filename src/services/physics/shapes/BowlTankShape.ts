@@ -172,7 +172,8 @@ class ConstrainedFloorSurfaceCollider implements ISurfaceCollider {
       fish.x >= this.floorLeftX &&
       fish.x <= this.floorRightX
     ) {
-      fish.y = this.floorY - fish.radius - COLLISION_BOUNDARY_BUFFER
+      // Position fish exactly on floor (no buffer gap)
+      fish.y = this.floorY - fish.radius
 
       // Apply floor restitution: gentle bounce
       if (fish.vy > 0) {
