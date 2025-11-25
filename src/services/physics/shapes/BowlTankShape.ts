@@ -263,7 +263,9 @@ export class BowlTankShape implements ITankShape {
     const rightEndAngle = Math.atan2(rightArcEnd.y - rightCenter.y, rightArcEnd.x - rightCenter.x)
 
     // Floor and water surface
-    const floorY = centerY + height / 2 // Bottom of tank (y=300)
+    // Bowl SVG has floor at y=90 (out of 0-100 viewBox), leaving 10 units of gap at bottom
+    // This gap (30px scaled) is intentional visual design - collision floor matches visual floor
+    const floorY = 90 * SVG_SCALE // SVG floor position at y=270 for 300px bowl
     const floorLeftX = 29.7 * SVG_SCALE // Left edge of narrow floor (x=89)
     const floorRightX = 70.3 * SVG_SCALE // Right edge of narrow floor (x=211)
     const waterSurfaceY = centerY - height / 2 + height * (1 - WATER_SURFACE_RATIO_BOWL)
@@ -372,7 +374,7 @@ export class BowlTankShape implements ITankShape {
   getSpawnBounds(): ISpawnBounds {
     // Spawn within safe area: above floor, below water, horizontally centered
     const safeMargin = 30
-    const floorY = this.centerY + this.height / 2 // Bottom of tank
+    const floorY = 90 * SVG_SCALE // Match SVG floor position, not tank bottom
     const waterSurfaceY = this.centerY - this.height / 2 + this.height * (1 - WATER_SURFACE_RATIO_BOWL)
 
     // Horizontal bounds: use narrower region to avoid spawning near curved walls

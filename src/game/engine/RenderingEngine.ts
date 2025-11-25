@@ -105,6 +105,8 @@ export class RenderingEngine {
         if (typeof this.tankView.updateDisplayScale === 'function') {
           this.tankView.updateDisplayScale()
         }
+        // Recenter the tank view to account for new dimensions
+        this.recenterTankView()
       })()
 
       // Sync fish using existing method
@@ -115,6 +117,26 @@ export class RenderingEngine {
     } catch (error) {
       console.warn('Error syncing RenderingEngine with store:', error)
     }
+  }
+
+  /**
+   * Recenter the tank view on the canvas.
+   * Called after tank upgrades or when tank dimensions change.
+   */
+  private recenterTankView(): void {
+    // Guard: only recenter if fully initialized with renderer and screen
+    if (!this.isInitialized || !this.app?.renderer || !this.app?.screen) return
+
+    const canvasWidth = this.app.screen.width
+    const canvasHeight = this.app.screen.height
+
+    // Account for the scale of the tank view when centering
+    const scale = this.tankView.scale.x
+    const tankWidth = this.tank.geometry.width * scale
+    const tankHeight = this.tank.geometry.height * scale
+
+    this.tankView.x = (canvasWidth - tankWidth) / 2
+    this.tankView.y = (canvasHeight - tankHeight) / 2
   }
 
   async init(element: HTMLElement): Promise<void> {
@@ -152,20 +174,14 @@ export class RenderingEngine {
         throw new Error('Pixi.js stage not available after initialization')
       }
 
-      // Center tank view on canvas
-      const canvasWidth = this.app.screen.width
-      const canvasHeight = this.app.screen.height
-
-      // Account for the scale of the tank view when centering
-      const scale = this.tankView.scale.x
-      const tankWidth = this.tank.geometry.width * scale
-      const tankHeight = this.tank.geometry.height * scale
-
-      this.tankView.x = (canvasWidth - tankWidth) / 2
-      this.tankView.y = (canvasHeight - tankHeight) / 2
-
       // Add tank view to stage
       this.app.stage.addChild(this.tankView)
+
+      // Mark as initialized before centering (recenterTankView checks isInitialized)
+      this.isInitialized = true
+
+      // Center tank view on canvas
+      this.recenterTankView()
 
       // Start the game loop
       this.app.ticker.add((ticker) => {
@@ -173,8 +189,6 @@ export class RenderingEngine {
           this.update(ticker.deltaTime)
         }
       })
-
-      this.isInitialized = true
     } catch (error) {
       console.error('Failed to initialize RenderingEngine:', error)
       this.destroy()

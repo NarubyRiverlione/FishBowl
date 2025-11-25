@@ -1,5 +1,6 @@
 import { ITankLogic } from '../../models/types'
 import { PERFORMANCE_LOG_INTERVAL_MS, MILLISECONDS_PER_SECOND, DEFAULT_FPS_FALLBACK } from '../../lib/constants'
+import useGameStore from '../../store/useGameStore'
 
 interface WindowWithDebug extends Window {
   __FISHBOWL_DEBUG_ENGINE__?: boolean
@@ -14,6 +15,10 @@ export class PerformanceService {
   }
 
   update(): void {
+    // Only run performance monitoring in developer mode
+    const isDeveloperMode = useGameStore.getState().developerMode
+    if (!isDeveloperMode) return
+
     const now = performance.now()
     if (now - this.lastLogTime > PERFORMANCE_LOG_INTERVAL_MS) {
       const fps = this.lastLogTime ? MILLISECONDS_PER_SECOND / (now - this.lastLogTime) : DEFAULT_FPS_FALLBACK
@@ -21,7 +26,7 @@ export class PerformanceService {
       const checks = this.tank.collisionChecks
       const collisions = this.tank.collisionsResolved
 
-      // Performance logging - keep enabled so tests observing metrics can verify behavior
+      // Performance logging - only in developer mode
       console.log(`FPS: ${fps.toFixed(1)} | Fish: ${fishCount} | Checks: ${checks} | Collisions: ${collisions}`)
       this.lastLogTime = now
     }

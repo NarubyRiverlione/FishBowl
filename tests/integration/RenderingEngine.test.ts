@@ -86,6 +86,9 @@ describe('RenderingEngine Integration', () => {
   })
 
   it('should log metrics after update', async () => {
+    // Enable developer mode to activate performance logging
+    useGameStore.setState({ developerMode: true })
+
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
     engine.spawnFish(5)
