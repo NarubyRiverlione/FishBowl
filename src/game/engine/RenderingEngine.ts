@@ -97,6 +97,10 @@ export class RenderingEngine {
       // Sync tank properties from store
       this.syncTankProperties(storeTank)
 
+      // Check if tank sprite needs to be recreated (e.g., tank upgrade from BOWL to STANDARD)
+      // Fire-and-forget since async, don't block the sync
+      void this.tankView.recreateTankSpriteIfNeeded()
+
       // Sync fish using existing method
       this.syncFish(storeTank.fish)
 

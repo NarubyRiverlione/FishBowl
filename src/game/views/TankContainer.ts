@@ -17,6 +17,7 @@ export class TankContainer extends Container {
   private displayScale: number = 1
   private bowlSprite: Sprite | null = null
   private floorGraphics: Graphics | null = null
+  private currentTankSize: string | null = null
   // Force fresh texture load on each session - helps with development
   private static textureCache: Map<string, Promise<Texture>> = new Map()
 
@@ -288,6 +289,22 @@ export class TankContainer extends Container {
     this.addChild(this.floorGraphics)
   }
 
+  // Check if tank size has changed and recreate sprite if needed
+  // Called when tank is upgraded (e.g., BOWL → STANDARD)
+  async recreateTankSpriteIfNeeded(): Promise<void> {
+    if (this.currentTankSize !== this.tank.size) {
+      // Tank size changed - remove old sprite and recreate with new SVG
+      if (this.bowlSprite && this.bowlSprite.parent === this) {
+        this.removeChild(this.bowlSprite)
+      }
+      this.bowlSprite = null
+      this.currentTankSize = null
+
+      // Load new sprite with correct SVG
+      await this.initializeBowl()
+    }
+  }
+
   private async initializeBowl(): Promise<void> {
     try {
       // Load and cache tank texture based on size
@@ -296,6 +313,7 @@ export class TankContainer extends Container {
       const texture = await this.loadTankTexture(textureSource)
 
       this.bowlSprite = new Sprite(texture)
+      this.currentTankSize = this.tank.size
 
       // Position bowl/tank at center of tank container
       this.bowlSprite.anchor.set(0.5, 0.5)
