@@ -100,6 +100,12 @@ const mockTank = (width: number, height: number): ITankLogic => ({
     restitution: 0.2,
     friction: 0.002,
   },
+  shape: {
+    type: 'rectangular',
+    checkBoundary: () => false,
+    resolveBoundary: () => { },
+    getSpawnBounds: () => ({ minX: 0, maxX: width, minY: 0, maxY: height }),
+  },
 })
 
 describe('Collision Utilities', () => {

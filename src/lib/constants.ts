@@ -127,8 +127,8 @@ export const TANK_CAPACITY_STANDARD = 15
 export const TANK_CAPACITY_BIG = 30
 export const MAX_TANKS_DEFAULT = 3
 // Tank Constants
-export const WATER_LEVEL = 0.95 // Water fills 95% of tank height (from bottom)
-export const WATER_SURFACE_RATIO = 0.95 // Ratio of tank height/diameter for water surface boundary
+export const WATER_LEVEL = 0.9 // Water fills 90% of tank height (from bottom)
+export const WATER_SURFACE_RATIO = 0.9 // Ratio of tank height/diameter for water surface boundary
 
 // ============================================================================
 // GAME WORLD COORDINATES (T042a)

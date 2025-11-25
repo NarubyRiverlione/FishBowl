@@ -41,17 +41,30 @@ export class RenderingEngine {
     this.setupStoreSubscription()
   }
 
+  /**
+   * Syncs tank properties from Zustand store to Tank model instance.
+   *
+   * CRITICAL: Geometry must be updated BEFORE size.
+   * The Tank.size setter triggers shape recreation using current geometry.
+   * If geometry isn't up-to-date when size changes (e.g., BOWL→STANDARD upgrade),
+   * shapes are created with stale dimensions (300x300 instead of 600x600).
+   *
+   * Data flow: Store (ITankData) → RenderingEngine → Tank model
+   * Geometry is single source of truth from store; shapes receive it at construction.
+   */
   private syncTankProperties(storeTank: ITankData): void {
     // Sync all tank properties from store to Tank model
 
     // Core tank properties
     this.tank.id = storeTank.id
-    this.tank.size = storeTank.size // Critical for shape rendering (BOWL vs STANDARD)
-    this.tank.capacity = storeTank.capacity // Critical for fish population limits
     this.tank.createdAt = storeTank.createdAt
+    this.tank.capacity = storeTank.capacity // Critical for fish population limits
 
-    // Geometry (critical for positioning and sizing)
+    // Geometry (critical for positioning and sizing) - UPDATE BEFORE SIZE
     this.tank.geometry = { ...storeTank.geometry }
+
+    // Size setter triggers shape recreation, must use updated geometry
+    this.tank.size = storeTank.size // Critical for shape rendering (BOWL vs STANDARD)
 
     // Water and environment
     this.tank.waterQuality = storeTank.waterQuality

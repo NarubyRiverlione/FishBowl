@@ -1,72 +1,87 @@
-import { IFishLogic, ITankGeometry } from '../../../models/types/index'
+import { IFishLogic } from '../../../models/types/index'
 import { ITankShape, ISpawnBounds } from '../../../models/types/tankShape'
-import { COLLISION_BOUNDARY_BUFFER, WATER_SURFACE_RATIO } from '../../../lib/constants'
+import { COLLISION_BOUNDARY_BUFFER, WALL_RESTITUTION } from '../../../lib/constants'
 
+/**
+ * RectangularTankShape represents rectangular tanks (STANDARD and BIG)
+ * Uses simple axis-aligned bounding box collision detection
+ */
 export class RectangularTankShape implements ITankShape {
   readonly type = 'rectangular'
-  geometry: ITankGeometry
 
-  constructor(centerX: number, centerY: number, width: number, height: number) {
-    this.geometry = { centerX, centerY, width, height }
+  private width: number
+  private marginX: number
+  private waterTop: number
+  private waterBottom: number
+
+  constructor(_centerX: number, _centerY: number, width: number, height: number) {
+    // Note: centerX and centerY are passed for API consistency with other shape constructors,
+    // but RectangularTankShape uses absolute margins rather than center-based positioning
+    this.width = width
+
+    // Margins based on recttank.svg (100x100 viewBox)
+    // Water x: 6-94 (6% margin)
+    // Water y: 20-94 (20% top margin, 6% bottom margin)
+    this.marginX = width * 0.06
+    this.waterTop = height * 0.2
+    this.waterBottom = height * 0.94
   }
 
   checkBoundary(fish: IFishLogic): boolean {
-    const left = this.geometry.centerX - this.geometry.width / 2
-    const right = this.geometry.centerX + this.geometry.width / 2
-    const top = this.geometry.centerY - this.geometry.height / 2
-    const waterBottom = this.geometry.centerY + (this.geometry.height / 2) * WATER_SURFACE_RATIO
-
+    // Returns true if collision detected (fish out of bounds), false if within bounds
     return (
-      fish.x - fish.radius > left + COLLISION_BOUNDARY_BUFFER &&
-      fish.x + fish.radius < right - COLLISION_BOUNDARY_BUFFER &&
-      fish.y - fish.radius > top + COLLISION_BOUNDARY_BUFFER &&
-      fish.y + fish.radius < waterBottom - COLLISION_BOUNDARY_BUFFER
+      fish.x - fish.radius <= this.marginX + COLLISION_BOUNDARY_BUFFER ||
+      fish.x + fish.radius >= this.width - this.marginX - COLLISION_BOUNDARY_BUFFER ||
+      fish.y - fish.radius <= this.waterTop + COLLISION_BOUNDARY_BUFFER ||
+      fish.y + fish.radius >= this.waterBottom - COLLISION_BOUNDARY_BUFFER
     )
   }
 
   resolveBoundary(fish: IFishLogic): void {
-    const left = this.geometry.centerX - this.geometry.width / 2
-    const right = this.geometry.centerX + this.geometry.width / 2
-    const top = this.geometry.centerY - this.geometry.height / 2
-    const waterBottom = this.geometry.centerY + (this.geometry.height / 2) * WATER_SURFACE_RATIO
+    // Handle boundary collisions with restitution applied
+    const restitution = WALL_RESTITUTION
 
-    // Left wall
-    if (fish.x - fish.radius < left + COLLISION_BOUNDARY_BUFFER) {
-      fish.x = left + fish.radius + COLLISION_BOUNDARY_BUFFER
-      fish.vx = Math.max(0, fish.vx) // Force away from wall
+    // Left wall collision
+    if (fish.x - fish.radius <= this.marginX + COLLISION_BOUNDARY_BUFFER) {
+      fish.x = this.marginX + fish.radius + COLLISION_BOUNDARY_BUFFER
+      if (fish.vx < 0) {
+        fish.vx = -fish.vx * restitution
+      }
     }
 
-    // Right wall
-    if (fish.x + fish.radius > right - COLLISION_BOUNDARY_BUFFER) {
-      fish.x = right - fish.radius - COLLISION_BOUNDARY_BUFFER
-      fish.vx = Math.min(0, fish.vx) // Force away from wall
+    // Right wall collision
+    if (fish.x + fish.radius >= this.width - this.marginX - COLLISION_BOUNDARY_BUFFER) {
+      fish.x = this.width - this.marginX - fish.radius - COLLISION_BOUNDARY_BUFFER
+      if (fish.vx > 0) {
+        fish.vx = -fish.vx * restitution
+      }
     }
 
-    // Top wall
-    if (fish.y - fish.radius < top + COLLISION_BOUNDARY_BUFFER) {
-      fish.y = top + fish.radius + COLLISION_BOUNDARY_BUFFER
-      fish.vy = Math.max(0, fish.vy) // Force away from wall
+    // Top water boundary collision
+    if (fish.y - fish.radius <= this.waterTop + COLLISION_BOUNDARY_BUFFER) {
+      fish.y = this.waterTop + fish.radius + COLLISION_BOUNDARY_BUFFER
+      if (fish.vy < 0) {
+        fish.vy = -fish.vy * restitution
+      }
     }
 
-    // Water surface (bottom boundary)
-    if (fish.y + fish.radius > waterBottom - COLLISION_BOUNDARY_BUFFER) {
-      fish.y = waterBottom - fish.radius - COLLISION_BOUNDARY_BUFFER
-      fish.vy = Math.min(0, fish.vy) // Force away from surface
+    // Bottom water boundary collision
+    if (fish.y + fish.radius >= this.waterBottom - COLLISION_BOUNDARY_BUFFER) {
+      fish.y = this.waterBottom - fish.radius - COLLISION_BOUNDARY_BUFFER
+      if (fish.vy > 0) {
+        fish.vy = -fish.vy * restitution
+      }
     }
   }
 
   getSpawnBounds(): ISpawnBounds {
-    const left = this.geometry.centerX - this.geometry.width / 2
-    const right = this.geometry.centerX + this.geometry.width / 2
-    const top = this.geometry.centerY - this.geometry.height / 2
-    const waterBottom = this.geometry.centerY + (this.geometry.height / 2) * WATER_SURFACE_RATIO
-    const padding = 20
+    const safeMargin = 20
 
     return {
-      minX: left + padding,
-      maxX: right - padding,
-      minY: top + padding,
-      maxY: waterBottom - padding,
+      minX: this.marginX + safeMargin,
+      maxX: this.width - this.marginX - safeMargin,
+      minY: this.waterTop + safeMargin,
+      maxY: this.waterBottom - safeMargin,
     }
   }
 }

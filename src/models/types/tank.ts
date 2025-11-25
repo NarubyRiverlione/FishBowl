@@ -1,6 +1,7 @@
 // Tank-related types for the FishBowl game
 import { IFishData, IFishLogic } from './fish'
 import { IFloor } from './floor'
+import { ITankShape } from './tankShape'
 
 export type UUID = string
 export type Timestamp = number
@@ -54,6 +55,9 @@ export interface ITankLogic extends ITankData {
   // Performance metrics (for monitoring)
   collisionChecks: number
   collisionsResolved: number
+
+  // Shape for collision detection (runtime behavior, not serializable data)
+  shape: ITankShape
 
   // Behavioral methods
   addFish(fish: IFishLogic): void

@@ -140,6 +140,12 @@ describe('Tank Visual Rendering (T042d)', () => {
         restitution: 0.2,
         friction: 0.002,
       },
+      shape: {
+        type: 'bowl',
+        checkBoundary: vi.fn(() => false),
+        resolveBoundary: vi.fn(),
+        getSpawnBounds: vi.fn(() => ({ minX: 20, maxX: 80, minY: 20, maxY: 80 })),
+      },
     }
   })
 
@@ -260,7 +266,16 @@ describe('Tank Visual Rendering (T042d)', () => {
     })
 
     it('should fallback to rectangular rendering when no shape is available', () => {
-      const tank = { ...mockTank, size: 'STANDARD' as TankSize, shape: undefined }
+      const tank = {
+        ...mockTank,
+        size: 'STANDARD' as TankSize,
+        shape: {
+          type: 'rectangular' as const,
+          checkBoundary: vi.fn(() => false),
+          resolveBoundary: vi.fn(),
+          getSpawnBounds: vi.fn(() => ({ minX: 0, maxX: 100, minY: 0, maxY: 100 })),
+        },
+      }
 
       const container = new TankContainer(tank)
 

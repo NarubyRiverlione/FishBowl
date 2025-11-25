@@ -18,32 +18,18 @@
     </linearGradient>
   </defs>
 
-  <!-- Tank Body -->
-  <!-- Rectangular glass box -->
-  <!-- x=5 to 95, y=10 to 95 -->
-  
-  <!-- Glass Outline (Back/Sides) -->
   <path d="M 5 10 L 5 95 L 95 95 L 95 10" 
         fill="#FFFFFF" fill-opacity="0.05" stroke="#A0A0A0" stroke-width="1.5" />
 
-  <!-- Water (Level at y=20) -->
-  <rect x="6" y="20" width="88" height="74" fill="url(#waterGradient)" stroke="none" />
+  <rect x="6" y="16.8" width="88" height="78.2" fill="url(#waterGradient)" stroke="none" />
         
-  <!-- Water Surface -->
-  <!-- Perspective rectangle for surface -->
-  <path d="M 6 20 L 94 20" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.5" />
+  <path d="M 6 16.8 L 94 16.8" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.5" />
 
-  <!-- Rim -->
-  <!-- Top rectangular rim -->
-  <!-- Outer Rim -->
   <rect x="3" y="8" width="94" height="4" rx="1" ry="1" fill="none" stroke="#C0C0C0" stroke-width="2" />
   
-  <!-- Highlights -->
-  <!-- Vertical glass reflections -->
   <path d="M 10 15 L 10 90" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.3" stroke-linecap="round" />
   <path d="M 90 15 L 90 90" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.3" stroke-linecap="round" />
   
-  <!-- Bottom thickness -->
   <rect x="3" y="95" width="94" height="3" fill="#808080" opacity="0.5" />
 
 </svg>

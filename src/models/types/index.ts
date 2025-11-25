@@ -12,6 +12,9 @@ export * from './fish'
 // Re-export tank-related types
 export * from './tank'
 
+// Re-export tank shape types
+export * from './tankShape'
+
 // Re-export game state types
 export * from './game'
 

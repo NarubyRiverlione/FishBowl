@@ -153,7 +153,8 @@ describe('FishSprite', () => {
       },
     }
 
-    const sprite = new FishSprite(fish as IFishLogic, 100, 100)
+    const fishLogic = fish as unknown as IFishLogic & { x: number; y: number }
+    const sprite = new FishSprite(fishLogic, 100, 100)
 
     // Initially, sprite should be positioned where we set the Fish model
     expect(sprite.x).toBe(100)
@@ -161,9 +162,9 @@ describe('FishSprite', () => {
     expect(fish.geometry.position.x).toBe(100)
     expect(fish.geometry.position.y).toBe(100)
 
-    // Change Fish model position
-    fish.geometry.position.x = 200
-    fish.geometry.position.y = 150
+    // Change Fish model position via the x/y properties (which map to geometry.position)
+    fishLogic.x = 200
+    fishLogic.y = 150
 
     sprite.update()
 

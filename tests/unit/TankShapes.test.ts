@@ -48,32 +48,32 @@ describe('TankShapes', () => {
 
     it('should identify when fish is within bounds', () => {
       const result = shape.checkBoundary(testFish)
-      expect(result).toBe(true)
+      expect(result).toBe(false) // False = within bounds, no collision
     })
 
     it('should detect boundary violation on left wall', () => {
       testFish.x = 0
       const result = shape.checkBoundary(testFish)
-      expect(result).toBe(false)
+      expect(result).toBe(true) // True = collision detected (out of bounds)
     })
 
     it('should detect boundary violation on right wall', () => {
       testFish.x = TANK_STANDARD_WIDTH
       const result = shape.checkBoundary(testFish)
-      expect(result).toBe(false)
+      expect(result).toBe(true) // True = collision detected (out of bounds)
     })
 
     it('should detect boundary violation on top wall', () => {
       testFish.y = 0
       const result = shape.checkBoundary(testFish)
-      expect(result).toBe(false)
+      expect(result).toBe(true) // True = collision detected (out of bounds)
     })
 
     it('should detect boundary violation on water surface', () => {
       const waterBottom = TANK_Y + (TANK_STANDARD_HEIGHT * WATER_SURFACE_RATIO)
       testFish.y = waterBottom + TEST_OFFSET
       const result = shape.checkBoundary(testFish)
-      expect(result).toBe(false)
+      expect(result).toBe(true) // True = collision detected (out of bounds)
     })
 
     it('should resolve left wall collision by pushing right', () => {
@@ -151,7 +151,7 @@ describe('TankShapes', () => {
 
     it('should identify when fish is within bounds', () => {
       const result = shape.checkBoundary(testFish)
-      expect(result).toBe(true)
+      expect(result).toBe(false) // False = within bounds, no collision
     })
 
     it('should detect boundary violation near circular wall', () => {
@@ -159,14 +159,14 @@ describe('TankShapes', () => {
       testFish.x = TANK_X + (TANK_BOWL_WIDTH / 2) - TEST_SMALL_OFFSET
       testFish.y = TANK_Y
       const result = shape.checkBoundary(testFish)
-      expect(result).toBe(false)
+      expect(result).toBe(true) // True = collision detected (out of bounds)
     })
 
     it('should detect boundary violation above water surface', () => {
       const waterSurface = TANK_Y + ((TANK_BOWL_WIDTH / 2) * WATER_SURFACE_RATIO)
       testFish.y = waterSurface + TEST_OFFSET
       const result = shape.checkBoundary(testFish)
-      expect(result).toBe(false)
+      expect(result).toBe(true) // True = collision detected (out of bounds)
     })
 
     it('should resolve circular wall collision by pushing toward center', () => {

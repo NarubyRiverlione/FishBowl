@@ -16,33 +16,17 @@
     </linearGradient>
   </defs>
 
-  <!-- Bowl Body -->
-  <!-- Center: (50, 51.25), Radius: 43.75 -->
-  <!-- Top Cut: y=25, x=15,85 -->
-  <!-- Bottom Cut: y=90, x=29.7,70.3 -->
-  
-  <!-- Glass Outline -->
   <path d="M 15 25 A 43.75 43.75 0 0 0 29.7 90 L 70.3 90 A 43.75 43.75 0 0 0 85 25" 
         fill="#FFFFFF" fill-opacity="0.1" stroke="#A0A0A0" stroke-width="1.5" />
 
-  <!-- Water (Level at y=45) -->
-  <!-- Intersection x at y=45: (x-50)^2 + (45-51.25)^2 = 43.75^2 -->
-  <!-- (x-50)^2 + 39 = 1914 -> (x-50)^2 = 1875 -> x-50 = 43.3 -->
-  <!-- x = 6.7 and 93.3 -->
-  <path d="M 6.7 45 A 43.75 43.75 0 0 0 29.7 90 L 70.3 90 A 43.75 43.75 0 0 0 93.3 45 A 43.3 8 0 0 0 6.7 45" 
+  <path d="M 15 25 A 43.75 43.75 0 0 0 29.7 90 L 70.3 90 A 43.75 43.75 0 0 0 85 25 A 35 5 0 0 0 15 25" 
         fill="url(#waterGradient)" stroke="none" />
         
-  <!-- Water Surface -->
-  <ellipse cx="50" cy="45" rx="43.3" ry="8" fill="#FFFFFF" fill-opacity="0.2" />
+  <ellipse cx="50" cy="25" rx="35" ry="5" fill="#FFFFFF" fill-opacity="0.3" />
 
-  <!-- Rim -->
-  <!-- Thick rim at top -->
-  <!-- Outer Rim -->
   <ellipse cx="50" cy="25" rx="38" ry="7" fill="none" stroke="#C0C0C0" stroke-width="4" />
-  <!-- Inner Rim / Opening -->
   <ellipse cx="50" cy="25" rx="35" ry="5" fill="none" stroke="#808080" stroke-width="1" />
-  
-  <!-- Highlights -->
+   
   <path d="M 20 35 Q 15 55 20 75" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round" />
   <path d="M 80 35 Q 85 55 80 75" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.4" stroke-linecap="round" />
 
