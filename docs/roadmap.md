@@ -35,18 +35,27 @@ Links:
 
 ---
 
-## Milestone 2 — Core Mechanics (Current)
+## Milestone 2 — Core Mechanics (✅ COMPLETE)
 
 Goal: Implement core game systems for playable loop and economy.
 
-- Game loop (tick-based, pause/resume)
-- Fish lifecycle: aging, hunger, health, death (`specs/001-core-mechanics`)
-- Feeding, cleaning, pollution, water quality
-- Economy basics: credits, buy/sell fish, tank upgrade
-- UI: HUD, store menu, basic interaction controls
-- Life stage visual rules (young/mature/old)
-- Water visuals: background texture + pollution-driven blur/tint (see `specs/001-core-mechanics` FR-017)
-- Acceptance: Playable loop — buy → feed → survive → sell
+**Status**: ✅ **COMPLETE** - MVP Ready for Production  
+**Completion**: November 2025  
+**Next**: Advanced features moved to new specs
+
+**Implemented Features**:
+
+- ✅ Game loop (tick-based, pause/resume)
+- ✅ Fish lifecycle: aging, hunger, health, death (`specs/001-core-mechanics`)
+- ✅ Feeding, cleaning, pollution, water quality
+- ✅ Economy basics: credits, buy/sell fish, tank upgrade
+- ✅ UI: HUD, store menu, basic interaction controls
+- ✅ Life stage visual rules (young/mature/old)
+- ✅ Multi-tank support (up to 3 tanks)
+- ✅ Developer mode and tutorial system
+- ✅ Fish selection and info panel
+- ✅ Collision detection and boundary physics
+- ✅ Acceptance: Playable loop — buy → feed → survive → sell ✅
 
 Links:
 
@@ -56,19 +65,19 @@ Links:
 
 ---
 
-## Milestone 3 — Breeding & Mid-game + Multi-Tank Display
+## Milestone 3 — Advanced Rendering & Physics (Planned)
 
-Goal: Introduce reproduction, genetics, mid-game upgrades, and responsive multi-tank layout.
+Goal: Enhance visual rendering, tank shapes, and advanced collision physics.
 
-**Breeding & Genetics** (not yet specced):
+**Advanced Tank Rendering** (from 001-core-mechanics Phase 4):
 
-- Breeding mechanics and mate selection
-- Simple genetics and trait inheritance (dominant/recessive)
-- Automatic feeder upgrade
-- Schooling/social behavior for selected species
-- Automatic player actions (time warp toggle)
+- Procedural tank rendering (BOWL circular, STANDARD square, BIG rectangle)
+- Advanced collision detection with composite shapes
+- Floor physics with different restitution values (gentle floor vs bouncy walls)
+- Tank shape factory system and debugging infrastructure
+- Performance optimization for multiple tank display
 
-**Multi-Tank Display** (from Phase 4g):
+**Multi-Tank Display**:
 
 - Responsive multi-tank layout: desktop grid view (all tanks visible), tablet split layout, mobile tab navigation
 - Tab buttons with visual indicators (● for BOWL, ◯ for STANDARD, ▭ for BIG)
@@ -78,13 +87,45 @@ Goal: Introduce reproduction, genetics, mid-game upgrades, and responsive multi-
 
 Links:
 
-- Breeding spec: not yet created (planned for `specs/003-breeding-midgame/`)
-- Multi-Tank Display tasks: moved from `specs/001-core-mechanics/tasks.md` Phase 4g (T043a–T043e)
-- PRD mapping: `docs/feature_check.md` (Breeding + Multi-Tank items)
+- Advanced Rendering spec: planned for `specs/003-advanced-rendering/`
+- Multi-Tank Display tasks: moved from `specs/001-core-mechanics/tasks.md` Phase 4
+- PRD mapping: `docs/feature_check.md` (Advanced rendering items)
 
 ---
 
-## Milestone 4 — Advanced Environment & Systems
+## Milestone 4 — Breeding & UX Polish (Planned)
+
+Goal: Introduce reproduction, genetics, and enhanced user experience.
+
+**Breeding & Genetics**:
+
+- Breeding mechanics and mate selection
+- Simple genetics and trait inheritance (dominant/recessive)
+- Schooling/social behavior for selected species
+- Automatic player actions (time warp toggle)
+
+**UX Polish & Animation** (from 001-core-mechanics Phase 5):
+
+- Fish animation system (tail wagging, fin movement)
+- Water visuals with pollution-driven effects
+- Enhanced fish selection and interaction
+- Visual polish and animation responsiveness
+
+**Quality & Logging**:
+
+- Structured logging with debug package integration
+- Performance monitoring and optimization
+- Code quality improvements
+
+Links:
+
+- Breeding spec: planned for `specs/004-breeding-ux/`
+- UX Polish tasks: moved from `specs/001-core-mechanics/tasks.md` Phase 5
+- PRD mapping: `docs/feature_check.md` (Breeding + UX items)
+
+---
+
+## Milestone 5 — Advanced Environment & Systems (Future)stems (Future)
 
 Goal: Deepen environment simulation and emergent behaviors.
 
@@ -93,28 +134,6 @@ Goal: Deepen environment simulation and emergent behaviors.
 - Disease modelling (contagion, treatment, quarantine)
 - Water change mechanic with time and cost
 - Biomass-weighted pollution and food-particle system
-
-Links:
-
-- PRD mapping: `docs/feature_check.md` (Environment)
-
----
-
-## Milestone 5 — Extended Economy & Polish
-
-Goal: Expand economy, equipment, and player-facing polish.
-
-- Equipment shop expansion (filters, pumps, heaters)
-- Market/rare breed mechanics
-- Achievements, seasonal events, and progression polish
-- Save/load and persistence
-
-Links:
-
-- PRD mapping: `docs/feature_check.md` (Economy items)
-- Status: `docs/IMPLEMENTATION_STATUS.md`
-
----
 
 ## How to use this roadmap
 

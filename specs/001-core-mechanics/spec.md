@@ -2,7 +2,8 @@
 
 **Feature Branch**: `001-core-mechanics`
 **Created**: 2025-11-19
-**Status**: Draft
+**Status**: ✅ COMPLETE - MVP Ready for Production
+**Completion**: November 2025
 **Input**: User description: "Implement core game mechanics defined in PRD"
 
 ## User Scenarios & Testing _(mandatory)_
@@ -195,6 +196,7 @@ As a player, I want to sell grown fish for a profit so that I can buy better equ
 Fish lifecycle currently implements health tracking and the `isAlive` flag, but does **NOT** automatically remove dead fish from the tank.
 
 **What's Implemented**:
+
 - ✅ Health degradation when starving (hunger ≥ 80) or water quality < 50
 - ✅ Health clamped to 0 when damage accumulated
 - ✅ `isAlive` boolean flag automatically set to `false` when health reaches 0
@@ -202,12 +204,14 @@ Fish lifecycle currently implements health tracking and the `isAlive` flag, but 
 - ✅ Integration test verifies starvation prevents death via feeding
 
 **What's Missing**:
+
 - ❌ Automatic removal of dead fish from `tank.fish` array during game tick
 - ❌ Dead fish corpses persist indefinitely in the tank unless manually sold
 - ❌ No visual feedback when fish dies (no death animation or corpse marker)
 - ❌ Integration test doesn't verify automatic corpse removal
 
 **Impact**:
+
 - Dead fish remain in game state and count toward tank array size
 - May affect UI displays that show fish count
 - Manual sell action is required to remove dead fish (workaround exists)
@@ -221,11 +225,13 @@ See `tasks.md` for implementation roadmap.
 ### Problem Statement
 
 With the bowl redesign adding a flat floor, the bowl is no longer purely circular. It now consists of:
+
 - **Curved sidewalls** (circular collision boundary)
 - **Flat floor** (horizontal line collision boundary)
 - **Water surface** (horizontal line at 95% height)
 
 Each surface requires different collision handling:
+
 - **Sidewalls**: Circular collision math, 0.8 restitution (bounce)
 - **Floor**: Horizontal line collision, 0.2 restitution (gentle settle)
 - **Water surface**: Horizontal line boundary, acts as barrier/ceiling
@@ -299,4 +305,3 @@ interface ISurfaceCollider {
 - **Water surface**: Always at `WATER_LEVEL = 0.95 * tankHeight` (prevents fish escape)
 - **Floor dimensions**: Invisible (1px) for BOWL, visible (30–40px) for STANDARD/BIG
 - **Collision safety buffer**: 2px boundary buffer to prevent escape
-

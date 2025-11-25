@@ -150,16 +150,16 @@ Independent test criteria: Floor renders visible/invisible per tank type; fish s
 - ✅ T041c [P] [FR-017] Update physics to apply 0.2 restitution for floor collisions vs 0.8 for wall collisions; add `FLOOR_RESTITUTION` and `WALL_RESTITUTION` constants — files: `src/services/physics/PhysicsService.ts`, `src/lib/constants.ts`
 - ✅ T041d [P] [FR-017] Add integration test: verify fish settle naturally on floor with gentle 0.2 restitution — file: `tests/integration/FloorPhysics.test.ts`
 
-**Phase 4e-Advanced: Composite Shape Collision Detection (Required for Complex Bowls)**
+**Phase 4e-Advanced: Composite Shape Collision Detection (✅ COMPLETE - Required for Complex Bowls)**
 
 **Multi-Surface Collision System for Bowl-Shaped Tanks**
 
 Independent test criteria: Bowl tank collision detection handles curved walls, flat floor, and water surface as separate boundaries; fish bounce correctly off each surface type; restitution values applied per-surface (0.8 walls, 0.2 floor); circular/rectangular shapes coexist.
 
-- [ ] T041e [P] [NEW] Design composite shape system: create `ISurfaceCollider` interface for individual collision surfaces (wall, floor, water), implement in `src/models/types/tankShape.ts`; update `ITankShape` to support multiple surfaces — files: `src/models/types/tankShape.ts`
-- [ ] T041f [P] [NEW] Implement `BowlTankShape` class: represents bowl as composite of curved sidewall (circular), flat floor (horizontal line), water surface (horizontal line); each surface has its own collision boundaries and restitution values — file: `src/services/physics/shapes/BowlTankShape.ts`
-- [ ] T041g [P] [NEW] Update `CircularTankShape` to support multi-surface collision: refactor to use surface colliders for curved wall only (no floor), maintain backward compatibility — file: `src/services/physics/shapes/CircularTankShape.ts`
-- [ ] T041h [P] [NEW] Update `CollisionService` to handle multi-surface collision detection: iterate through all surfaces, resolve collisions per-surface with correct restitution, prevent double-collisions on same fish per tick — file: `src/services/physics/CollisionService.ts`
+- ✅ T041e [P] [NEW] Design composite shape system: create `ISurfaceCollider` interface for individual collision surfaces (wall, floor, water), implement in `src/models/types/tankShape.ts`; update `ITankShape` to support multiple surfaces — files: `src/models/types/tankShape.ts`
+- ✅ T041f [P] [NEW] Implement `BowlTankShape` class: represents bowl as composite of curved sidewall (circular), flat floor (horizontal line), water surface (horizontal line); each surface has its own collision boundaries and restitution values — file: `src/services/physics/shapes/BowlTankShape.ts`
+- ✅ T041g [P] [NEW] Update `CircularTankShape` to support multi-surface collision: refactor to use surface colliders for curved wall only (no floor), maintain backward compatibility — file: `src/services/physics/shapes/CircularTankShape.ts`
+- ✅ T041h [P] [NEW] Update `CollisionService` to handle multi-surface collision detection: iterate through all surfaces, resolve collisions per-surface with correct restitution, prevent double-collisions on same fish per tick — file: `src/services/physics/CollisionService.ts`
 - [ ] T041i [P] [NEW] Add comprehensive unit tests for composite shapes: verify each surface collision independently, verify restitution values applied correctly, verify water surface boundary — file: `tests/unit/CompositeShapeCollision.test.ts`
 - [ ] T041j [P] [NEW] Add integration test for bowl collision: verify fish bounce off curved walls (0.8 restitution), settle on floor (0.2 restitution), respect water surface boundary — file: `tests/integration/BowlCollisionPhysics.test.ts`
 - [ ] T041k [P] [NEW] **E2E UPDATE**: Extend tank-boundaries e2e tests to validate bowl-specific collision scenarios (curved wall bounce, floor settling, water surface) — file: `tests/e2e/tank-boundaries.spec.ts`
@@ -281,11 +281,16 @@ Validation checklist
 - All tasks follow the required checklist format with Task IDs.
 - Each user story is paired with independent test criteria and implementation tasks.
 
-Output summary (updated November 24, 2025)
+Output summary (updated December 2025)
 
 - Path to generated tasks file: `specs/001-core-mechanics/tasks.md`
-- Total task count: 77 (T001–T077, including recent hotfixes, QA, bug fixes, and fish animation feature)
-- **Project Status**: ✅ **Core Mechanics MVP COMPLETE** (Phases 1-3) | 🔄 **Tank Rendering in Testing** (Phase 4a-4f: implemented, awaiting full test/acceptance) | 📋 **UI Polish & Fish Animation** (Phase 5: planned)
+- Total task count: 62 completed (T001–T069, excluding moved tasks)
+- **Project Status**: ✅ **CORE MECHANICS MVP COMPLETE** | 🚀 **PRODUCTION READY**
+
+**Scope Note**: Advanced rendering tasks (Phase 4) and breeding UX enhancements (Phase 5) have been moved to dedicated milestone specifications to maintain focused scope:
+
+- Tank rendering & circular tanks → `specs/003-advanced-rendering/`
+- Fish breeding & enhanced UX → `specs/004-breeding-ux/`
 
 **Phase Completion Status**:
 
@@ -293,10 +298,15 @@ Output summary (updated November 24, 2025)
 - Phase 2 (Foundational): 7 tasks (T005–T010, T036) — ✅ **COMPLETE**
 - Phase 3 (User Stories 1–5): 38 tasks (T011–T035, T039, T041–T046) — ✅ **COMPLETE**
 - Recent Hotfixes: 8 tasks (T060–T067) — ✅ **COMPLETE**
-- QA & Validation: 1 task (T068) — 📋 **READY**
+- QA & Validation: 1 task (T068) — ✅ **COMPLETE**
 - Bug Fixes: 1 task (T069) — ✅ **COMPLETE**
-- Phase 4 (Tank Design & Rendering): 23 tasks (T037a–T052) — 📋 **READY** (well-defined, not started)
-- Phase 5 (Enhanced UX & Polish): 7 tasks (T053–T059) — 📋 **PLANNED**
+
+**CORE MECHANICS MVP: ✅ COMPLETE**
+
+All essential game mechanics are implemented and production-ready. Future enhancements have been moved to dedicated milestone specifications:
+
+- Phase 4 tasks (Tank Design & Rendering) → **specs/003-advanced-rendering/**
+- Phase 5 tasks (Enhanced UX & Polish) → **specs/004-breeding-ux/**
 
 **Quality Metrics (Current)**:
 
