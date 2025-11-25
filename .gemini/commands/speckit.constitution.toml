@@ -74,7 +74,7 @@ Follow this execution flow:
 Formatting & Style Requirements:
 
 - Use Markdown headings exactly as in the template (do not demote/promote levels).
-- Wrap long rationale lines to keep readability (<100 chars ideally) but do not hard enforce with awkward breaks.
+- Wrap long rationale lines to keep readability (<1000 chars ideally) but do not hard enforce with awkward breaks.
 - Keep a single blank line between sections.
 - Avoid trailing whitespace.
 

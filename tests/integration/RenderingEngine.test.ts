@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { RenderingEngine } from '../../src/game/RenderingEngine'
+import { RenderingEngine } from '../../src/game/engine/RenderingEngine'
 import { Tank } from '../../src/models/Tank'
+import useGameStore from '../../src/store/useGameStore'
 
 // Mock PixiJS
 vi.mock('pixi.js', async () => {
@@ -30,13 +31,16 @@ describe('RenderingEngine Integration', () => {
   let engine: RenderingEngine
 
   beforeEach(async () => {
+    // Reset game store to clear any previous tank state
+    useGameStore.setState({ tank: null, tanks: [] })
+
     engine = new RenderingEngine(800, 600, 0x000000)
     await engine.init(document.createElement('div'))
   })
 
   it('should initialize with tank', () => {
     expect(engine.tank).toBeInstanceOf(Tank)
-    expect(engine.tank.width).toBe(800)
+    expect(engine.tank.geometry.width).toBe(800)
   })
 
   it('should spawn fish', () => {
@@ -53,6 +57,12 @@ describe('RenderingEngine Integration', () => {
     const initialX = fish.x
 
     // Simulate a tick (delta = 1)
+    // Disable random swim behavior for determinism in this test
+    // (swim may apply random forces that can occasionally move the fish backward)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - test monkeypatch
+    fish.swim = () => {}
+
     engine.update(1)
 
     // With swim behavior, the position will be affected by random forces

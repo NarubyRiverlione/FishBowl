@@ -5,8 +5,8 @@ import { Fish } from '../../src/models/Fish'
 describe('Tank Model', () => {
   it('should initialize with dimensions', () => {
     const tank = new Tank(800, 600, 0x000000)
-    expect(tank.width).toBe(800)
-    expect(tank.height).toBe(600)
+    expect(tank.geometry.width).toBe(800)
+    expect(tank.geometry.height).toBe(600)
     expect(tank.backgroundColor).toBe(0x000000)
     expect(tank.fish.length).toBe(0)
   })

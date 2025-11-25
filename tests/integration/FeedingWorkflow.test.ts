@@ -1,0 +1,108 @@
+import { describe, it, expect, beforeEach } from 'vitest'
+import useGameStore from '../../src/store/useGameStore'
+import { FishSpecies } from '../../src/models/types'
+import { FEED_BASE_COST, FEED_PER_FISH_COST, POLLUTION_PER_FEEDING, TANK_CAPACITY_BOWL } from '../../src/lib/constants'
+import { TEST_VALUES, BUSINESS_LOGIC } from '../config/testConstants'
+
+describe('Feeding Workflow Integration', () => {
+  beforeEach(() => {
+    useGameStore.setState({
+      credits: TEST_VALUES.CREDITS.MODERATE,
+      tanks: [],
+      tank: null,
+    })
+    // Initialize a tank
+    useGameStore.getState().addOrSelectTank({
+      id: 'test-tank',
+      size: 'BOWL',
+      capacity: TANK_CAPACITY_BOWL,
+      waterQuality: BUSINESS_LOGIC.TANK_VALUES.WATER_QUALITY_MAX,
+      pollution: BUSINESS_LOGIC.TANK_VALUES.POLLUTION_MIN,
+      hasFilter: false,
+      temperature: 24,
+      fish: [],
+      createdAt: Date.now(),
+      geometry: {
+        width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
+        height: TEST_VALUES.DIMENSIONS.TANK_HEIGHT,
+        centerX: TEST_VALUES.DIMENSIONS.TANK_WIDTH / 2,
+        centerY: TEST_VALUES.DIMENSIONS.TANK_HEIGHT / 2,
+      },
+      backgroundColor: 0x000000,
+      floor: {
+        visible: true,
+        type: 'pebble',
+        geometry: {
+          x: 0,
+          y: TEST_VALUES.DIMENSIONS.TANK_HEIGHT - 10,
+          width: TEST_VALUES.DIMENSIONS.TANK_WIDTH,
+          height: 10,
+        },
+        restitution: 0.3,
+        friction: 0.5,
+      },
+    })
+  })
+
+  it('should deduct credits and increase pollution when feeding', () => {
+    const store = useGameStore.getState()
+    const tankId = store.tank!.id
+
+    // Add a fish
+    store.buyFish(tankId, FishSpecies.GUPPY)
+
+    const initialCredits = useGameStore.getState().credits
+    const initialPollution = useGameStore.getState().tank!.pollution
+
+    // Feed
+    useGameStore.getState().feedTank(tankId)
+
+    const newState = useGameStore.getState()
+    const expectedCost = FEED_BASE_COST + 1 * FEED_PER_FISH_COST
+
+    expect(newState.credits).toBe(initialCredits - expectedCost)
+    expect(newState.tank!.pollution).toBe(initialPollution + POLLUTION_PER_FEEDING)
+  })
+
+  it('should reduce hunger of living fish', () => {
+    const store = useGameStore.getState()
+    const tankId = store.tank!.id
+
+    // Add a fish
+    store.buyFish(tankId, FishSpecies.GUPPY)
+
+    // Manually set hunger
+    const tank = useGameStore.getState().tank!
+    const fish = tank.fish[0]
+
+    // Update fish hunger in state directly for setup
+    const hungryFish = { ...fish, hunger: TEST_VALUES.FEEDING.INITIAL_HUNGER }
+    const updatedTank = { ...tank, fish: [hungryFish] } as typeof tank
+    useGameStore.setState({
+      tanks: [updatedTank],
+      tank: updatedTank,
+    })
+
+    // Feed
+    useGameStore.getState().feedTank(tankId)
+
+    const newState = useGameStore.getState()
+    const fedFish = newState.tank!.fish[0]!
+
+    expect(fedFish.hunger).toBeLessThan(TEST_VALUES.FEEDING.INITIAL_HUNGER)
+    expect(fedFish.lastFedAt).toBeDefined()
+  })
+
+  it('should not feed if insufficient credits', () => {
+    const store = useGameStore.getState()
+    const tankId = store.tank!.id
+
+    useGameStore.setState({ credits: 0 })
+
+    useGameStore.getState().feedTank(tankId)
+
+    const newState = useGameStore.getState()
+    expect(newState.credits).toBe(0)
+    expect(newState.tank!.pollution).toBe(0)
+  })
+})

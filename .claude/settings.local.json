@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(loc-audit)",
+      "Bash(.specify/scripts/bash/check-prerequisites.sh:*)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm test:e2e:*)",
+      "Bash(npx playwright:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nImplement SVG-based fishbowl rendering with proper design\n\n- Created fishbowl.svg asset with rim, circular sides, and flat bottom\n- Replaced Graphics API with SVG Sprite for better maintainability\n- Water gradient fills from bottom to 95% water line\n- Prominent golden rim at top matching Freepik reference design\n- Circular left/right sides with flat bottom base\n- Implemented circular collision detection (Tank.ts)\n- Fish bounce off curved walls with velocity reflection\n- All tests passing (6 integration, 3 E2E)\n- Zero linting errors\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(cat:*)",
+      "Bash(git commit:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm eslint:*)",
+      "Bash(find:*)",
+      "Bash(cut:*)",
+      "Bash(pnpm tsc:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

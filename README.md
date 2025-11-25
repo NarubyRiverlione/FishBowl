@@ -1,17 +1,85 @@
 # FishBowl
 
+<!-- Test Coverage Badges -->
+
+![Coverage: Statements](https://img.shields.io/badge/Statements-85.32%25-green)
+![Coverage: Branches](https://img.shields.io/badge/Branches-63.71%25-orange)
+![Coverage: Functions](https://img.shields.io/badge/Functions-83.92%25-green)
+![Coverage: Lines](https://img.shields.io/badge/Lines-87.23%25-green)
+![Tests](https://img.shields.io/badge/Tests-197%20passing%2C%205%20failing-orange)
+![Test Files](https://img.shields.io/badge/Test%20Files-42%20unit/integration%20+%2036%20E2E-blue)
+
 A web-based fish breeding simulation game built with React, Pixi.js, and TypeScript.
 
-**Current Status**: ✅ Visual Prototype Complete (Phase 1)
+**Current Status**: ✅ Core Mechanics MVP Complete (Phases 1-3) | 🔧 Tank Rendering Implementation (Phase 4a-4f: collision detection working, 5 failing tests) | 📋 UI Polish Planned (Phase 4g-5)
+
+> **📌 Note on Milestone Numbering**: Milestone numbering reflects execution order (POC first), not spec creation order:
+>
+> - **Milestone 1** = Spec 002 (Visual Prototype - built as POC)
+> - **Milestone 2** = Spec 001 (Core Mechanics - initial spec, built after POC validation)
+
+## ⚠️ Important Architecture Notes
+
+- **[ARCHITECTURE_CONCERNS.md](./ARCHITECTURE_CONCERNS.md)** - Documents rendering engine responsibility mixing that needs future refactor
+- Current implementation works correctly but has mixed concerns between rendering and game logic
+
+## Recent Progress
+
+### ✅ **Latest Achievements** (November 2025)
+
+- **🎯 MVP Complete**: All core game mechanics implemented and tested
+- **🔧 Boundary Physics**: Enhanced collision system with proper fish boundary enforcement
+- **📊 Test Status**: 197 passing, 5 failing (42 unit/integration + 36 E2E) with 85% statement coverage
+- **🛠️ Code Quality**: Zero TypeScript errors, clean linting, constants-based architecture
+- **⚡ Performance**: Stable 60 FPS with collision detection and physics simulation
+- **🎮 Developer Experience**: Enhanced dev mode, test helpers, and debugging infrastructure
 
 ## Features
 
-✅ **Physics-Based Swimming**: Realistic movement with velocity, acceleration, and friction  
-✅ **Collision Detection**: Fish-to-fish and boundary collisions with elastic bounce  
-✅ **Visual Variety**: 8 distinct colors, varied sizes (0.5x - 1.5x scale)  
-✅ **SVG Graphics**: Detailed fish sprites with gills, eyes, and tail fins  
-✅ **Realistic Tank**: Open-top aquarium with water surface at 85% height  
-✅ **Performance**: 60 FPS maintained with 50+ fish on screen
+### ✅ Implemented
+
+**Visual Prototype** (Milestone 1):
+
+- Physics-based fish swimming with collision detection
+- SVG graphics with 8 colors and varied sizes
+- 60 FPS performance with 50+ fish
+- Realistic open-top aquarium tank
+
+**Core Mechanics** (Milestone 2 - Complete):
+
+- Game loop with pause/resume (1 tick/second)
+- Fish lifecycle: aging, hunger, health, death
+- Economy: buy/sell fish, credits system
+- Tank management: BOWL → STANDARD upgrade, multi-tank support
+- Water quality: pollution, cleaning, filters
+- Feeding system with cost and pollution
+- Fish selection UI (click to select, info panel, sell button)
+- Life stage visual rendering (young/mature/old with size and color variations)
+- Full UI: HUD with stats, store menu, developer mode
+
+**Quality Assurance**:
+
+- Comprehensive collision physics with boundary enforcement
+- Constants-based architecture for maintainability
+- E2E test coverage for critical user flows
+- Performance monitoring and metrics
+- Cross-browser compatibility testing
+
+### 🚀 Next Phase
+
+**Phase 4: Tank Design & Rendering** (23 tasks defined):
+
+- Tank shape system (circular BOWL, square STANDARD, rectangular BIG)
+- Visual tank rendering with procedural graphics
+- Multi-tank display layout (desktop grid, mobile tabs)
+- Floor physics and visual effects
+- Advanced collision system with shape abstraction
+
+### 🔮 Planned
+
+- Breeding system with genetics
+- Advanced water quality (oxygen, plants, stress)
+- Expanded economy and equipment shop
 
 ## Tech Stack
 
@@ -36,228 +104,95 @@ pnpm install
 
 ### Development Commands
 
-- **Start Dev Server**:
-  ```bash
-  pnpm dev
-  ```
-  Runs at http://localhost:5173
-- **Run Tests**:
-  ```bash
-  pnpm test          # Unit & integration tests
-  pnpm test:e2e      # End-to-end tests (Playwright)
-  pnpm test:coverage # Coverage report
-  ```
-- **Lint Code**:
-  ```bash
-  pnpm lint
-  ```
-- **Format Code**:
-  ```bash
-  pnpm format
-  ```
-- **Build for Production**:
-  ```bash
-  pnpm build
-  ```
+```bash
+pnpm dev              # Start dev server (http://localhost:5173)
+pnpm test             # Run unit & integration tests
+pnpm test --coverage  # Run tests with coverage report
+pnpm test:e2e         # Run E2E tests (Playwright)
+pnpm lint             # Lint code (ESLint + TypeScript strict)
+pnpm build            # Build for production
+```
 
-For detailed setup instructions, see [QUICKSTART.md](./QUICKSTART.md).
+**Developer Mode**: Add `?dev=true` to URL for 1000 credits, STANDARD tank, no tutorial.
+
+For detailed setup, see [QUICKSTART.md](./QUICKSTART.md).
 
 ## Project Structure
 
 ```
 src/
-├── types/       # TypeScript interfaces (IFish, ITank, IRender)
-├── models/      # Domain entities with pure logic (Fish, Tank)
-├── lib/         # Utility functions (physics, collision, random)
-├── game/        # Pixi.js rendering (FishSprite, TankView, RenderingEngine)
-├── components/  # React UI (AquariumCanvas wrapper)
-└── assets/      # SVG graphics and images
+├── models/
+│   ├── types/        # TypeScript interfaces
+│   │   ├── fish.ts   # IFishData, IFishLogic, IFishGeometry
+│   │   ├── tank.ts   # ITankData, ITankLogic, ITankGeometry
+│   │   └── ...
+│   ├── Fish.ts       # Fish class (implements IFishLogic)
+│   └── Tank.ts       # Tank class (implements ITankLogic)
+├── services/         # Business logic (FishService, Physics, Collision)
+├── game/             # Pixi.js rendering (FishSprite, TankView, RenderingEngine)
+├── store/            # Zustand state management (stores IFishData, ITankData)
+├── components/       # React UI (AquariumCanvas wrapper)
+└── assets/           # SVG graphics and images
 ```
 
-## Physics Implementation
+**Key Design**: Separation of **Data** (IFishData, ITankData) and **Logic** (IFishLogic, ITankLogic)
 
-FishBowl features a custom physics engine for realistic swimming behavior:
-
-### Core Physics Formulas
-
-**Velocity Update** (with friction):
-
-```
-v' = v + a
-v' = v' * (1 - friction)
-```
-
-- `v`: current velocity
-- `a`: acceleration
-- `friction`: drag coefficient (0.005 for water resistance)
-
-**Acceleration** (Newton's Second Law):
-
-```
-a = F / m
-```
-
-- `F`: applied force
-- `m`: fish mass (proportional to size/scale)
-
-### Collision Detection
-
-**Fish-to-Fish** (Circle Collision):
-
-```
-distance = sqrt((x1 - x2)² + (y1 - y2)²)
-collision = distance < (r1 + r2)
-```
-
-**Boundary Collision**:
-
-- Check if fish position ± radius exceeds tank bounds
-- Apply to water surface (85% tank height) as top boundary
-
-### Collision Response
-
-**Elastic Bounce** (Conservation of Momentum):
-
-```
-v1' = ((m1 - m2) * v1 + 2 * m2 * v2) / (m1 + m2)
-v2' = ((m2 - m1) * v2 + 2 * m1 * v1) / (m1 + m2)
-```
-
-- Coefficient of restitution: 0.8 (slight energy loss)
-
-**Wall Bounce**:
-
-```
-v' = -v * restitution
-```
-
-### Swimming Behavior
-
-Fish maintain movement through:
-
-1. **Random Direction Changes**: 0.5% chance per frame to apply lateral force
-2. **Speed Boost**: When velocity < 1px/frame, apply forward thrust
-3. **Natural Gliding**: Low friction allows smooth coasting
-
-### Performance Notes
-
-- **Collision Complexity**: O(n²) for n fish
-  - 20 fish = 190 checks/frame
-  - 50 fish = 1,225 checks/frame
-- **Target FPS**: 60 (maintained with 50+ fish)
-- **Spatial Hash**: Optional optimization for >100 fish (not yet implemented)
+- Data interfaces are serializable and stored in Zustand
+- Logic interfaces extend data with behavioral methods for game simulation
+- See [Data Model](./specs/001-core-mechanics/data-model.md) for full interface definitions
 
 ## Architecture
 
-### Data Flow
+**Tech Stack**: React 19, TypeScript 5.9, Pixi.js 8, Zustand (state), Vitest + Playwright (testing)
 
-```
-User/Browser
-    ↓
-React Component (AquariumCanvas)
-    ↓
-RenderingEngine (Game Loop)
-    ↓
-┌───────────────┬───────────────────┐
-│    Tank       │    TankView       │
-│   (Model)     │  (Pixi Container) │
-│               │                   │
-│  - Fish[]     │  - FishSprite[]   │
-│  - update()   │  - render()       │
-│  - Physics    │  - Graphics       │
-└───────────────┴───────────────────┘
-        ↓                   ↓
-   Fish Model         FishSprite
-   (Logic)            (Visual)
-```
+**Pattern**: Model-View-Controller (MVC)
 
-### Key Components
+- `src/models/` - Pure TypeScript domain logic (Fish, Tank)
+- `src/services/` - Business logic (FishService, PhysicsService, EconomyService)
+- `src/store/` - Zustand state management (game, tank, fish slices)
+- `src/game/` - Pixi.js rendering (FishSprite, TankContainer, RenderingEngine)
+- `src/components/` - React UI (HUD, StoreMenu, AquariumCanvas)
+- `src/lib/` - Utilities (constants, random, physics helpers)
 
-**RenderingEngine**:
+**Physics**: Custom engine with velocity/acceleration, friction (0.005), elastic collisions (restitution 0.8), and autonomous swimming behavior. See [docs/PHYSICS.md](./docs/PHYSICS.md) for detailed formulas and implementation.
 
-- Pixi.js Application wrapper
-- Game loop ticker (60 FPS)
-- Fish spawning and destruction
-- FPS monitoring
+## Testing
 
-**Tank (Model)**:
+**Coverage**: 197 passing, 5 failing (42 unit/integration + 36 E2E tests)
 
-- Fish collection management
-- Physics simulation step
-- Collision detection and response
-- Metrics tracking
+| Metric     | Coverage | Status                |
+| ---------- | -------- | --------------------- |
+| Statements | 85.32%   | 🟡 Approaching target |
+| Functions  | 83.92%   | 🟡 Approaching target |
+| Lines      | 87.23%   | 🟡 Good coverage      |
+| Branches   | 63.71%   | 🟡 Moderate coverage  |
 
-**TankView (Pixi.js)**:
+**Test Organization** (Updated November 2025):
 
-- Visual container for tank and fish
-- Water surface rendering
-- Tank wall rendering
+- **Unit/Integration Tests** (42 files): Isolated component testing and feature integration
+- **E2E Tests** (36 tests): Full user flow testing with Playwright
+- **Integration Tests**: End-to-end feature testing within unit test suite
+  - Game mechanics, UI workflows, System interactions
+- **Performance Tests**: Stress testing with 50+ fish and boundary collision
 
-**Fish (Model)**:
+**Key Coverage Areas**:
 
-- Position, velocity, acceleration
-- Mass, radius (for collisions)
-- `update(delta)`: Apply physics
-- `swim()`: Autonomous movement behavior
+- Models: 100%, Physics: 98.41%, Services: 90%+
+- Game Engine: 74%, Components: 86.6%, Store: 95%+
+- E2E Coverage: Tank boundaries, fish interaction, core mechanics
 
-**FishSprite (Pixi.js)**:
+**Recent Test Enhancements** (November 2025):
 
-- SVG texture rendering
-- Position/rotation sync with Fish model
-- Color tinting
-- Texture loading (async)
+- ✅ **Boundary Physics Testing**: Comprehensive E2E tests for fish collision boundaries
+- ✅ **Constants Integration**: E2E tests use same constants as implementation
+- ✅ **Performance Monitoring**: FPS and collision metrics in E2E tests
+- ✅ **Debug Infrastructure**: Test helpers and collision logging for development
 
-### Separation of Concerns
+**Strategy**: TDD approach with constants-based testing architecture. See `docs/TEST_ORGANIZATION_GUIDE.md` for patterns.
 
-- **Models**: Pure TypeScript logic, no rendering
-- **Game**: Pixi.js rendering, observes models
-- **Components**: React UI, thin wrapper layer
-- **Lib**: Stateless utility functions
+## Roadmap
 
-## Testing Strategy
-
-- **Unit Tests**: Models, utilities (physics, collision, random)
-- **Integration Tests**: RenderingEngine, TankView, AquariumCanvas
-- **E2E Tests**: Playwright for full user scenarios (rendering, animation, boundaries)
-- **Coverage**: >90% for models/lib, >85% for game/components
-
-**Test Results**: 40 tests passing (37 unit/integration + 3 E2E)
-
-- Models: 100% coverage ✅
-- Lib: 98.78% coverage ✅
-- Game: 74% coverage (acceptable for MVP) ✅
-- Components: 86.66% coverage ✅
-
-## Project Roadmap
-
-### ✅ Phase 1: Visual Prototype (Complete)
-
-- Physics-based fish swimming
-- Collision detection and response
-- SVG graphics and animations
-- Performance optimization (60 FPS)
-- Comprehensive testing and documentation
-
-### 🔮 Phase 2: Breeding System (Planned)
-
-- Fish genetics and inheritance
-- Life cycle (fry → adult → old)
-- Reproduction mechanics
-- Mutations and special traits
-
-### 🔮 Phase 3: Economy & Progression (Planned)
-
-- Currency system
-- Fish trading and marketplace
-- Equipment upgrades (filters, pumps)
-- Tank expansion
-
-### 🔮 Phase 4: Advanced Features (Future)
-
-- Water quality simulation
-- Plant ecosystem
-- Disease mechanics
-- Multiple tank management
+See `docs/roadmap.md` for the milestone plan and high-level feature allocation. For implementation progress, see `docs/IMPLEMENTATION_STATUS.md`.
 
 ## Governance
 
@@ -272,10 +207,73 @@ Key principles:
 
 ## Documentation
 
-- [QUICKSTART.md](./QUICKSTART.md) - Setup guide and troubleshooting
-- [docs/IMPLEMENTATION_STATUS.md](./docs/IMPLEMENTATION_STATUS.md) - Feature implementation tracking
-- [docs/PRD.md](./docs/PRD.md) - Product requirements (Dutch)
-- [specs/002-visual-prototype/](./specs/002-visual-prototype/) - Phase 1 specification and tasks
+### Setup & Development
+
+- [QUICKSTART.md](./QUICKSTART.md) - Setup and troubleshooting
+- [docs/IMPLEMENTATION_STATUS.md](./docs/IMPLEMENTATION_STATUS.md) - Implementation progress
+
+### Testing & Quality
+
+- [docs/TEST_ORGANIZATION_GUIDE.md](./docs/TEST_ORGANIZATION_GUIDE.md) - Test classification patterns
+- [docs/TEST_ANALYSIS_REPORT.md](./docs/TEST_ANALYSIS_REPORT.md) - Test suite analysis
+
+### Technical Documentation
+
+- [docs/PHYSICS.md](./docs/PHYSICS.md) - Physics engine details
+- [docs/PRD_Eng.md](./docs/PRD_Eng.md) - Product requirements
+
+### Specifications
+
+- [specs/001-core-mechanics/](./specs/001-core-mechanics/) - Core mechanics spec (MVP complete)
+- [specs/002-visual-prototype/](./specs/002-visual-prototype/) - Visual prototype spec (complete)
+
+## Recent Updates (November 2025)
+
+### ✅ **Boundary Collision System Enhancement**
+
+**Problem**: Fish could escape tank boundaries during rapid movement or edge cases.
+
+**Solution**: Implemented comprehensive collision physics improvements:
+
+- **Enhanced boundary detection** with 2px safety buffer (`COLLISION_BOUNDARY_BUFFER`)
+- **Collision velocity forcing** to ensure fish bounce away from walls
+- **Debug logging system** for collision tracking in test environment
+- **Constants-based architecture** - E2E tests use same values as implementation
+
+**Results**:
+
+- ✅ **Collision Detection**: Working boundary collision system with safety buffers
+- ✅ **E2E Tests**: 36 E2E tests passing (boundary compliance, fish interaction, core mechanics)
+- 🔧 **Current Status**: 197/202 tests passing (collision detection working, 5 failing tests in other areas)
+- ✅ **Enhanced collision system** with debug feedback
+
+### ✅ **Testing Architecture Improvements**
+
+**Constants Integration**: E2E tests now use imported constants instead of magic numbers:
+
+```typescript
+// Before: magic numbers that could diverge from code
+const waterLevel = canvas.height * 0.85 // Hard-coded value
+
+// After: constants-based consistency
+const waterLevel = canvas.height * WATER_LEVEL // From src/lib/constants.ts
+```
+
+**Test Script Enhancement**: Added separate HTML report generation:
+
+```bash
+pnpm test:e2e      # Line reporter (CI-friendly)
+pnpm test:e2e:html # Full HTML report (debugging)
+```
+
+**Performance**: All tests complete in <15 seconds with real physics simulation.
+
+### 🔧 **Technical Debt Resolution**
+
+- **TypeScript**: Zero `any` types, full strict mode compliance
+- **Linting**: Zero warnings with enhanced ESLint rules
+- **Test Status**: 197 passing, 5 failing (202 total: 42 unit/integration + 36 E2E)
+- **Constants**: Single source of truth for all physics/collision values
 
 ## License
 

@@ -13,9 +13,16 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --reporter=line",
+    "test:e2e:html": "playwright test",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "coverage:badges": "node scripts/update-coverage-badges.js",
+    "coverage:badges:dry": "node scripts/update-coverage-badges.js --dry-run",
+    "test:coverage:update": "pnpm test:coverage && pnpm coverage:badges",
+    "report:tasks": "python3 scripts/task-completion-report.py",
+    "report:tasks:001": "python3 scripts/task-completion-report.py specs/001-core-mechanics/tasks.md",
+    "report:tasks:002": "python3 scripts/task-completion-report.py specs/002-visual-prototype/tasks.md"
   },
   "dependencies": {
     "pixi.js": "^8.14.2",

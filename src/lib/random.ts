@@ -1,26 +1,31 @@
-/**
- * Palette of fish colors.
- * - Orange (Clownfish)
- * - Blue (Tang)
- * - Yellow (Tang)
- * - Purple (Basslet)
- * - Red (Snapper)
- */
-export const FISH_PALETTE = [
-  '#FF7F50', // Coral
-  '#00BFFF', // Deep Sky Blue
-  '#FFD700', // Gold
-  '#9370DB', // Medium Purple
-  '#FF6347', // Tomato
-]
+import { FISH_SPECIES_BASE_COLORS, DEFAULT_FALLBACK_COLOR } from './constants'
+import { FishSpecies } from '../models/types'
 
 /**
- * Generates a random hex color string from a predefined palette.
- * @returns Hex color string
+ * Generates a species-specific color with individual variation.
+ * Each fish gets the base color for their species with slight random variations.
+ * @param species The fish species
+ * @returns Hex color string with species-appropriate variation
  */
-export const randomColor = (): string => {
-  const index = Math.floor(Math.random() * FISH_PALETTE.length)
-  return FISH_PALETTE[index] ?? '#FF7F50' // Fallback to coral if undefined
+export const getSpeciesColor = (species: FishSpecies): string => {
+  const baseColor = FISH_SPECIES_BASE_COLORS[species]
+  if (!baseColor) return DEFAULT_FALLBACK_COLOR
+
+  // Parse the hex color
+  const hex = baseColor.replace('#', '')
+  const r = parseInt(hex.substring(0, 2), 16)
+  const g = parseInt(hex.substring(2, 4), 16)
+  const b = parseInt(hex.substring(4, 6), 16)
+
+  // Add small random variations (-20 to +20 for each channel)
+  const variation = 20
+  const newR = Math.max(0, Math.min(255, r + Math.floor(Math.random() * (variation * 2 + 1)) - variation))
+  const newG = Math.max(0, Math.min(255, g + Math.floor(Math.random() * (variation * 2 + 1)) - variation))
+  const newB = Math.max(0, Math.min(255, b + Math.floor(Math.random() * (variation * 2 + 1)) - variation))
+
+  // Convert back to hex
+  const toHex = (n: number) => n.toString(16).padStart(2, '0')
+  return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`
 }
 
 /**

@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { updateVelocity, calculateAcceleration, detectBoundaryCollision } from '../../src/lib/physics'
+import {
+  updateVelocity,
+  calculateAcceleration,
+  detectBoundaryCollision,
+} from '../../src/services/physics/PhysicsService'
 
 describe('Physics Utilities', () => {
   describe('updateVelocity', () => {

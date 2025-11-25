@@ -1,25 +1,102 @@
-import { ITank } from '../types/tank'
-import { IFish } from '../types/fish'
-import { resolveBoundaryCollision, resolveFishCollision, detectFishCollision } from '../lib/collision'
+import { ITankLogic, ITankGeometry, TankSize, UUID, IFishLogic, IFloor } from './types'
+import type { ITankShape } from './types/tankShape'
+import { Fish } from './Fish'
+import { getFloorConfig } from './types/floor'
+import { BowlTankShape } from '../services/physics/shapes/BowlTankShape'
+import { RectangularTankShape } from '../services/physics/shapes/RectangularTankShape'
 
-export class Tank implements ITank {
-  width: number
-  height: number
+import {
+  resolveBoundaryCollision,
+  resolveFishCollision,
+  detectFishCollision,
+} from '../services/physics/CollisionService'
+import { PERCENTAGE_MAX } from '../lib/constants'
+import { ISpawnBounds } from './types/tankShape'
+
+export class Tank implements ITankLogic {
+  id: UUID = crypto.randomUUID()
+  private _size: TankSize = 'BOWL'
+  capacity: number = 1
+  waterQuality: number = PERCENTAGE_MAX
+  pollution: number = 0
+  hasFilter: boolean = false
+  temperature: number = 24
+  createdAt: number = Date.now()
   backgroundColor: number
-  fish: IFish[] = []
+  fish: Fish[] = [] // Implementation uses Fish[] but interface expects IFish[]
+  geometry: ITankGeometry
+  floor: IFloor
+  shape: ITankShape
 
   // Metrics
   collisionChecks: number = 0
   collisionsResolved: number = 0
 
   constructor(width: number, height: number, backgroundColor: number) {
-    this.width = width
-    this.height = height
+    this.geometry = {
+      width,
+      height,
+      centerX: width / 2,
+      centerY: height / 2,
+    }
     this.backgroundColor = backgroundColor
+    this.floor = getFloorConfig(this._size, width, height)
+
+    // Initialize shape based on tank type
+    this.shape = this.createShape(width, height)
   }
 
-  addFish(fish: IFish): void {
-    this.fish.push(fish)
+  // Getter for size
+  get size(): TankSize {
+    return this._size
+  }
+
+  // Setter for size that updates shape and floor when size changes
+  set size(newSize: TankSize) {
+    if (newSize !== this._size) {
+      this._size = newSize
+      this.floor = getFloorConfig(this._size, this.geometry.width, this.geometry.height)
+      this.shape = this.createShape(this.geometry.width, this.geometry.height)
+    }
+  }
+
+  private createShape(width: number, height: number): ITankShape {
+    const centerX = width / 2
+    const centerY = height / 2
+
+    // BOWL tanks use BowlTankShape with composite collision surfaces
+    if (this._size === 'BOWL') {
+      return new BowlTankShape(centerX, centerY, width, height)
+    }
+
+    // STANDARD and BIG tanks use rectangular collision surfaces
+    return new RectangularTankShape(centerX, centerY, width, height)
+  }
+
+  addFish(fish: IFishLogic): void {
+    // Accept IFishLogic but internally we work with Fish instances
+    if (fish instanceof Fish) {
+      this.fish.push(fish)
+    } else {
+      // Convert IFishLogic to Fish if needed
+      const fishInstance = new Fish(fish.id, fish.geometry.position.x, fish.geometry.position.y, fish.color, fish.size)
+      fishInstance.species = fish.species
+      fishInstance.age = fish.age
+      fishInstance.health = fish.health
+      fishInstance.hunger = fish.hunger
+      fishInstance.isAlive = fish.isAlive
+      fishInstance.genetics = fish.genetics
+      fishInstance.createdAt = fish.createdAt
+      fishInstance.lastFedAt = fish.lastFedAt
+      fishInstance.geometry.velocity.vx = fish.geometry.velocity.vx
+      fishInstance.geometry.velocity.vy = fish.geometry.velocity.vy
+      fishInstance.geometry.radius = fish.geometry.radius
+      this.fish.push(fishInstance)
+    }
+  }
+
+  removeFish(fishId: string): void {
+    this.fish = this.fish.filter((f) => f.id !== fishId)
   }
 
   update(delta: number): void {
@@ -49,5 +126,18 @@ export class Tank implements ITank {
         }
       }
     }
+  }
+
+  // Collision detection methods - delegated to shape
+  checkBoundary(fish: IFishLogic): boolean {
+    return this.shape.checkBoundary(fish)
+  }
+
+  resolveBoundary(fish: IFishLogic): void {
+    this.shape.resolveBoundary(fish)
+  }
+
+  getSpawnBounds(): ISpawnBounds {
+    return this.shape.getSpawnBounds()
   }
 }

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { RenderingEngine } from '../../src/game/RenderingEngine'
+import { RenderingEngine } from '../../src/game/engine/RenderingEngine'
+import { TEST_VALUES } from '../config/testConstants'
 
 // Mock PixiJS
 vi.mock('pixi.js', async () => {
@@ -9,6 +10,7 @@ vi.mock('pixi.js', async () => {
     Application: class {
       stage = { addChild: vi.fn(), removeChild: vi.fn() }
       canvas = document.createElement('canvas')
+      screen = { width: 800, height: 600 }
       ticker = {
         add: vi.fn(),
         remove: vi.fn(),
@@ -24,6 +26,9 @@ vi.mock('pixi.js', async () => {
       addChild = vi.fn()
       removeChild = vi.fn()
       removeChildren = vi.fn()
+      scale = { x: 1, y: 1, set: vi.fn() }
+      x = 0
+      y = 0
     },
     Sprite: class {
       anchor = { set: vi.fn() }
@@ -41,11 +46,11 @@ describe('Performance Stress Test', () => {
   })
 
   it('should handle 20 fish without crashing', () => {
-    engine.spawnFish(20)
-    expect(engine.tank.fish.length).toBe(20)
+    engine.spawnFish(TEST_VALUES.STRESS_TEST.BASIC_FISH_COUNT)
+    expect(engine.tank.fish.length).toBe(TEST_VALUES.STRESS_TEST.BASIC_FISH_COUNT)
 
     // Simulate a few frames
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < TEST_VALUES.STRESS_TEST.FRAME_COUNT; i++) {
       engine.update(1)
     }
 
@@ -54,18 +59,18 @@ describe('Performance Stress Test', () => {
   })
 
   it('should handle 50 fish (stress test)', () => {
-    engine.spawnFish(50)
-    expect(engine.tank.fish.length).toBe(50)
+    engine.spawnFish(TEST_VALUES.STRESS_TEST.FISH_COUNT)
+    expect(engine.tank.fish.length).toBe(TEST_VALUES.STRESS_TEST.FISH_COUNT)
 
     const start = performance.now()
     // Simulate 60 frames (1 second at 60fps)
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < TEST_VALUES.STRESS_TEST.FRAME_COUNT; i++) {
       engine.update(1)
     }
     const end = performance.now()
 
     // Check if 60 frames took less than a reasonable amount of time (e.g., 100ms for pure logic)
     // Note: This tests logic performance, not rendering performance since Pixi is mocked
-    expect(end - start).toBeLessThan(1000)
+    expect(end - start).toBeLessThan(TEST_VALUES.STRESS_TEST.MAX_FRAME_TIME)
   })
 })
