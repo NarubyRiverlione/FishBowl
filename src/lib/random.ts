@@ -1,4 +1,4 @@
-import { FISH_SPECIES_BASE_COLORS } from './constants'
+import { FISH_SPECIES_BASE_COLORS, DEFAULT_FALLBACK_COLOR } from './constants'
 import { FishSpecies } from '../models/types'
 
 /**
@@ -9,7 +9,7 @@ import { FishSpecies } from '../models/types'
  */
 export const getSpeciesColor = (species: FishSpecies): string => {
   const baseColor = FISH_SPECIES_BASE_COLORS[species]
-  if (!baseColor) return '#FF7F50' // Fallback
+  if (!baseColor) return DEFAULT_FALLBACK_COLOR
 
   // Parse the hex color
   const hex = baseColor.replace('#', '')

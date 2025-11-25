@@ -80,6 +80,8 @@ export const FISH_SPECIES_BASE_COLORS = {
   TETRA: '#00BFFF', // Deep Sky Blue - Blue family
   BETTA: '#9370DB', // Medium Purple - Purple family
 }
+// Default fallback color when species color is not defined
+export const DEFAULT_FALLBACK_COLOR = '#FF7F50' // Coral - consistent with GUPPY base color
 
 // Fish spawn size range
 export const FISH_SPAWN_SIZE_MIN = 0.5
