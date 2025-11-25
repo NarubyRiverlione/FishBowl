@@ -295,12 +295,16 @@ export class TankContainer extends Container {
   // Called when tank is upgraded (e.g., BOWL → STANDARD)
   async recreateTankSpriteIfNeeded(): Promise<void> {
     // Check if the tank size has actually changed
+    console.log('🔄 recreateTankSpriteIfNeeded: currentTankSize=', this.currentTankSize, 'tank.size=', this.tank.size)
     if (this.currentTankSize === this.tank.size) {
+      console.log('  No size change needed')
       return // No change needed
     }
 
+    console.log('  Tank size changed! Recreating sprite...')
     // Tank size changed - remove old sprite completely
     if (this.bowlSprite) {
+      console.log('  Removing old sprite...')
       // Remove from parent if attached
       if (this.bowlSprite.parent) {
         this.bowlSprite.parent.removeChild(this.bowlSprite)
@@ -311,7 +315,9 @@ export class TankContainer extends Container {
     }
 
     // Load new sprite with correct SVG
+    console.log('  Loading new sprite for size:', this.tank.size)
     await this.initializeBowl()
+    console.log('  ✅ Sprite recreation complete')
   }
 
   private async initializeBowl(): Promise<void> {
@@ -335,6 +341,14 @@ export class TankContainer extends Container {
         this.tank.geometry.height / this.bowlSprite.texture.height
       )
       this.bowlSprite.scale.set(scale)
+
+      console.log(`🏠 Tank sprite initialized:`, {
+        size: this.tank.size,
+        geometry: this.tank.geometry,
+        textureSize: { w: this.bowlSprite.texture.width, h: this.bowlSprite.texture.height },
+        scale,
+        isBowl,
+      })
 
       this.addChild(this.bowlSprite)
     } catch (error) {

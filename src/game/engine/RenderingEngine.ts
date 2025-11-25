@@ -98,8 +98,12 @@ export class RenderingEngine {
       this.syncTankProperties(storeTank)
 
       // Check if tank sprite needs to be recreated (e.g., tank upgrade from BOWL to STANDARD)
-      // Fire-and-forget since async, don't block the sync
-      void this.tankView.recreateTankSpriteIfNeeded()
+      // Then update display scale to match new tank dimensions
+      void (async () => {
+        await this.tankView.recreateTankSpriteIfNeeded()
+        // Update display scale after sprite recreation to fit new tank size
+        this.tankView.updateDisplayScale()
+      })()
 
       // Sync fish using existing method
       this.syncFish(storeTank.fish)
