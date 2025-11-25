@@ -129,6 +129,7 @@ export const MAX_TANKS_DEFAULT = 3
 // Tank Constants
 export const WATER_LEVEL = 0.9 // Water fills 90% of tank height (from bottom)
 export const WATER_SURFACE_RATIO = 0.9 // Ratio of tank height/diameter for water surface boundary
+export const WATER_SURFACE_RATIO_BOWL = 0.66 // Bowl-specific: keeps fish below elliptical rim (lowest point at y=102 for 300px bowl)
 
 // ============================================================================
 // GAME WORLD COORDINATES (T042a)

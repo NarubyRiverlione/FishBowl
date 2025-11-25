@@ -2,7 +2,7 @@ import { IFishLogic } from '../../../models/types/index'
 import { ITankShape, ISpawnBounds, ISurfaceCollider } from '../../../models/types/tankShape'
 import {
   COLLISION_BOUNDARY_BUFFER,
-  WATER_SURFACE_RATIO,
+  WATER_SURFACE_RATIO_BOWL,
   FLOOR_RESTITUTION,
   WALL_RESTITUTION,
 } from '../../../lib/constants'
@@ -265,7 +265,7 @@ export class BowlTankShape implements ITankShape {
     const floorY = centerY + height / 2 // Bottom of tank (y=300)
     const floorLeftX = 29.7 * SVG_SCALE // Left edge of narrow floor (x=89)
     const floorRightX = 70.3 * SVG_SCALE // Right edge of narrow floor (x=211)
-    const waterSurfaceY = centerY - height / 2 + height * (1 - WATER_SURFACE_RATIO)
+    const waterSurfaceY = centerY - height / 2 + height * (1 - WATER_SURFACE_RATIO_BOWL)
 
     this.surfaces = [
       new ArcSurfaceCollider(leftCenter.x, leftCenter.y, arcRadius, leftStartAngle, leftEndAngle, true),
@@ -372,7 +372,7 @@ export class BowlTankShape implements ITankShape {
     // Spawn within safe area: above floor, below water, horizontally centered
     const safeMargin = 30
     const floorY = this.centerY + this.height / 2 // Bottom of tank
-    const waterSurfaceY = this.centerY + (this.height / 2) * (1 - WATER_SURFACE_RATIO)
+    const waterSurfaceY = this.centerY - this.height / 2 + this.height * (1 - WATER_SURFACE_RATIO_BOWL)
 
     // Horizontal bounds: use narrower region to avoid spawning near curved walls
     const spawnWidth = 100 * SVG_SCALE // Approx 1/3 of tank width, centered
