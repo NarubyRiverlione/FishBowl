@@ -102,7 +102,9 @@ export class RenderingEngine {
       void (async () => {
         await this.tankView.recreateTankSpriteIfNeeded()
         // Update display scale after sprite recreation to fit new tank size
-        this.tankView.updateDisplayScale()
+        if (typeof this.tankView.updateDisplayScale === 'function') {
+          this.tankView.updateDisplayScale()
+        }
       })()
 
       // Sync fish using existing method
