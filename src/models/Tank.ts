@@ -69,7 +69,7 @@ export class Tank implements ITankLogic {
       return new BowlTankShape(centerX, centerY, width, height)
     }
 
-    // STANDARD and BIG tanks use rectangular collision@
+    // STANDARD and BIG tanks use rectangular collision surfaces
     return new RectangularTankShape(centerX, centerY, width, height)
   }
 
