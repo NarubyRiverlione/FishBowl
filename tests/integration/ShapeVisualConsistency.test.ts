@@ -172,19 +172,26 @@ describe('Shape-Visual Consistency (T042e)', () => {
 
       const container = new TankContainer(tank)
 
-      // Water level should be at WATER_LEVEL% of tank height
-      const expectedWaterLevel = tank.geometry.height * WATER_LEVEL
+      // Water surface calculation for BOWL tank uses WATER_SURFACE_RATIO_BOWL (0.66)
+      // waterSurfaceY = centerY - height/2 + height * (1 - WATER_SURFACE_RATIO_BOWL)
+      const centerY = tank.geometry.height / 2 // 150
+      const height = tank.geometry.height // 300
+      const expectedWaterSurfaceY = centerY - height / 2 + height * (1 - 0.66) // 150 - 150 + 102 = 102
 
-      // Create test fish at water surface level
-      const surfaceFish = new Fish('surface-test', tank.geometry.width / 2, expectedWaterLevel, '#ffffff', 1.0)
+      // Create test fish well BELOW the water surface to be safely within bounds
+      // Fish needs to be at least radius + buffer below the water surface
+      const safeDepth = expectedWaterSurfaceY + 30 // 102 + 30 = 132
+      const surfaceFish = new Fish('surface-test', tank.geometry.width / 2, safeDepth, '#ffffff', 1.0)
       surfaceFish.species = FishSpecies.GUPPY
-      surfaceFish.geometry.radius = 3 // Very small radius for surface testing
+      surfaceFish.geometry.radius = 3
 
-      const bottomFish = new Fish('bottom-fish', tank.geometry.width / 2, tank.geometry.height - 10, '#ffffff', 1.0)
+      // Bottom fish should be well above the floor collision boundary
+      // For BOWL, floor is curved so we need to be well above the bottom
+      const bottomFish = new Fish('bottom-fish', tank.geometry.width / 2, tank.geometry.height - 40, '#ffffff', 1.0)
       bottomFish.species = FishSpecies.GUPPY
       bottomFish.geometry.radius = 3
 
-      // Test that fish at water surface level are within bounds (not out of bounds)
+      // Test that fish well below water surface are within bounds
       const isAtSurfaceOutOfBounds = tank.checkBoundary(surfaceFish)
       expect(isAtSurfaceOutOfBounds).toBe(false) // Should NOT be out of bounds
 

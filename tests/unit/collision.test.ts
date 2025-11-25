@@ -52,6 +52,21 @@ const mockTank = (width: number, height: number): ITankLogic => ({
   fish: [],
   collisionChecks: 0,
   collisionsResolved: 0,
+  // Add missing shape and floor for ITankLogic
+  shape: {
+    type: 'rectangular',
+    surfaces: [],
+    checkBoundary: () => false,
+    resolveBoundary: () => {},
+    getSpawnBounds: () => ({ minX: 20, maxX: width - 20, minY: 20, maxY: height - 20 }),
+  },
+  floor: {
+    visible: false,
+    type: 'invisible',
+    geometry: { x: 0, y: height - 10, width, height: 10 },
+    restitution: 0.2,
+    friction: 0.1,
+  },
   addFish: () => {},
   removeFish: () => {},
   update: () => {},

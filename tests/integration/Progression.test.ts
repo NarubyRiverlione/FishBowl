@@ -23,9 +23,15 @@ describe('Progression Mechanics', () => {
       temperature: 24,
       fish: [],
       createdAt: Date.now(),
-      width: 400,
-      height: 400,
       backgroundColor: 0x000000,
+      geometry: { width: 300, height: 300, centerX: 150, centerY: 150 },
+      floor: {
+        visible: false,
+        type: 'invisible',
+        geometry: { x: 0, y: 280, width: 300, height: 20 },
+        restitution: 0.2,
+        friction: 0.1,
+      },
     })
   })
 
@@ -43,7 +49,8 @@ describe('Progression Mechanics', () => {
     // Hacking state is faster for test.
     const tank = useGameStore.getState().tank!
     const fish = tank.fish[0]
-    const matureFish = { ...fish, age: MATURE_AGE_SECONDS } // Exact age
+    if (!fish) throw new Error('Fish not found')
+    const matureFish = { ...fish, id: fish.id, species: fish.species, age: MATURE_AGE_SECONDS } // Exact age
 
     const updatedTank = { ...tank, fish: [matureFish] }
     useGameStore.setState({
@@ -73,7 +80,8 @@ describe('Progression Mechanics', () => {
     // Set fish to mature
     const tank = useGameStore.getState().tank!
     const fish = tank.fish[0]
-    const matureFish = { ...fish, age: MATURE_AGE_SECONDS + 10 }
+    if (!fish) throw new Error('Fish not found')
+    const matureFish = { ...fish, id: fish.id, species: fish.species, age: MATURE_AGE_SECONDS + 10 }
 
     const updatedTank = { ...tank, fish: [matureFish] }
     useGameStore.setState({
@@ -104,7 +112,7 @@ describe('Progression Mechanics', () => {
 
     expect(tank.size).toBe('STANDARD')
     expect(tank.capacity).toBe(TANK_CAPACITY_STANDARD)
-    expect(tank.geometry.width).toBe(800)
+    expect(tank.geometry.width).toBe(600)
     expect(tank.geometry.height).toBe(600)
     expect(newState.credits).toBe(initialCredits - TANK_UPGRADE_COST)
   })

@@ -51,6 +51,8 @@ describe('RenderingEngine Integration', () => {
   it('should update fish positions on tick', () => {
     engine.spawnFish(1)
     const fish = engine.tank.fish[0]
+    if (!fish) throw new Error('Fish not spawned')
+
     fish.vx = 10
     fish.vy = 0
 
@@ -82,6 +84,10 @@ describe('RenderingEngine Integration', () => {
   })
 
   it('should log metrics after update', async () => {
+    // Enable developer mode for performance logging
+    const store = (await import('../../src/store/useGameStore')).default
+    store.getState().setMode('dev')
+
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
 
     engine.spawnFish(5)
