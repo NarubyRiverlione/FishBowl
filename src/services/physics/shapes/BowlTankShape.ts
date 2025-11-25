@@ -311,14 +311,20 @@ export class BowlTankShape implements ITankShape {
   }
 
   checkBoundary(fish: IFishLogic): boolean {
-    // First check if fish is completely outside tank boundaries (rectangular bounds)
+    // Bowl extent: Calculate based on actual tank dimensions
+    // SVG viewBox is 0-100, left rim at 15, right rim at 85
+    const svgScale = this.width / 100
+    const bowlLeftExtent = 15 * svgScale
+    const bowlRightExtent = 85 * svgScale
+
+    // First check if fish is completely outside bowl's actual extent
     if (
-      fish.x - fish.radius < 0 ||
-      fish.x + fish.radius > this.width ||
+      fish.x - fish.radius < bowlLeftExtent ||
+      fish.x + fish.radius > bowlRightExtent ||
       fish.y - fish.radius < 0 ||
       fish.y + fish.radius > this.height
     ) {
-      return true // Out of rectangular bounds
+      return true // Out of bowl bounds
     }
 
     // Then check surface collisions (arcs, floor, water surface)
@@ -326,13 +332,19 @@ export class BowlTankShape implements ITankShape {
   }
 
   resolveBoundary(fish: IFishLogic): void {
-    // First resolve rectangular boundary violations (fish completely outside tank)
-    if (fish.x - fish.radius < 0) {
-      fish.x = fish.radius + COLLISION_BOUNDARY_BUFFER
+    // Bowl extent: Calculate based on actual tank dimensions
+    // SVG viewBox is 0-100, left rim at 15, right rim at 85
+    const svgScale = this.width / 100
+    const bowlLeftExtent = 15 * svgScale
+    const bowlRightExtent = 85 * svgScale
+
+    // First resolve boundary violations (fish outside bowl's actual extent)
+    if (fish.x - fish.radius < bowlLeftExtent) {
+      fish.x = bowlLeftExtent + fish.radius + COLLISION_BOUNDARY_BUFFER
       fish.vx = Math.abs(fish.vx) * WALL_RESTITUTION
     }
-    if (fish.x + fish.radius > this.width) {
-      fish.x = this.width - fish.radius - COLLISION_BOUNDARY_BUFFER
+    if (fish.x + fish.radius > bowlRightExtent) {
+      fish.x = bowlRightExtent - fish.radius - COLLISION_BOUNDARY_BUFFER
       fish.vx = -Math.abs(fish.vx) * WALL_RESTITUTION
     }
     if (fish.y - fish.radius < 0) {
