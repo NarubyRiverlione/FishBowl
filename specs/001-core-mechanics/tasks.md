@@ -251,6 +251,11 @@ Final Phase: Polish & Cross-Cutting Concerns
 **QA & Code Quality Validation**
 
 - [ ] T068 [QA] Code complexity validation: scan all TypeScript files to identify any exceeding 120 lines of code (excluding empty lines and comments); ensure proper separation of concerns by breaking down large files into focused modules — command: custom script to analyze line counts and suggest refactoring
+
+**Bug Fixes**
+
+- ✅ T069 🐛 [BUG] **CRITICAL**: Bowl tank collision detection failing - fish escaping all sides of tank. **Screenshot Evidence**: Fish escaping left curved wall (10.59.36), right curved wall (10.59.46), bottom boundary (10.58.09), and swimming through all sides without bouncing (10.58.20). **Root Cause Analysis**: Current `BowlTankShape` uses simplified circular wall collision (radius 150px) that doesn't match the actual SVG geometry. The visual bowl (fishbowl.svg) has curved arc segments (radius 43.75 in SVG coords, 131.25px scaled) with bulbous shape: wider at top (~70 SVG units → 210px) than bottom (~40.6 SVG units → 122px). Floor collision spans full width (0-300px) instead of constrained bottom (89-211px). No coordinate space mapping between SVG viewBox (0-100) and game world (0-300). **Fix Approach**: Replace circular `WallSurfaceCollider` with `LeftArcSurfaceCollider` and `RightArcSurfaceCollider` using arc segment collision math. Constrain `FloorSurfaceCollider` to x-range 89-211px. Keep `WaterSurfaceCollider` unchanged (flat horizontal at 90% height). **Implementation**: Arc collision algorithm: find arc center from endpoints + radius, project fish onto arc, clamp to angular range, check distance, calculate normal vector for bounce, apply 0.8 restitution. **Related Tasks**: T041e-T041k (composite shape implementation) — files: `src/services/physics/shapes/BowlTankShape.ts` (primary), `tests/unit/BowlTankShape.test.ts`, `tests/integration/BowlCollisionPhysics.test.ts` — **FIXED**: Implemented arc segment collision with strict x-coordinate rejection zones (left arc: x≤109, right arc: x≥191) to prevent false positives. All 202 tests passing.
+
 - ✅ T070 [CLEANUP] Remove all feature flags and their logic (cleanup required before PR): search codebase for all feature flag constants (`USE_TANK_SHAPES`, `USE_SHAPE_COLLISION`, `ENABLE_CIRCULAR_TANKS`, `ENABLE_MULTI_TANK_DISPLAY`), remove feature flag checks and conditionals, simplify code paths to use implemented features as default — files: `src/lib/constants.ts`, all files with feature flag conditionals
 
 Dependencies (user-story completion order)
@@ -289,13 +294,13 @@ Output summary (updated November 24, 2025)
 - Phase 3 (User Stories 1–5): 38 tasks (T011–T035, T039, T041–T046) — ✅ **COMPLETE**
 - Recent Hotfixes: 8 tasks (T060–T067) — ✅ **COMPLETE**
 - QA & Validation: 1 task (T068) — 📋 **READY**
-- Bug Fixes: 1 task (T069) — 🐛 **OPEN**
+- Bug Fixes: 1 task (T069) — ✅ **COMPLETE**
 - Phase 4 (Tank Design & Rendering): 23 tasks (T037a–T052) — 📋 **READY** (well-defined, not started)
 - Phase 5 (Enhanced UX & Polish): 7 tasks (T053–T059) — 📋 **PLANNED**
 
 **Quality Metrics (Current)**:
 
-- ✅ 127 tests passing (35 unit + 10 E2E)
+- ✅ 202 tests passing (42 test files)
 - ✅ 89% statement coverage, 92% line coverage
 - ✅ Zero TypeScript errors (strict mode compliance)
 - ✅ Zero ESLint warnings (enhanced rules)

@@ -2,10 +2,10 @@
 
 <!-- Test Coverage Badges -->
 
-![Coverage: Statements](https://img.shields.io/badge/Statements-89.22%25-green)
-![Coverage: Branches](https://img.shields.io/badge/Branches-70.99%25-yellow)
-![Coverage: Functions](https://img.shields.io/badge/Functions-83.89%25-green)
-![Coverage: Lines](https://img.shields.io/badge/Lines-92.20%25-brightgreen)
+![Coverage: Statements](https://img.shields.io/badge/Statements-85.32%25-green)
+![Coverage: Branches](https://img.shields.io/badge/Branches-63.71%25-orange)
+![Coverage: Functions](https://img.shields.io/badge/Functions-83.92%25-green)
+![Coverage: Lines](https://img.shields.io/badge/Lines-87.23%25-green)
 ![Tests](https://img.shields.io/badge/Tests-127%20passing-brightgreen)
 ![Test Files](https://img.shields.io/badge/Test%20Files-35%20unit%20+%2010%20E2E-blue)
 
